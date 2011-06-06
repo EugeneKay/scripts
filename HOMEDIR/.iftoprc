@@ -1,0 +1,17 @@
+interface: eth0
+dns-resolution: yes
+port-resolution: yes
+show-bars: yes
+promiscuous: no
+port-display: on
+hide-source: no
+hide-destination: no
+use-bytes: no
+sort: 10s
+line-display: one-line-both
+show-totals: yes
+log-scale: no
+max-bandwidth: 10M
+filter-code: not port domain and not port bootpc and not ether host ff:ff:ff:ff:ff:ff and not port netbios-ns and not port mdns and not port microsoft-ds and not port ntp
+
+
