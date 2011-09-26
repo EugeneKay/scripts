@@ -10,10 +10,14 @@
 # Copyright 2011 Eugene E. Kashpureff (eugene@kashpureff.org)
 # License: GNU General Public License, version 3+
 
-## Environment setup
+##
+## Environment Setup
+##
+
+## Runtime vars
 # Working directory. Backups are kept here.
 BASEDIR="/data/backups"
-# Directory to use for script locking
+# Concurrency lock-prevention dir
 LOCKDIR="${BASEDIR}/.lock"
 # Timestamp to use
 TIMESTAMP=`date +%s`
@@ -25,11 +29,17 @@ SOURCEDIR="${BASEDIR}/.sources"
 BACKUPS="14"
 # Backup frequency(used as a naming string only)
 FREQUENCY="daily"
-# Bandwidth limit(0 for unlimited)
+# Bandwidth limit, in KB/s(0 for unlimited)
 BWLIMIT="250"
 # Extra options for rsync
 RSYNCOPTS=${1}
 
+## Env vars
+
+
+##
+## Script Lock
+##
 
 # Attempt to acquire lock
 if mkdir "${LOCKDIR}"
@@ -41,6 +51,10 @@ fi
 
 # Remove lock on exit, even if abnormal
 trap "rm -rf ${LOCKDIR}; exit" INT TERM EXIT
+
+##
+## Remote Syncing
+##
 
 # Loop through each defined Remote
 while read remote
@@ -90,9 +104,16 @@ do
 		done < ${SOURCEDIR}/${remote}
 		unset source
 	fi
+	# Save timestamp
+	echo "${TIMESTAMP}" > "${basename}.0/.timestamp"
+	
+	
 	echo ""
 done < ${REMOTES}
 unset remote savedir
 
-# Clean up variables
+##
+## Cleanup
+##
+
 unset BASEDIR LOCKDIR TIMESTAMP REMOTES SOURCEDIR BACKUPS FREQUENCY BWLIMIT RSYNCOPTS
