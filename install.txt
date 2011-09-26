@@ -1,0 +1,12 @@
+Notes on installing Scientific Linux 6
+
+authconfig --disablefingerprint --update
+adduser eugenekay
+passwd eugenekay
+visudo
+
+yum update
+yum install screen bind-utils man traceroute telnet rsync openssh-clients vim ntp jwhois wget 
+
+VMs: kernel-devel gcc make perl 
+vmware tools
