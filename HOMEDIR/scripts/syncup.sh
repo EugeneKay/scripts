@@ -46,7 +46,8 @@ if mkdir "${LOCKDIR}"
 then
 	echo $$ > "${LOCKDIR}/pid"
 else
-	echo >&2 "ERROR: Unable to acquire script lock"
+	echo "Error: Unable to acquire script lock"
+	exit
 fi
 
 # Remove lock on exit, even if abnormal
