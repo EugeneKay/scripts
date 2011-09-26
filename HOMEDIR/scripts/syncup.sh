@@ -19,13 +19,13 @@
 BASEDIR="/data/backups"
 # Concurrency lock-prevention dir
 LOCKDIR="${BASEDIR}/.lock"
-# Timestamp to use
-TIMESTAMP=`date +%s`
+# Timestamp format to use
+TIMESTAMP="date +%s"
 # File containing remote names
 REMOTES="${BASEDIR}/.remotes"
 # Directory to read remote:/sources/
 SOURCEDIR="${BASEDIR}/.sources"
-# Number of backups to keep
+# Number of old backups to keep
 BACKUPS="14"
 # Backup frequency(used as a naming string only)
 FREQUENCY="daily"
@@ -59,58 +59,67 @@ trap "rm -rf ${LOCKDIR}; exit" INT TERM EXIT
 # Loop through each defined Remote
 while read remote
 do
+	# Extra space for readability
+	echo ""
 	echo "Remote: ${remote}"
-	# Directory to save data into
-	savedir="${BASEDIR}/${remote}"
+	# Directory to save backups into
+	backdir="${BASEDIR}/${remote}"
 	# Base name for backups
-	basename="${savedir}/${FREQUENCY}"
-	# Create if it doesn't exist
-	if [ ! -d "${savedir}" ]
+	backbase="${backdir}/${FREQUENCY}"
+	
+	# Check that a list of Sources exists
+	if [ ! -f "${SOURCEDIR}/${remote}" ]
 	then
-		mkdir "${savedir}"
-		mkdir "${basename}.0"
+		echo "Error:  No Sources list found"
+		# Abort this Remotey
+		continue
+	fi
+	
+	# Create if it doesn't exist
+	if [ ! -d "${backdir}" ]
+	then
+		mkdir "${backdir}"
+		mkdir "${backbase}.0"
 	fi
 
 	# Remove oldest backup
-	if [ -d "${basename}.${BACKUPS}" ]
+	if [ -d "${backbase}.${BACKUPS}" ]
 	then
-		rm -rf "${basename}.${BACKUPS}"
+		rm -rf "${backbase}.${BACKUPS}"
 	fi
 
 	# Move all old backups up by one
-	i=$[$BACKUPS-1]
-	while [ $i -gt 0 ]
+	i=${BACKUPS}
+	while [ $i -gt 1 ]
 	do
-		if [ -d "${basename}.${i}" ]
+		if [ -d "${backbase}.$[$i-1]" ]
 		then	
-			mv "${basename}.${i}" "${basename}.$[$i+1]"
+			mv "${backbase}.$[i-1]" "${backbase}.${i}"
 		fi
 		i=$[$i-1]
 	done
 	unset i
 
 	# Hard-link a new #1 from #0
-	cp -al "${basename}.0" "${basename}.1"
-
-	# Check that a list of Sources exists
-	if [ -f "${SOURCEDIR}/${remote}" ]
-	then
-		# Loop through Sources
-		while read source
-		do
-			echo "Source: ${source}"
-			# Rsync remote:/source/ into the backup dir
-			rsync -rltzR --bwlimit=${BWLIMIT} --delete-during ${source} ${basename}.0 ${RSYNCOPTS}
-		done < ${SOURCEDIR}/${remote}
-		unset source
-	fi
-	# Save timestamp
-	echo "${TIMESTAMP}" > "${basename}.0/.timestamp"
+	cp -al "${backbase}.0" "${backbase}.1"
+	# Remove timestamp from #0
+	rm "${backbase}.0/.timestamp"
 	
+	# Loop through Sources
+	while read source
+	do
+		# Current Source being synced
+		echo "Source: ${source}"
+		
+		# Rsync remote:/source/ into the backup dir
+		rsync -rltzR --bwlimit=${BWLIMIT} --delete-during ${RSYNCOPTS} ${source} ${backbase}.0
+	done < ${SOURCEDIR}/${remote}
+	unset source
 	
-	echo ""
+	${TIMESTAMP} > "${backbase}.0/.timestamp"
+	
 done < ${REMOTES}
-unset remote savedir
+unset remote backdir
 
 ##
 ## Cleanup
