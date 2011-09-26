@@ -126,14 +126,14 @@ do
 		echo "Source: ${source}"
 		
 		# Rsync remote:/source/ into the backup dir
-		rsync -rltzR --bwlimit=${BWLIMIT} --delete-during ${RSYNCOPTS} ${source} ${backbase}.0
+		rsync -rltyzR --delete-after --bwlimit=${BWLIMIT} ${RSYNCOPTS} ${source} ${backbase}.0
 	done < ${SOURCEDIR}/${remote}
 	unset source
 	
 	${TIMESTAMP} > "${backbase}.0/.timestamp"
 	
 done < ${REMOTES}
-unset remote backdir
+unset remote backdir backbase
 
 ##
 ## Cleanup
