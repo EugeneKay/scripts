@@ -25,8 +25,8 @@ TIMESTAMP="date +%s"
 REMOTES="${BASEDIR}/.remotes"
 # Directory to read remote:/sources/
 SOURCEDIR="${BASEDIR}/.sources"
-# Number of old backups to keep
-BACKUPS="14"
+# Number of incremental backups to keep
+INCREMENTALS="14"
 # Backup frequency(used as a naming string only)
 FREQUENCY="daily"
 # Bandwidth limit, in KB/s(0 for unlimited)
@@ -87,33 +87,37 @@ do
 			continue
 		fi
 	else
-		# Create backdir if it doesn't exist
+		# Create backdir if it doesn't exist(eg, first-run)
 		mkdir "${backdir}"
 		mkdir "${backbase}.0"
 	fi
 	
-	# Remove oldest backup
-	if [ -d "${backbase}.${BACKUPS}" ]
+	# Rotate backups only if #0 is complete(overwrite otherwise)
+	if [ -f ${backbase}.0/.timestamp ]
 	then
-		rm -rf "${backbase}.${BACKUPS}"
-	fi
-
-	# Move all old backups up by one
-	i=${BACKUPS}
-	while [ $i -gt 1 ]
-	do
-		if [ -d "${backbase}.$[$i-1]" ]
-		then	
-			mv "${backbase}.$[i-1]" "${backbase}.${i}"
+		# Remove oldest backup
+		if [ -d "${backbase}.${INCREMENTALS}" ]
+		then
+			rm -rf "${backbase}.${INCREMENTALS}"
 		fi
-		i=$[$i-1]
-	done
-	unset i
-
-	# Hard-link a new #1 from #0
-	cp -al "${backbase}.0" "${backbase}.1"
-	# Remove timestamp from #0
-	rm "${backbase}.0/.timestamp"
+		
+		# Move all old backups up by one
+		i=${INCREMENTALS}
+		while [ $i -gt 1 ]
+		do
+			if [ -d "${backbase}.$[$i-1]" ]
+			then	
+				mv "${backbase}.$[i-1]" "${backbase}.${i}"
+			fi
+			i=$[$i-1]
+		done
+		unset i
+		
+		# Hard-link a new #1 from #0
+		cp -al "${backbase}.0" "${backbase}.1"
+		# Remove timestamp from #0
+		rm -f "${backbase}.0/.timestamp"
+	fi
 	
 	# Loop through Sources
 	while read source
@@ -135,4 +139,6 @@ unset remote backdir
 ## Cleanup
 ##
 
-unset BASEDIR LOCKDIR TIMESTAMP REMOTES SOURCEDIR BACKUPS FREQUENCY BWLIMIT RSYNCOPTS
+# Get rid of variables
+unset BASEDIR LOCKDIR TIMESTAMP REMOTES SOURCEDIR INCREMENTALS FREQUENCY BWLIMIT 
+unset RSYNCOPTS
