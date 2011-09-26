@@ -71,17 +71,26 @@ do
 	if [ ! -f "${SOURCEDIR}/${remote}" ]
 	then
 		echo "Error:  No Sources list found"
-		# Abort this Remotey
+		# Abort this Remote
 		continue
 	fi
 	
-	# Create if it doesn't exist
-	if [ ! -d "${backdir}" ]
+	# Check for $backdir, create if needed
+	if [ -d "${backdir}" ]
 	then
+		# Check for #0, fail if it's not there
+		if [ ! -d "${backbase}.0" ]
+		then
+			echo "Error:  Backup #0 is missing."
+			# Abort this Remote
+			continue
+		fi
+	else
+		# Create backdir if it doesn't exist
 		mkdir "${backdir}"
 		mkdir "${backbase}.0"
 	fi
-
+	
 	# Remove oldest backup
 	if [ -d "${backbase}.${BACKUPS}" ]
 	then
