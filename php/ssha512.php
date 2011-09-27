@@ -42,7 +42,12 @@ fieldset {
 }
 #passform {
 	text-align: center;
-	margin: 2em 2em 2em 2em;
+	margin: 2em;
+}
+#passhash {
+	text-align: center;
+	margin: 2em;
+	font-size: 0.5em;
 }
 #footer {
 	position: fixed;
@@ -78,14 +83,14 @@ fieldset {
 
 <?php
 if (isset($_POST['password'])) {
-	echo "<center><font size=\"-2\">\n";
+	echo "<p id=\"passhash\">\n";
 	$salt = '';
 	for ($i=0; $i<=8; $i++ ) {
 		$salt .= pack('N', mt_rand());
 	}
 	$hash = '{SSHA512}' . base64_encode(hash('sha512', $_POST['password'] . $salt, TRUE) . $salt);
 	echo $hash."\n";
-	echo "</font></center>";
+	echo "</p>\n";
 }
 ?>
 <div id="footer"><div>Source code available on <a href="https://github.com/EugeneKay/scripts/blob/master/php/ssha512.php">GitHub</a></div></div>
