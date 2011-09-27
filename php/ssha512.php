@@ -84,11 +84,11 @@ fieldset {
 <?php
 if (isset($_POST['password'])) {
 	echo "<p id=\"passhash\">\n";
-	$salt = '';
+	$salt='';
 	for ($i=0; $i<=8; $i++ ) {
-		$salt .= pack('N', mt_rand());
+		$salt.=pack('N', mt_rand());
 	}
-	$hash = '{SSHA512}' . base64_encode(hash('sha512', $_POST['password'] . $salt, TRUE) . $salt);
+	$hash='{SSHA512}'.base64_encode(hash('sha512', $_POST['password'].$salt, TRUE).$salt);
 	echo $hash."\n";
 	echo "</p>\n";
 }
