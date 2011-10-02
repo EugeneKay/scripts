@@ -3,6 +3,9 @@
 #
 # Dump MySQL & PostgreSQL databases for backup
 #
+# Copyright 2011 Eugene E. Kashpureff (eugene@kashpureff.org)
+# License: WTFPL, any version
+#
 dumpdir="/data/backups"
 timestamp=`date +"%Y-%m-%d_%H:%M"`
 

@@ -8,7 +8,7 @@
 # using rsync and hardlinks. 
 
 # Copyright 2011 Eugene E. Kashpureff (eugene@kashpureff.org)
-# License: GNU General Public License, version 3+
+# License: WTFPL, any version
 
 ##
 ## Environment Setup

@@ -5,14 +5,14 @@
 // Generate a SSHA512(Salted SHA-2 512bit) hash from a given input text. 
 //
 // Copyright 2011 Eugene E. "EugeneKay" Kashpureff (eugene@kashpureff.org)
-// Licensed under GNU General Public License, version 3 or later.
+// Licensed under the WTFPL, any version.
 */
 ?>
 <!-- 
 Generate a SSHA512(Salted SHA-2 512bit) hash from a given input text. 
 
 Copyright 2011 Eugene E. "EugeneKay" Kashpureff (eugene@kashpureff.org)
-Licensed under GNU General Public License, version 3 or later.
+Licensed under the WTFPL, any version.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
@@ -93,6 +93,8 @@ if (isset($_POST['password'])) {
 	echo "</p>\n";
 }
 ?>
-<div id="footer"><div>Source code available on <a href="https://github.com/EugeneKay/scripts/blob/master/php/ssha512.php">GitHub</a></div></div>
+<div id="footer">
+	<div>Source code available on <a href="https://github.com/EugeneKay/scripts/blob/master/php/ssha512.php">GitHub</a></div>
+</div>
 </body>
 </html>
