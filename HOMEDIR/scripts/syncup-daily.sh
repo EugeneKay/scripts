@@ -19,20 +19,14 @@
 BASEDIR="/data/backups"
 # Concurrency lock-prevention dir
 LOCKDIR="${BASEDIR}/.lock"
-# Timestamp format to use
-TIMESTAMP="date +%s"
 # File containing remote names
 REMOTES="${BASEDIR}/.remotes"
-# Directory to read remote:/sources/
-SOURCEDIR="${BASEDIR}/.sources"
 # Number of incremental backups to keep
-INCREMENTALS="48"
+INCREMENTALS="45"
 # Backup frequency(used as a naming string only)
-FREQUENCY="hourly"
-# Bandwidth limit, in KB/s(0 for unlimited)
-BWLIMIT="250"
-# Extra options for rsync
-RSYNCOPTS=${1}
+FREQUENCY="daily"
+# Parent backup's FREQUENCY string
+PARENT="hourly"
 
 ## Env vars
 
@@ -67,33 +61,24 @@ do
 	backdir="${BASEDIR}/${remote}"
 	# Base name for backups
 	backbase="${backdir}/${FREQUENCY}"
+	# Base name to copy from
+	parentbase="${backdir}/${PARENT}"
 	
-	# Check that a list of Sources exists
-	if [ ! -f "${SOURCEDIR}/${remote}" ]
+	# Check for $backdir, create if needed
+	if [ ! -d "${backdir}" ]
 	then
-		echo "Error:  No Sources list found"
+		echo "Error: Invalid remote."
+	fi
+	# Check for upstream #0, fail if it's not there
+	if [ ! -d "${parentbase}.0" ]
+	then
+		echo "Error: Parent #0 is missing."
 		# Abort this Remote
 		continue
 	fi
 	
-	# Check for $backdir, create if needed
-	if [ -d "${backdir}" ]
-	then
-		# Check for #0, fail if it's not there
-		if [ ! -d "${backbase}.0" ]
-		then
-			echo "Error:  Backup #0 is missing."
-			# Abort this Remote
-			continue
-		fi
-	else
-		# Create backdir if it doesn't exist(eg, first-run)
-		mkdir "${backdir}"
-		mkdir "${backbase}.0"
-	fi
-	
-	# Rotate backups only if #0 is complete(overwrite otherwise)
-	if [ -f ${backbase}.0/.timestamp ]
+	# Rotate backups only if parent #0 is complete(skip otherwise)
+	if [ -f ${parentbase}.0/.timestamp ]
 	then
 		# Remove oldest backup
 		if [ -d "${backbase}.${INCREMENTALS}" ]
@@ -103,7 +88,7 @@ do
 		
 		# Move all old backups up by one
 		i=${INCREMENTALS}
-		while [ $i -gt 1 ]
+		while [ $i -gt 0 ]
 		do
 			if [ -d "${backbase}.$[$i-1]" ]
 			then	
@@ -113,32 +98,15 @@ do
 		done
 		unset i
 		
-		# Hard-link a new #1 from #0
-		cp -al "${backbase}.0" "${backbase}.1"
-		# Remove timestamp from #0
-		rm -f "${backbase}.0/.timestamp"
+		# Hard-link a new #0 from uparent #0
+		cp -al "${parentbase}.0" "${backbase}.0"
 	fi
-	
-	# Loop through Sources
-	while read source
-	do
-		# Current Source being synced
-		echo "Source: ${source}"
-		
-		# Rsync remote:/source/ into the backup dir
-		rsync -rltyzR --delete-after --bwlimit=${BWLIMIT} ${RSYNCOPTS} ${source} ${backbase}.0
-	done < ${SOURCEDIR}/${remote}
-	unset source
-	
-	${TIMESTAMP} > "${backbase}.0/.timestamp"
-	
 done < ${REMOTES}
-unset remote backdir backbase
+unset remote backdir
 
 ##
 ## Cleanup
 ##
 
 # Get rid of variables
-unset BASEDIR LOCKDIR TIMESTAMP REMOTES SOURCEDIR INCREMENTALS FREQUENCY BWLIMIT 
-unset RSYNCOPTS
+unset BASEDIR LOCKDIR SOURCEDIR INCREMENTALS FREQUENCY PARENT
