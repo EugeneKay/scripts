@@ -84,6 +84,13 @@ do
 		if [ -d "${backbase}.${INCREMENTALS}" ]
 		then
 			rm -rf "${backbase}.${INCREMENTALS}"
+			
+			# Check that backup was actually removed
+			if [ -d "${backbase}.${INCREMENTALS}" ]
+			then
+				echo "Error: Oldest backup was not removed!?"
+				continue
+			fi
 		fi
 		
 		# Move all old backups up by one
