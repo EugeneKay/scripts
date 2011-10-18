@@ -27,7 +27,7 @@ License: WTFPL, any version or GNU General Public License, version 3+
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <meta http-equiv="Content-type" content="text/html;charset=UTF-8" /> 
-<title>Salted SHA-512 Generator</title>
+<title>What is my IP?</title>
 <style type="text/css">
 a:link,
 a:visited {
