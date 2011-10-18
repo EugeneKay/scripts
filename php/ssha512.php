@@ -5,14 +5,14 @@
 // Generate a SSHA512(Salted SHA-2 512bit) hash from a given input text. 
 //
 // Copyright 2011 Eugene E. "EugeneKay" Kashpureff (eugene@kashpureff.org)
-// Licensed under the WTFPL, any version.
+// License: WTFPL, any version or GNU General Public License, version 3+
 */
 ?>
 <!-- 
 Generate a SSHA512(Salted SHA-2 512bit) hash from a given input text. 
 
 Copyright 2011 Eugene E. "EugeneKay" Kashpureff (eugene@kashpureff.org)
-Licensed under the WTFPL, any version.
+License: WTFPL, any version or GNU General Public License, version 3+
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
