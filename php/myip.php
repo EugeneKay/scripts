@@ -80,7 +80,7 @@ fieldset {
 <div id="header">What is my IP?</div>
 <p>You are connecting via <?php echo $address_type; ?> and your address is <?php echo $address; ?>.<br />
 This maps back to a reverse hostname of <?php echo $hostname; ?>.<br />
-The IPs on file for this hostname are:<br \>
+The IPs on file for this hostname are:<br /></p>
 <ul>
 <?php
 foreach ($addresses as $key => $addr ) {
@@ -93,7 +93,6 @@ foreach ($addresses as $key => $addr ) {
 }
 ?>
 </ul>
-</p>
 <div id="footer">
 	<div>Source code available on <a href="https://github.com/EugeneKay/scripts/blob/master/php/myip.php">GitHub</a></div>
 </div>
