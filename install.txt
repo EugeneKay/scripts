@@ -6,7 +6,7 @@ passwd eugenekay
 visudo
 
 yum update
-yum install screen bind-utils man traceroute telnet rsync openssh-clients vim ntp jwhois wget 
+yum erase yum-autoupdate
+yum install screen bind-utils man traceroute telnet rsync openssh-clients vim ntp jwhois wget perl epel-release
 
-VMs: kernel-devel gcc make perl 
-vmware tools
+Do vmware tools install

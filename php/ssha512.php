@@ -74,7 +74,7 @@ fieldset {
 <object>
 <form action="ssha512.php" method="post">
 <fieldset>
-<input type="password" name="password" size="40" value="" />
+<input type="password" name="password" size="40" value="" autocomplete="off" />
 <input type="submit" value="Hash!" />
 </fieldset>
 </form>
