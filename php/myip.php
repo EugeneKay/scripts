@@ -114,7 +114,8 @@ foreach ($addresses as $key => $addr ) {
 <br />
 <br />
 <br />
-Try again via <a href="http://ipv4.eugenekay.com/myip.php">IPv4</a> or <a href="http://ipv6.eugenekay.com/myip.php">IPv6</a>?
+Try again via <a href="http://ipv4.eugenekay.com/myip.php">IPv4</a> or <a href="http://ipv6.eugenekay.com/myip.php">IPv6</a>?<br>
+Want your IP in <a href="http://<?php echo $_SERVER["HTTP_HOST"]; ?>/myip.php?o=plain">plaintext</a>?
 </p>
 <div id="footer">
 	<div>Source code available on <a href="https://github.com/EugeneKay/scripts/blob/master/php/myip.php">GitHub</a></div>
