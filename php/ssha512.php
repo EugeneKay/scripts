@@ -1,18 +1,27 @@
 <?php
-// ssha512.php
-
 /*
-// Generate a SSHA512(Salted SHA-2 512bit) hash from a given input text. 
+// Salted SHA-512 Generator
 //
-// Copyright 2011 Eugene E. "EugeneKay" Kashpureff (eugene@kashpureff.org)
-// License: WTFPL, any version or GNU General Public License, version 3+
-*/
-?>
-<!-- 
-Generate a SSHA512(Salted SHA-2 512bit) hash from a given input text. 
+
+Generate a SSHA512(Salted SHA-2 512bit) hash from a given input text. Output is
+suitable for use with Dovecot's SSHA512 password scheme.
 
 Copyright 2011 Eugene E. "EugeneKay" Kashpureff (eugene@kashpureff.org)
 License: WTFPL, any version or GNU General Public License, version 3+
+
+*/
+?>
+<!-- 
+//
+// Salted SHA-512 Generator
+//
+
+Generate a SSHA512(Salted SHA-2 512bit) hash from a given input text. Output is
+suitable for use with Dovecot's SSHA512 password scheme.
+
+Copyright 2011 Eugene E. "EugeneKay" Kashpureff (eugene@kashpureff.org)
+License: WTFPL, any version or GNU General Public License, version 3+
+
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">

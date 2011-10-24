@@ -1,12 +1,14 @@
 <?php
-// myip.php
-
 /*
-// Show the remote IP address used to request this page, perform a reverse host
-// lookup on this IP, and then show the forward IPs from that hostname.
-//
-// Copyright 2011 Eugene E. "EugeneKay" Kashpureff (eugene@kashpureff.org)
-// License: WTFPL, any version or GNU General Public License, version 3+
+// My IP
+// 
+
+Show the remote IP address used to request this page, perform a reverse host
+lookup on this IP, and then show the forward IPs from that hostname.
+
+Copyright 2011 Eugene E. "EugeneKay" Kashpureff (eugene@kashpureff.org)
+License: WTFPL, any version or GNU General Public License, version 3+
+
 */
 
 $address = $_SERVER["REMOTE_ADDR"];
@@ -21,11 +23,16 @@ $addresses = dns_get_record($hostname, DNS_ALL);
 
 ?>
 <!-- 
+//
+// My IP
+//
+
 Show the remote IP address used to request this page, perform a reverse host 
 lookup on this IP, and then show the forward IPs from that hostname.
 
 Copyright 2011 Eugene E. "EugeneKay" Kashpureff (eugene@kashpureff.org)
 License: WTFPL, any version or GNU General Public License, version 3+
+
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
