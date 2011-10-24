@@ -1,14 +1,14 @@
 #!/bin/bash
-
 ##
 ## Syncup
 ##
-
+#
 # Syncup is a script to create incremental backups of several Remote systems
 # using rsync and hardlinks. 
-
+#
 # Copyright 2011 Eugene E. Kashpureff (eugene@kashpureff.org)
 # License: WTFPL, any version or GNU General Public License, version 3+
+#
 
 ##
 ## Environment Setup

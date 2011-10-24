@@ -1,11 +1,14 @@
 #!/bin/bash
-# $HOMEDIR/scripts/sql_dump
+##
+## SQL Dumper
+##
 #
-# Dump MySQL & PostgreSQL databases for backup
+# SQL Dumper will dump MySQL & PostgreSQL databases to be backed up
 #
 # Copyright 2011 Eugene E. Kashpureff (eugene@kashpureff.org)
-# License: WTFPL, any version
+# License: WTFPL, any version or GNU General Public License, version 3+
 #
+
 dumpdir="/data/backups"
 timestamp=`date +"%Y-%m-%d_%H:%M"`
 
