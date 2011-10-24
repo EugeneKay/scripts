@@ -10,6 +10,11 @@
 */
 
 $address = $_SERVER["REMOTE_ADDR"];
+// Stop here if all they want is their IP address
+if ( @$_GET["o"]=="plain") {
+	echo $address;
+	die();
+}
 $address_type = strpos($address, ":") === false ? "IPv4" : "IPv6";
 $hostname = gethostbyaddr( $address );
 $addresses = dns_get_record($hostname, DNS_ALL);
@@ -83,16 +88,34 @@ This maps back to a reverse hostname of <?php echo $hostname; ?>.<br />
 The IPs on file for this hostname are:<br /></p>
 <ul>
 <?php
+
 foreach ($addresses as $key => $addr ) {
 	if ( $addr["type"]=="A" ) {
-		echo "<li>".$addr["ip"]."</li>\n";
+		if ($addr["ip"]==$address) {
+			echo "<li><b>".$addr["ip"]."</b></li>\n";
+		}
+		else {
+			echo "<li>".$addr["ip"]."</li>\n";
+		}
 	}
 	elseif ( $addr["type"]=="AAAA" ) {
-		echo "<li>".$addr["ipv6"]."</li>\n";
+		if ($addr["ipv6"]==$address) {
+			echo "<li><b>".$addr["ipv6"]."</b></li>\n";
+		}
+		else {
+			echo "<li>".$addr["ipv6"]."</li>\n";
+		}
 	}
 }
+
 ?>
 </ul>
+<p>
+<br />
+<br />
+<br />
+Try again via <a href="http://ipv4.eugenekay.com/myip.php">IPv4</a> or <a href="http://ipv6.eugenekay.com/myip.php">IPv6</a>?
+</p>
 <div id="footer">
 	<div>Source code available on <a href="https://github.com/EugeneKay/scripts/blob/master/php/myip.php">GitHub</a></div>
 </div>
