@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Generate a set of random files, eg for TrueCrypt
+
+count=1
+
+while [ ${count} -lt 101 ]
+do
+        dd if=/dev/urandom of=`printf "%02d" ${count}` bs=1K count=1024
+        count=$[$count+1]
+done

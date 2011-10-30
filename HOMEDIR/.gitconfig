@@ -1,6 +1,7 @@
+# ~/.gitconfig
+
 [user]
-	name = 
-	email = 
-[github]
-	user = 
-	token = 
+	name = Eugene E. Kashpureff
+	email = eugene@khresear.ch
+[color]
+	ui = true

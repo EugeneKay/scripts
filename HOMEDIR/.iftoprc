@@ -1,3 +1,5 @@
+# ~/.iftoprc
+
 interface: eth0
 dns-resolution: yes
 port-resolution: yes
@@ -13,5 +15,3 @@ show-totals: yes
 log-scale: no
 max-bandwidth: 10M
 filter-code: not port domain and not port bootpc and not ether host ff:ff:ff:ff:ff:ff and not port netbios-ns and not port mdns and not port microsoft-ds and not port ntp
-
-

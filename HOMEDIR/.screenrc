@@ -1,3 +1,6 @@
+# ~/.screenrc
+
+
 startup_message off
 deflogin on
 autodetach off
@@ -62,3 +65,9 @@ bind 'O' login off
 bind '}' history
 bind 'a' windowlist -b
 hardstatus string "eugenekay@%H:%n%? %t"
+
+screen 0
+select 0
+exec screen-ssh-agent
+exec true
+source $HOME/.ssh/screen-agent

@@ -1,0 +1,24 @@
+# ~/.rtorrent.rc
+
+min_peers = 10
+max_peers = 100
+min_peers_seed = 10
+max_peers_seed = 100
+max_uploads = 25
+max_uploads_global = 25
+download_rate = 250
+upload_rate = 25
+#max_memory_usage = 256M
+directory = /home/eugene/rtorrent/
+session = /home/eugene/rtorrent/sessions/
+ schedule = watch_directory,5,5,load_start=/home/eugene/rtorrent/autoload/*.torrent
+#*/
+ schedule = untied_directory,5,5,stop_untied=
+bind = 1.2.3.4
+port_range = 55500-55599
+port_random = no
+#check_hash = no
+use_udp_trackers = yes
+
+encryption = allow_incoming,try_outgoing,enable_retry,prefer_plaintext
+dht=on
