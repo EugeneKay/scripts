@@ -6,6 +6,9 @@
 # Increments serial number automatically before commit. Working copy must be the
 # same as the staged copy(this will be fixed eventually)
 #
+# Copyright 2011 K and H Research Company (support@khresear.ch)
+# License: WTFPL, any version or GNU General Public License, version 3+
+#
 
 # Temporary directory name
 TEMP=".tmp"
