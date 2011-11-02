@@ -41,7 +41,7 @@ TTL="300"
 
 # Get the current publically-visible IP
 # TODO: check IPv6 as well
-pubip=$(wget -qO- "http://ipv4.eugenekay.com/myip.php?o=plain")
+pubip=$(wget -qO- "http://ipv4.util.khresear.ch/myip?o=plain")
 
 # Get the current IP on file with DNS
 dnsip=$(dig +short @${SERVER} ${RECORD}.${DOMAIN} A)
