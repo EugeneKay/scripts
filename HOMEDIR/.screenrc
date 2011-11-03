@@ -64,7 +64,7 @@ bind 'I' login on
 bind 'O' login off
 bind '}' history
 bind 'a' windowlist -b
-hardstatus string "eugenekay@%H:%n%? %t"
+hardstatus string "$USER@%H:%n%? %t"
 
 screen 0
 select 0
