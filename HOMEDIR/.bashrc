@@ -15,11 +15,11 @@ fi
 
 ## Useful shortcuts
 
-# Load default SSH identity into ssh-agent
-alias ssha='ssh-add -t 20m ~/.ssh/identity'
+# Load SSH-2 RSA identity into ssh-agent
+alias ssha='ssh-add -t 20m ~/.ssh/id_rsa 2>/dev/null'
 
 # Purge loaded SSH identities
-alias sshd='ssh-add -D'
+alias sshd='ssh-add -D 2>/dev/null'
 
 # Go home
 alias cdc='cd && clear'
