@@ -11,15 +11,29 @@ License: WTFPL, any version or GNU General Public License, version 3+
 
 */
 
+// Get the remote address
 $address = $_SERVER["REMOTE_ADDR"];
+
 // Stop here if all they want is their IP address
 if ( @$_GET["o"]=="plain") {
 	echo $address;
 	die();
 }
+
+// Detect if we're serving up IPv4 or IPv6 
 $address_type = strpos($address, ":") === false ? "IPv4" : "IPv6";
+
+// Get the remote hostname(from rDNS)
 $hostname = gethostbyaddr( $address );
+
+// Get the forward records for their remote hostname(A/AAAA lookup)
 $addresses = dns_get_record($hostname, DNS_ALL);
+
+// Get the Domain used to request this page, with ipv4/6 prefix stripped off
+$ourdomain = preg_replace("/^(ipv[46]\.)/", "", $_SERVER["HTTP_HOST"]);
+
+// Get the path used to request this page
+$ourpath = $_SERVER["REQUEST_URI"];
 
 ?>
 <!-- 
@@ -121,8 +135,8 @@ foreach ($addresses as $key => $addr ) {
 <br />
 <br />
 <br />
-Try again via <a href="http://ipv4.eugenekay.com/myip.php">IPv4</a> or <a href="http://ipv6.eugenekay.com/myip.php">IPv6</a>?<br>
-Want your IP in <a href="http://<?php echo $_SERVER["HTTP_HOST"]; ?>/myip.php?o=plain">plaintext</a>?
+Try again via <a href="http://ipv4.<?php echo $ourdomain.$ourpath; ?>">IPv4</a> or <a href="http://ipv6.<?php echo $ourdomain.$ourpath; ?>">IPv6</a>?<br>
+Want your IP in <a href="http://<?php echo $_SERVER["HTTP_HOST"].$ourpath; ?>?o=plain">plaintext</a>?
 </p>
 <div id="footer">
 	<div>Source code available on <a href="https://github.com/EugeneKay/scripts/blob/master/php/myip.php">GitHub</a></div>
