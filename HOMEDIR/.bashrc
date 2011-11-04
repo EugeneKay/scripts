@@ -82,8 +82,12 @@ COLOR_DEF="\[\e[0m\]"
 #
 # Returns: 0
 #
-function ps1_prep() {
+function _ps1_prep() {
 	## Load runtime variables
+	
+	# Check if we're in a git repo
+	git rev-parse --git-dir 2>/dev/null > /dev/null
+	ps1_git=1
 	
 	# Get ssh-agent status
 	ssh-add -l 2>/dev/null >/dev/null
@@ -95,14 +99,160 @@ function ps1_prep() {
 	
 	## Assemble the prompt
 	
+	# Opening bracket
+	PS1="["
+	
 	# User @ host
-	PS1="[\u@\h \W]"
+	PS1=${PS1}"\u@\h "
+	
+	# Current directory
+	if [ ${ps1_git} -eq 0 ]
+	then
+		# Git info
+		PS1=${PS1}"`_ps1_git`"
+	else
+		# Current working dir
+		PS1=${PS1}"\W"
+	fi
+	
+	# Closing bracket
+	PS1=${PS1}"]"
 	
 	# Shell character($ or #)
-	PS1=${PS1}"`ps1_sc`"
+	PS1=${PS1}"`_ps1_sc`"
 	
 	# Trailing space
 	PS1=${PS1}" "
+	
+	## Exit
+	
+	# Return cleanly
+	return 0
+	
+	}
+## PS1 Git Info
+#
+# Display some information about the git repository we're in
+#
+# Outputs: (branch), green if clean, red if dirty
+# Returns: 0
+#
+_ps1_git () {
+	## Load repo info
+	
+	# Repo directory name
+	local git_name=$(basename $(git rev-parse --show-toplevel))
+	
+	# Current path within repo
+	local git_path=$(git rev-parse --show-prefix)
+	
+	# Branch we're on
+	local git_branch="$(git symbolic-ref HEAD 2>/dev/null)" || git_branch="(unnamed branch)"
+	git_branch=${git_branch##refs/heads/}
+	
+	# Repo status(long form)
+	local git_status=$(git status 2>/dev/null)
+	
+	# Count file changes
+	local index_edit=0
+	local index_add=0
+	local index_del=0
+	local index_mv=0
+	local index_cp=0
+	local tree_edit=0
+	local tree_add=0
+	local tree_del=0
+	local tree_mv=0
+	local tree_cp=0
+	local untracked=0
+
+	for status in $(git status --porcelain | cut -b 1,2)
+	do
+		# Index counters
+		case ${status:0:1} in
+			"M") (( index_edit++ ));;
+			"A") (( index_add++ ));;
+			"D") (( index_del++ ));;
+			"R") (( index_mv++ ));;
+			"C") (( index_cp++ ));;
+		esac
+		
+		# Work-tree counters
+		case ${status:1:1} in
+			"M") (( tree_edit++ ));;
+			"A") (( tree_add++ ));;
+			"D") (( tree_del++ ));;
+			"R") (( tree_mv++ ));;
+			"C") (( tree_cp++ ));;
+			"") (( )) ;;
+			*) (( untracked++ ));;
+		esac
+		
+	done
+	
+	## Display repo info
+	
+	# Repo name
+	echo -ne "${git_name}"
+	# In-repo path
+	if [ "$git_path" != "" ]
+	then
+		echo -ne "/${git_path%/}"
+	fi
+	
+	
+	# Opening paren
+	echo -ne " ("
+	
+	# Upstream status(coloration of branch name)
+	local pattern="# Your branch is (ahead|behind) "
+	if [[ $git_status =~ $pattern ]]
+	then
+		# We're at a different place than upstream
+		if [[ ${BASH_REMATCH[1]} == "ahead" ]];
+		then
+			# Ahead
+			echo -ne ${COLOR_YLW}
+		else
+			# Behind
+			echo -ne ${COLOR_RED}
+		fi
+	else
+		# We're at the same spot as upstream
+		echo -ne ${COLOR_GRN}
+	fi
+
+	# Branch name
+	echo -ne "${git_branch}"
+
+	# Normalize color
+	echo -ne ${COLOR_DEF}
+
+	# Index counters
+	echo -ne ${COLOR_GRN}
+	if [ ${index_edit} -ne 0 ]; then echo -ne " *${index_edit}"; fi;
+	if [ ${index_add} -ne 0 ]; then echo -ne " +${index_add}"; fi;
+	if [ ${index_del} -ne 0 ]; then echo -ne " -${index_del}"; fi;
+	if [ ${index_mv} -ne 0 ]; then echo -ne " ~${index_mv}"; fi;
+	if [ ${index_cp} -ne 0 ]; then echo -ne " =${index_cp}"; fi;
+	
+	# Work-tree counters
+	echo -ne ${COLOR_YLW}
+	if [ ${tree_edit} -ne 0 ]; then echo -ne " *${tree_edit}"; fi;
+	if [ ${tree_add} -ne 0 ]; then echo -ne " +${tree_add}"; fi;
+	if [ ${tree_del} -ne 0 ]; then echo -ne " -${tree_del}"; fi;
+	if [ ${tree_mv} -ne 0 ]; then echo -ne " ~${tree_mv}"; fi;
+	if [ ${tree_cp} -ne 0 ]; then echo -ne " =${tree_cp}"; fi;
+
+	# Untracked counter
+	echo -ne ${COLOR_RED}
+	if [ ${untracked} -ne 0 ]; then echo -ne " !${untracked}"; fi;
+
+	# Nnormalize color
+	echo -ne ${COLOR_DEF}
+
+	# Closing paren
+	echo -ne ")"
 	
 	## Exit
 	
@@ -118,7 +268,7 @@ function ps1_prep() {
 # Outputs: a shell character, $(# if sudo), in red(green if ssh-agent has key)
 # Returns: 0
 # 
-ps1_sc () {
+_ps1_sc () {
 	## Output shell char
 	
 	# Determine color
@@ -168,7 +318,7 @@ export EDITOR="/usr/bin/vim"
 unset MAILCHECK
 
 ## Prompt
-PROMPT_COMMAND=ps1_prep
+PROMPT_COMMAND=_ps1_prep
 
 ## Load local bashrc
 source ~/.bashrc.local
