@@ -6,8 +6,12 @@
 Generate a SSHA512(Salted SHA-2 512bit) hash from a given input text. Output is
 suitable for use with Dovecot's SSHA512 password scheme.
 
-Copyright 2011 Eugene E. "EugeneKay" Kashpureff (eugene@kashpureff.org)
+Copyright 2011 K and H Research Company (kandh@khresear.ch)
 License: WTFPL, any version or GNU General Public License, version 3+
+
+NOTICE: This file is no longer being maintained in this repo. It is retained
+here for legacy access only, and is liable to be removed. Please obtain a 
+current copy from (https://github.com/KHresearch/util/blob/live/ssha512.php)
 
 */
 ?>
@@ -19,7 +23,7 @@ License: WTFPL, any version or GNU General Public License, version 3+
 Generate a SSHA512(Salted SHA-2 512bit) hash from a given input text. Output is
 suitable for use with Dovecot's SSHA512 password scheme.
 
-Copyright 2011 Eugene E. "EugeneKay" Kashpureff (eugene@kashpureff.org)
+Copyright 2011 K and H Research Company (kandh@khresear.ch)
 License: WTFPL, any version or GNU General Public License, version 3+
 
 -->
