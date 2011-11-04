@@ -16,7 +16,7 @@ fi
 ## Useful shortcuts
 
 # Load default SSH identity into ssh-agent
-alias ssha='ssh-add -t 20m ~/.ssh/ssh_identity'
+alias ssha='ssh-add -t 20m ~/.ssh/identity'
 
 # Purge loaded SSH identities
 alias sshd='ssh-add -D'
@@ -54,23 +54,31 @@ alias sexportfs='sudo exportfs'
 alias o.O='echo O.o'
 
 ## Colors
-COLOR_WHITE='\033[1;37m'
-COLOR_LIGHTGRAY='\033[0;37m'
-COLOR_GRAY='\033[1;30m'
-COLOR_BLACK='\033[0;30m'
-COLOR_RED='\033[0;31m'
-COLOR_LIGHTRED='\033[1;31m'
-COLOR_GREEN='\033[0;32m'
-COLOR_LIGHTGREEN='\033[1;32m'
-COLOR_BROWN='\033[0;33m'
-COLOR_YELLOW='\033[1;33m'
-COLOR_BLUE='\033[0;34m'
-COLOR_LIGHTBLUE='\033[1;34m'
-COLOR_PURPLE='\033[0;35m'
-COLOR_PINK='\033[1;35m'
-COLOR_CYAN='\033[0;36m'
-COLOR_LIGHTCYAN='\033[1;36m'
-COLOR_DEFAULT='\033[0m'
+# With char escape
+COLOR_BLK="\[\e[0;30m\]"
+COLOR_GRY="\[\e[1;30m\]"
+COLOR_WHT="\[\e[0;37m\]"
+COLOR_RED="\[\e[0;31m\]"
+COLOR_PNK="\[\e[1;35m\]"
+COLOR_MGN="\[\e[0;35m\]"
+COLOR_BLU="\[\e[0;34m\]"
+COLOR_CYN="\[\e[0;36m\]"
+COLOR_GRN="\[\e[0;32m\]"
+COLOR_YLW="\[\e[0;33m\]"
+COLOR_DEF="\[\e[0m\]"
+# Without escapes
+COLOR_CODE_BLK="\e[0;30m"
+COLOR_CODE_GRY="\e[1;30m"
+COLOR_CODE_WHT="\e[0;37m"
+COLOR_CODE_RED="\e[0;31m"
+COLOR_CODE_PNK="\e[1;35m"
+COLOR_CODE_MGN="\e[0;35m"
+COLOR_CODE_BLU="\e[0;34m"
+COLOR_CODE_CYN="\e[0;36m"
+COLOR_CODE_GRN="\e[0;32m"
+COLOR_CODE_YLW="\e[0;33m"
+COLOR_CODE_DEF="\e[0m"
+
 
 ##
 ## Functions
@@ -78,34 +86,19 @@ COLOR_DEFAULT='\033[0m'
 
 ## Get Shell Character
 #
-# Echo a shell character for use in the PS1 var. Detects if there is a key
-# loaded in ssh-agent and the current sudo status, and adjusts accordigly.
+# Echo a shell character for use in the PS1 var depending upon sudo status
 #
-# Returns: a shell character, $(normal) or #(sudo), in green(key) or red(nokey)
+# Outputs: a shell character; # if sudo is available, $ otherwise
+# Returns: 0
 # 
 get_shell_char () {
 	## Load runtime variables
-	
-	# Get ssh-agent status
-	ssh-add -l 2>/dev/null >/dev/null
-	ssh_status=$?
 	
 	# Get sudo status
 	sudo -n /bin/true 2>/dev/null >/dev/null
 	sudo_status=$?
 	
-	
-	## Output formatted shell char
-	
-	# Color the shell char
-	if [ ${ssh_status} -eq 1 ]
-	then
-		# No key
-		echo -ne ${COLOR_RED}
-	else
-		# Key loaded
-		echo -ne ${COLOR_GREEN}
-	fi
+	## Output shell char
 	
 	# Echo a shell character
 	if [ ${sudo_status} -eq 1 ]
@@ -117,9 +110,39 @@ get_shell_char () {
 		echo -n '#'
 	fi
 
-	# Return the prompt to normal
-	echo -ne ${COLOR_DEFAULT}
+	## Exit
 	
+	# Return cleanly
+	return 0;
+	
+	}
+
+## Get Shell Character Color
+#
+# Echo a color code for the shell character in PS1, depending upon ssh-agent
+# key status
+#
+# Outputs: a color code; green if a key is loaded, red otherwise
+# Returns: 0
+#
+get_shell_char_color() {
+	## Load runtime variables 
+	
+	# Get ssh-agent status
+	ssh-add -l 2>/dev/null >/dev/null
+	ssh_status=$?
+
+	## Output coloring for shell char
+	
+	# Determine color
+	if [ ${ssh_status} -eq 1 ]
+	then
+		# No key
+		echo -ne ${COLOR_CODE_RED}
+	else
+		# Key loaded
+		echo -ne ${COLOR_CODE_GRN}
+	fi
 	
 	## Exit
 	
@@ -145,7 +168,7 @@ export EDITOR="/usr/bin/vim"
 unset MAILCHECK
 
 ## Prompt
-export PS1="[\u@\h \W]\$(get_shell_char) "
+PS1="[\u@\h \W]\[\$(get_shell_char_color)\]\$(get_shell_char)${COLOR_DEF} "
 
 
 ## Load local bashrc
