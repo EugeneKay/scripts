@@ -101,13 +101,13 @@ get_shell_char () {
 	## Output shell char
 	
 	# Echo a shell character
-	if [ ${sudo_status} -eq 1 ]
+	if [ ${sudo_status} -eq 0 ]
 	then
-		# Sudo failed
-		echo -n '$'
-	else
 		# Sudo active
 		echo -n '#'
+	else
+		# Sudo failed
+		echo -n '$'
 	fi
 
 	## Exit
@@ -135,13 +135,13 @@ get_shell_char_color() {
 	## Output coloring for shell char
 	
 	# Determine color
-	if [ ${ssh_status} -eq 1 ]
+	if [ ${ssh_status} -eq 0 ]
 	then
-		# No key
-		echo -ne ${COLOR_CODE_RED}
-	else
 		# Key loaded
 		echo -ne ${COLOR_CODE_GRN}
+	else
+		# No key
+		echo -ne ${COLOR_CODE_RED}
 	fi
 	
 	## Exit
