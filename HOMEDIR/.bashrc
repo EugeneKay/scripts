@@ -5,8 +5,9 @@
 ##
 
 ## Global defaults
-if [ -f /etc/bashrc ]; then
-        . /etc/bashrc
+if [ -f /etc/bashrc ]
+then
+	. /etc/bashrc
 fi
 
 ##
@@ -66,42 +67,72 @@ COLOR_CYN="\[\e[0;36m\]"
 COLOR_GRN="\[\e[0;32m\]"
 COLOR_YLW="\[\e[0;33m\]"
 COLOR_DEF="\[\e[0m\]"
-# Without escapes
-COLOR_CODE_BLK="\e[0;30m"
-COLOR_CODE_GRY="\e[1;30m"
-COLOR_CODE_WHT="\e[0;37m"
-COLOR_CODE_RED="\e[0;31m"
-COLOR_CODE_PNK="\e[1;35m"
-COLOR_CODE_MGN="\e[0;35m"
-COLOR_CODE_BLU="\e[0;34m"
-COLOR_CODE_CYN="\e[0;36m"
-COLOR_CODE_GRN="\e[0;32m"
-COLOR_CODE_YLW="\e[0;33m"
-COLOR_CODE_DEF="\e[0m"
 
 
 ##
 ## Functions
 ##
 
-## Get Shell Character
+
+### Prompt Related
+
+## PS1 Prep
 #
-# Echo a shell character for use in the PS1 var depending upon sudo status
+# Prepare the shell prompt
 #
-# Outputs: a shell character; # if sudo is available, $ otherwise
 # Returns: 0
-# 
-get_shell_char () {
+#
+function ps1_prep() {
 	## Load runtime variables
+	
+	# Get ssh-agent status
+	ssh-add -l 2>/dev/null >/dev/null
+	ps1_ssh=$?
 	
 	# Get sudo status
 	sudo -n /bin/true 2>/dev/null >/dev/null
-	sudo_status=$?
+	ps1_sudo=$?
 	
+	## Assemble the prompt
+	
+	# User @ host
+	PS1="[\u@\h \W]"
+	
+	# Shell character($ or #)
+	PS1=${PS1}"`ps1_sc`"
+	
+	# Trailing space
+	PS1=${PS1}" "
+	
+	## Exit
+	
+	# Return cleanly
+	return 0
+	
+	}
+
+## PS1 Shell Character
+#
+# Echo a shell character for use in the PS1 var depending upon sudo status
+#
+# Outputs: a shell character, $(# if sudo), in red(green if ssh-agent has key)
+# Returns: 0
+# 
+ps1_sc () {
 	## Output shell char
 	
+	# Determine color
+	if [ ${ps1_ssh} -eq 0 ]
+	then
+		# Key loaded
+		echo -ne ${COLOR_GRN}
+	else
+		# No key or other issue
+		echo -ne ${COLOR_RED}
+	fi
+	
 	# Echo a shell character
-	if [ ${sudo_status} -eq 0 ]
+	if [ ${ps1_sudo} -eq 0 ]
 	then
 		# Sudo active
 		echo -n '#'
@@ -109,45 +140,14 @@ get_shell_char () {
 		# Sudo failed
 		echo -n '$'
 	fi
-
-	## Exit
 	
-	# Return cleanly
-	return 0;
-	
-	}
-
-## Get Shell Character Color
-#
-# Echo a color code for the shell character in PS1, depending upon ssh-agent
-# key status
-#
-# Outputs: a color code; green if a key is loaded, red otherwise
-# Returns: 0
-#
-get_shell_char_color() {
-	## Load runtime variables 
-	
-	# Get ssh-agent status
-	ssh-add -l 2>/dev/null >/dev/null
-	ssh_status=$?
-
-	## Output coloring for shell char
-	
-	# Determine color
-	if [ ${ssh_status} -eq 0 ]
-	then
-		# Key loaded
-		echo -ne ${COLOR_CODE_GRN}
-	else
-		# No key
-		echo -ne ${COLOR_CODE_RED}
-	fi
+	# Return to normal color
+	echo -ne ${COLOR_DEF}
 	
 	## Exit
 	
 	# Return cleanly
-	return 0;
+	return 0
 	
 	}
 
@@ -168,8 +168,7 @@ export EDITOR="/usr/bin/vim"
 unset MAILCHECK
 
 ## Prompt
-PS1="[\u@\h \W]\[\$(get_shell_char_color)\]\$(get_shell_char)${COLOR_DEF} "
-
+PROMPT_COMMAND=ps1_prep
 
 ## Load local bashrc
 source ~/.bashrc.local
