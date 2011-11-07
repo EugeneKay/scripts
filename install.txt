@@ -5,8 +5,9 @@ adduser eugenekay
 passwd eugenekay
 visudo
 
+yum erase yum-autoupdate yum-conf-sl-other
 yum update
-yum erase yum-autoupdate
 yum install screen bind-utils man traceroute telnet rsync openssh-clients vim ntp jwhois wget perl epel-release
 
-Do vmware tools install
+VMs: install vmware tools, remove dvd drive
+Physical: yum install sl_enable_serialconsole-96
