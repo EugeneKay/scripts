@@ -111,8 +111,7 @@ function _ps1_prep() {
 		# Git info
 		PS1=${PS1}"`_ps1_git`"
 	else
-		# Current working dir
-		PS1=${PS1}"\W"
+		PS1=${PS1}"`_ps1_wd`"
 	fi
 	
 	# Closing bracket
@@ -166,7 +165,7 @@ _ps1_git () {
 	local tree_cp=0
 	local untracked=0
 
-	for status in $(git status --porcelain | cut -b 1,2)
+	for status in $(git status --porcelain)
 	do
 		# Index counters
 		case ${status:0:1} in
@@ -260,6 +259,33 @@ _ps1_git () {
 	return 0
 	
 	}
+
+## PS1 Working Dir
+#
+# 
+# Outputs: working directory name, trimmed down if needed
+# Returns: 0
+#
+_ps1_wd () {
+	## Find current directory name
+	_ps1_pwd=$(basename `pwd`)
+	
+	## Directory name length
+	if [ "${#_ps1_pwd}" -gt "25" ]
+	then
+		# Too long, show short version
+		echo ${_ps1_pwd:0:20}"..."
+	else
+		# Show full directory name, using PS1 special "working dir"
+		echo "\W"
+	fi
+	
+	## Exit
+	
+	# Return cleanly
+	return 0
+	
+	}		
 
 ## PS1 Shell Character
 #
