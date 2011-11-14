@@ -43,8 +43,11 @@ do
 	fi
 	
 	# Grep out the old serial number. This regex should be tightened!
-	oldser=$(egrep -ho "[0-9]{10}" $file)
-
+	oldser=($(egrep -ho "[0-9]{10}" $file))
+	
+	# Really ugly and stupid hack to deal with grep <v2.6 limiting our regex
+	oldser=${oldser[0]}
+	
 	# Check that we actually got a valid serial back
 	if [[ $oldser != [0-9]* ]]
 	then
