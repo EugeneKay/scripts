@@ -156,13 +156,9 @@ _ps1_git () {
 	local index_edit=0
 	local index_add=0
 	local index_del=0
-	local index_mv=0
-	local index_cp=0
 	local tree_edit=0
 	local tree_add=0
 	local tree_del=0
-	local tree_mv=0
-	local tree_cp=0
 	local untracked=0
 	
 	# Count files in index
@@ -170,6 +166,10 @@ _ps1_git () {
 	do
 		# Edited in index
 		if $(echo "${filename}" | grep '^M' &>/dev/null)
+		then
+			(( index_edit++ ))
+		fi
+		if $(echo "${filename}" | grep '^T' &>/dev/null)
 		then
 			(( index_edit++ ))
 		fi
@@ -243,36 +243,29 @@ _ps1_git () {
 		# We're at the same spot as upstream
 		echo -ne ${COLOR_GRN}
 	fi
-
+	
 	# Branch name
 	echo -ne "${git_branch}"
-
+	
 	# Normalize color
 	echo -ne ${COLOR_DEF}
-
+	
 	# Index counters
 	echo -ne ${COLOR_GRN}
 	if [ ${index_edit} -ne 0 ]; then echo -ne " *${index_edit}"; fi;
 	if [ ${index_add} -ne 0 ]; then echo -ne " +${index_add}"; fi;
 	if [ ${index_del} -ne 0 ]; then echo -ne " -${index_del}"; fi;
-	if [ ${index_mv} -ne 0 ]; then echo -ne " ~${index_mv}"; fi;
-	if [ ${index_cp} -ne 0 ]; then echo -ne " =${index_cp}"; fi;
 	
 	# Work-tree counters
 	echo -ne ${COLOR_YLW}
 	if [ ${tree_edit} -ne 0 ]; then echo -ne " *${tree_edit}"; fi;
 	if [ ${tree_add} -ne 0 ]; then echo -ne " +${tree_add}"; fi;
 	if [ ${tree_del} -ne 0 ]; then echo -ne " -${tree_del}"; fi;
-	if [ ${tree_mv} -ne 0 ]; then echo -ne " ~${tree_mv}"; fi;
-	if [ ${tree_cp} -ne 0 ]; then echo -ne " =${tree_cp}"; fi;
-
-	# Untracked counter
-	echo -ne ${COLOR_RED}
 	if [ ${untracked} -ne 0 ]; then echo -ne " !${untracked}"; fi;
-
-	# Nnormalize color
+	
+	# Normalize color
 	echo -ne ${COLOR_DEF}
-
+	
 	# Closing paren
 	echo -ne ")"
 	
