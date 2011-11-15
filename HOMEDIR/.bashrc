@@ -87,7 +87,7 @@ function _ps1_prep() {
 	
 	# Check if we're in a git repo
 	git rev-parse --git-dir 2>/dev/null > /dev/null
-	ps1_git=1
+	ps1_git=$?
 	
 	# Get ssh-agent status
 	ssh-add -l 2>/dev/null >/dev/null
@@ -152,7 +152,7 @@ _ps1_git () {
 	# Repo status(long form)
 	local git_status=$(git status 2>/dev/null)
 	
-	# Count file changes
+	# Reset file counters
 	local index_edit=0
 	local index_add=0
 	local index_del=0
@@ -164,30 +164,53 @@ _ps1_git () {
 	local tree_mv=0
 	local tree_cp=0
 	local untracked=0
-
-	for status in $(git status --porcelain)
+	
+	# Count files in index
+	for filename in $(git diff --cached --name-status)
 	do
-		# Index counters
-		case ${status:0:1} in
-			"M") (( index_edit++ ));;
-			"A") (( index_add++ ));;
-			"D") (( index_del++ ));;
-			"R") (( index_mv++ ));;
-			"C") (( index_cp++ ));;
-		esac
+		# Edited in index
+		if $(echo "${filename}" | grep '^M' &>/dev/null)
+		then
+			(( index_edit++ ))
+		fi
 		
-		# Work-tree counters
-		case ${status:1:1} in
-			"M") (( tree_edit++ ));;
-			"A") (( tree_add++ ));;
-			"D") (( tree_del++ ));;
-			"R") (( tree_mv++ ));;
-			"C") (( tree_cp++ ));;
-			"") (( )) ;;
-			*) (( untracked++ ));;
-		esac
+		# Deleted in index
+		if $(echo "${filename}" | grep '^D' &>/dev/null)
+		then
+			(( index_del++ ))
+		fi
 		
+		# Added in index
+		if $(echo "${filename}" | grep '^A' &>/dev/null)
+		then
+			(( index_add++ ))
+		fi
 	done
+	
+	# Work-tree files
+	for filename in $(git diff --name-status)
+	do
+		# Edited in tree
+		if $(echo "${filename}" | grep '^M' &>/dev/null)
+		then
+			(( tree_edit++ ))
+		fi
+		
+		# Deleted in tree
+		if $(echo "${filename}" | grep '^D' &>/dev/null)
+		then
+			(( tree_del++ ))
+		fi
+		
+		# Added in tree
+		if $(echo "${filename}" | grep '^A' &>/dev/null)
+		then
+			(( tree_add++ ))
+		fi
+	done
+	
+	# Count untracked files
+	untracked=$(git ls-files --other --exclude-standard | wc -l )
 	
 	## Display repo info
 	
@@ -268,7 +291,7 @@ _ps1_git () {
 #
 _ps1_wd () {
 	## Find current directory name
-	_ps1_pwd=$(basename `pwd`)
+	_ps1_pwd=$(basename "`pwd`")
 	
 	## Directory name length
 	if [ "${#_ps1_pwd}" -gt "25" ]
