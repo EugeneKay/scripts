@@ -80,7 +80,7 @@ do
 	if [ -d "${backdir}" ]
 	then
 		# Check for #0, fail if it's not there
-		if [ ! -d "${backbase}.0" ]
+		if [ ! -d "${backbase}.00" ]
 		then
 			echo "Error:  Backup #0 is missing."
 			# Abort this Remote
@@ -89,41 +89,41 @@ do
 	else
 		# Create backdir if it doesn't exist(eg, first-run)
 		mkdir "${backdir}"
-		mkdir "${backbase}.0"
+		mkdir "${backbase}.00"
 	fi
 	
 	# Rotate backups only if #0 is complete(overwrite otherwise)
-	if [ -f ${backbase}.0/.timestamp ]
+	if [ -f ${backbase}.00/.timestamp ]
 	then
 		# Remove oldest backup
 		if [ -d "${backbase}.${INCREMENTALS}" ]
 		then
 			rm -rf "${backbase}.${INCREMENTALS}"
-			
-			# Check that backup was actually removed
-			if [ -d "${backbase}.${INCREMENTALS}" ]
-			then
-				echo "Error: Oldest backup was not removed!?"
-				continue
-			fi
+		fi
+		
+		# Check that backup was actually removed
+		if [ -d "${backbase}.${INCREMENTALS}" ]
+		then
+			echo "Error: Oldest backup was not removed!?"
+			continue
 		fi
 		
 		# Move all old backups up by one
 		i=${INCREMENTALS}
 		while [ $i -gt 1 ]
 		do
-			if [ -d "${backbase}.$[$i-1]" ]
+			if [ -d "${backbase}.`printf "%02d" $[$i-1]`" ]
 			then	
-				mv "${backbase}.$[i-1]" "${backbase}.${i}"
+				mv "${backbase}.`printf "%02d" $[i-1]`" "${backbase}.`printf "%02d" ${i}`"
 			fi
 			i=$[$i-1]
 		done
 		unset i
 		
 		# Hard-link a new #1 from #0
-		cp -al "${backbase}.0" "${backbase}.1"
+		cp -al "${backbase}.00" "${backbase}.01"
 		# Remove timestamp from #0
-		rm -f "${backbase}.0/.timestamp"
+		rm -f "${backbase}.00/.timestamp"
 	fi
 	
 	# Loop through Sources
@@ -133,11 +133,11 @@ do
 		echo "Source: ${source}"
 		
 		# Rsync remote:/source/ into the backup dir
-		rsync -rltyzR --delete-after --bwlimit=${BWLIMIT} ${RSYNCOPTS} ${source} ${backbase}.0
+		rsync -rltyzR --delete-after --bwlimit=${BWLIMIT} ${RSYNCOPTS} ${source} ${backbase}.00
 	done < ${SOURCEDIR}/${remote}
 	unset source
 	
-	${TIMESTAMP} > "${backbase}.0/.timestamp"
+	${TIMESTAMP} > "${backbase}.00/.timestamp"
 	
 done < ${REMOTES}
 unset remote backdir backbase
