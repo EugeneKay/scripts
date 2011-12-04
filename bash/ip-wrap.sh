@@ -11,7 +11,7 @@
 # License: WTFPL, any version or GNU General Public License, version 3+
 #
 
-## Check with ip subcommand is being requested
+## Check which ip subcommand is being requested
 case "$1" in
 "addr")
 	## Only allow devices tun0-tun99
