@@ -1,5 +1,6 @@
-Notes on installing Scientific Linux 6
+Notes on installing various OSes
 
+==Scientific Linux / CentOS 6:
 authconfig --disablefingerprint --update
 adduser eugenekay
 passwd eugenekay
@@ -11,3 +12,14 @@ yum install screen bind-utils man traceroute telnet rsync openssh-clients vim nt
 
 VMs: install vmware tools, remove dvd drive
 Physical: yum install sl_enable_serialconsole-96
+
+==Windows 7
+Need Ultimate for Aero Glass remoting!
+
+-VMware Tools
+-Remote Desktop
+-Activation
+-Updates
+-Disable sleep
+-Hibernation, swapfile
+-Add Domain admins to Administrators group
