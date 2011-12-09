@@ -17,7 +17,7 @@ fi
 ## Useful shortcuts
 
 # Load SSH-2 RSA identity into ssh-agent
-alias ssha='ssh-add -t 20m ~/.ssh/id_rsa 2>/dev/null'
+alias ssha='ssh-add -t 60m ~/.ssh/id_rsa 2>/dev/null'
 
 # Purge loaded SSH identities
 alias sshd='ssh-add -D 2>/dev/null'
@@ -76,13 +76,13 @@ COLOR_DEF="\[\e[0m\]"
 
 ### Prompt Related
 
-## PS1 Prep
+## PS1 Build
 #
-# Prepare the shell prompt
+# Build the shell prompt
 #
 # Returns: 0
 #
-function _ps1_prep() {
+function _ps1_build() {
 	## Load runtime variables
 	
 	# Check if we're in a git repo
@@ -102,8 +102,11 @@ function _ps1_prep() {
 	# Opening bracket
 	PS1="["
 	
-	# User @ host
-	PS1=${PS1}"\u@\h "
+	# User @
+	PS1=${PS1}"\u@"
+	
+	# Host info
+	PS1=${PS1}"`_ps1_host` "
 	
 	# Current directory
 	if [ ${ps1_git} -eq 0 ]
@@ -276,6 +279,58 @@ _ps1_git () {
 	
 	}
 
+## PS1 Host Info
+#
+#
+# Outputs: Hostname, colored by load average
+# Returns: 0
+#
+_ps1_host () {
+	# Get load average
+	local load=$(echo "($(cut -f 1 -d ' ' < /proc/loadavg)+0.5)/1" | bc)
+	
+	# Determine load average
+	if [ "$load" -lt 1 ]
+	then
+		# Light load
+		echo -ne ${COLOR_GRN}
+	else
+		if [ "$load" -lt "$ps1_host_cores" ]
+		then
+			# Medium load
+			echo -ne ${COLOR_YLW}
+		else
+			# Heavy load
+			echo -ne ${COLOR_RED}
+		fi
+	fi
+	
+	# Show unqualified hostname
+	echo -ne ${ps1_host_name}
+	
+	# Set prompt color back to normal
+	echo -ne ${COLOR_DEF}
+	
+	# Return cleanly
+	return 0;
+}
+
+## PS1 Prep
+#
+# Prepare variables to be used later by various PS1 functions
+#
+# Returns: 0
+#
+_ps1_prep () {
+	# Core quantity(includes HyperThreading, too.... meh)
+	ps1_host_cores=$(cat /proc/cpuinfo | grep processor | wc -l)
+	
+	# Unqualified hostname
+	ps1_host_name=$(hostname -s)
+	
+	# Return cleanly
+	return 0
+}
 ## PS1 Working Dir
 #
 # 
@@ -290,7 +345,7 @@ _ps1_wd () {
 	if [ "${#_ps1_pwd}" -gt "25" ]
 	then
 		# Too long, show short version
-		echo ${_ps1_pwd:0:20}"..."
+		echo -ne ${_ps1_pwd:0:20}"..."
 	else
 		# Show full directory name, using PS1 special "working dir"
 		echo "\W"
@@ -360,7 +415,11 @@ export EDITOR="/usr/bin/vim"
 unset MAILCHECK
 
 ## Prompt
-PROMPT_COMMAND=_ps1_prep
+# Prepare variables for prompt
+_ps1_prep
+
+# Set prompt
+PROMPT_COMMAND=_ps1_build
 
 ## Load local bashrc
 source ~/.bashrc.local
