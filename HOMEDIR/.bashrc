@@ -295,13 +295,19 @@ _ps1_host () {
 		# Light load
 		echo -ne ${COLOR_GRN}
 	else
-		if [ "$load" -lt "$ps1_host_cores" ]
+		if [ "$load" -lt "$[$ps1_host_cores/2]" ]
 		then
 			# Medium load
 			echo -ne ${COLOR_YLW}
 		else
-			# Heavy load
-			echo -ne ${COLOR_RED}
+			if [ "$load" -lt "$ps1_host_cores" ]
+			then
+				# Heavy Load
+				echo -ne ${COLOR_MGN}
+			else
+				# Extreme Load
+				echo -ne ${COLOR_RED}
+			fi
 		fi
 	fi
 	
