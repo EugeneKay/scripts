@@ -287,26 +287,26 @@ _ps1_git () {
 #
 _ps1_host () {
 	# Get load average
-	local load=$(echo "($(cut -f 1 -d ' ' < /proc/loadavg)+0.5)/1" | bc)
+	local load=$(echo "($(cut -f 1 -d ' ' < /proc/loadavg)+1.5)/1" | bc)
 	
 	# Determine load average
-	if [ "$load" -lt 1 ]
+	if [ "$load" -gt "$ps1_host_cores" ]
 	then
-		# Light load
-		echo -ne ${COLOR_GRN}
+		# Extreme
+		echo -ne ${COLOR_RED}
 	else
-		if [ "$load" -lt "$[$ps1_host_cores/2]" ]
+		if [ "$load" -gt "$[$ps1_host_cores/2]" ]
 		then
-			# Medium load
-			echo -ne ${COLOR_YLW}
+			# Heavy
+			echo -ne ${COLOR_MGN}
 		else
-			if [ "$load" -lt "$ps1_host_cores" ]
+			if [ "$load" -gt "1" ]
 			then
-				# Heavy Load
-				echo -ne ${COLOR_MGN}
+				# Medium
+				echo -ne ${COLOR_YLW}
 			else
-				# Extreme Load
-				echo -ne ${COLOR_RED}
+				# Light
+				echo -ne ${COLOR_GRN}
 			fi
 		fi
 	fi
