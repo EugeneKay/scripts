@@ -8,9 +8,9 @@ visudo
 
 yum erase yum-autoupdate yum-conf-sl-other
 yum update
-yum install screen bind-utils man traceroute telnet rsync openssh-clients vim ntp jwhois wget perl epel-release
+yum install screen bind-utils man traceroute telnet rsync openssh-clients vim ntp bc jwhois wget perl epel-release 
 
-VMs: install vmware tools, remove dvd drive
+VMs: yum install gcc make kernel-devel, install vmware tools, remove dvd drive & resize ram 
 Physical: yum install sl_enable_serialconsole-96
 
 ==Windows 7
