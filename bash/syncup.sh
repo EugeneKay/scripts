@@ -114,7 +114,7 @@ do
 		do
 			if [ -d "${backbase}.`printf "%02d" $[$i-1]`" ]
 			then	
-				mv "${backbase}.`printf "%02d" $[i-1]`" "${backbase}.`printf "%02d" ${i}`"
+				mv "${backbase}.`printf "%02d" $[$i-1]`" "${backbase}.`printf "%02d" ${i}`"
 			fi
 			i=$[$i-1]
 		done

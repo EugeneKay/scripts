@@ -70,7 +70,7 @@ do
 		echo "Error: Invalid remote."
 	fi
 	# Check for upstream #0, fail if it's not there
-	if [ ! -d "${parentbase}.0" ]
+	if [ ! -d "${parentbase}.00" ]
 	then
 		echo "Error: Parent #0 is missing."
 		# Abort this Remote
@@ -78,7 +78,7 @@ do
 	fi
 	
 	# Rotate backups only if parent #0 is complete(skip otherwise)
-	if [ -f ${parentbase}.0/.timestamp ]
+	if [ -f ${parentbase}.00/.timestamp ]
 	then
 		# Remove oldest backup
 		if [ -d "${backbase}.${INCREMENTALS}" ]
@@ -97,16 +97,16 @@ do
 		i=${INCREMENTALS}
 		while [ $i -gt 0 ]
 		do
-			if [ -d "${backbase}.$[$i-1]" ]
+			if [ -d "${backbase}.`printf "%02d" $[$i-1]`" ]
 			then	
-				mv "${backbase}.$[i-1]" "${backbase}.${i}"
+				mv "${backbase}.`printf "%02d" $[$i-1]`" "${backbase}.`printf "%02d" ${i}`"
 			fi
 			i=$[$i-1]
 		done
 		unset i
 		
 		# Hard-link a new #0 from uparent #0
-		cp -al "${parentbase}.0" "${backbase}.0"
+		cp -al "${parentbase}.00" "${backbase}.00"
 	fi
 done < ${REMOTES}
 unset remote backdir
