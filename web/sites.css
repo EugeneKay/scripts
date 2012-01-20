@@ -1,0 +1,21 @@
+@namespace url(http://www.w3.org/1999/xhtml);
+/* 
+ *CNN
+ */
+@-moz-document domain("cnn.com") {
+/* "Weekend Outlook" */
+.cnn_awsmbr {
+    display:none;
+}
+
+}
+/*
+ * Github
+ */
+@-moz-document domain("github.com") {
+/* README Box */
+#readme .plain pre {
+    font-size: 12px !important;
+}
+
+}

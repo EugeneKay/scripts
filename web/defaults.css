@@ -1,0 +1,16 @@
+@namespace url(http://www.w3.org/1999/xhtml);
+/* 
+ *Links
+ */
+a,
+a:link,
+a:visited {
+	color #00f;
+	text-decoration: none;
+}
+a:hover,
+a:active,
+a:focus {
+	color: #f00;
+	text-decoration: underline;
+}
