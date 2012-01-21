@@ -19,3 +19,13 @@
 }
 
 }
+/*
+ * Wikipedia
+ */
+@-moz-document domain("wikipedia.org") {
+
+#siteNotice {
+    display: none;
+}
+
+}
