@@ -85,9 +85,17 @@ COLOR_DEF="\[\e[0m\]"
 function _ps1_build() {
 	## Load runtime variables
 	
-	# Check if we're in a git repo
-	git rev-parse --git-dir 2>/dev/null > /dev/null
-	ps1_git=$?
+	# Check if we're in a git worktree
+	if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" == "true" ]
+	then
+		ps1_git_tree=0
+	else
+		ps1_git_tree=1
+	fi
+
+	# Check if we're inside a git dir
+	[ "$(git rev-parse --is-inside-git-dir 2>/dev/null)" == "true" ] && ps1_git_dir=0 || ps1_git_dir=1
+
 	
 	# Get ssh-agent status
 	ssh-add -l 2>/dev/null >/dev/null
@@ -109,7 +117,7 @@ function _ps1_build() {
 	PS1=${PS1}"`_ps1_host` "
 	
 	# Current directory
-	if [ ${ps1_git} -eq 0 ]
+	if [ ${ps1_git_tree} -eq 0 ] && [ ${ps1_git_dir} -ne 0 ]
 	then
 		# Git info
 		PS1=${PS1}"`_ps1_git`"
@@ -165,7 +173,7 @@ _ps1_git () {
 	local untracked=0
 	
 	# Count files in index
-	for filename in $(git diff --cached --name-status)
+	for filename in $(git diff --cached --name-status 2>/dev/null)
 	do
 		# Edited in index
 		if $(echo "${filename}" | grep '^M' &>/dev/null)
@@ -191,7 +199,7 @@ _ps1_git () {
 	done
 	
 	# Work-tree files
-	for filename in $(git diff --name-status)
+	for filename in $(git diff --name-status 2>/dev/null)
 	do
 		# Edited in tree
 		if $(echo "${filename}" | grep '^M' &>/dev/null)
