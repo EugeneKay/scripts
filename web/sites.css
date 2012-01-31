@@ -29,3 +29,13 @@
 }
 
 }
+/*
+ * YouTube
+ */
+@-moz-document domain("youtube.com") {
+
+.yt-alert {
+    display: none;
+}
+
+}
