@@ -1,4 +1,7 @@
+#
 # ~/.bashrc
+# scripts
+#
 
 ##
 ## Basics
@@ -10,9 +13,13 @@ then
 	. /etc/bashrc
 fi
 
+
 ##
 ## Aliases & Constants
 ##
+
+## Git
+alias git='ps1_git_date=0 && /usr/bin/git'
 
 ## Useful shortcuts
 
@@ -73,7 +80,6 @@ COLOR_DEF="\[\e[0m\]"
 ## Functions
 ##
 
-
 ### Prompt Related
 
 ## PS1 Build
@@ -89,13 +95,29 @@ function _ps1_build() {
 	if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" == "true" ]
 	then
 		ps1_git_tree=0
+		ps1_git_repo=$(git rev-parse --show-toplevel 2>/dev/null)
 	else
 		ps1_git_tree=1
 	fi
-
+	
 	# Check if we're inside a git dir
 	[ "$(git rev-parse --is-inside-git-dir 2>/dev/null)" == "true" ] && ps1_git_dir=0 || ps1_git_dir=1
-
+	
+	# Check if we need to load git repo info
+	if [ ${ps1_git_tree} -eq 0 ] && [ ${ps1_git_dir} -ne 0 ] 
+	then
+		# Check if we've changed git repos
+		if [ "${ps1_git_repo}" != "${ps1_git_repo_last}" ]
+		then
+			_ps1_git_load
+		fi
+		# Check if ps1_git data is too old
+		if [ ${ps1_git_date} -le $(date +%s) ]
+		then
+			_ps1_git_load
+		fi
+	fi
+	
 	
 	# Get ssh-agent status
 	ssh-add -l 2>/dev/null >/dev/null
@@ -111,28 +133,82 @@ function _ps1_build() {
 	PS1="["
 	
 	# User @
-	PS1=${PS1}"\u@"
+	PS1+="\u@"
 	
 	# Host info
-	PS1=${PS1}"`_ps1_host` "
+	PS1+="`_ps1_host` "
 	
-	# Current directory
+	# Directory info
 	if [ ${ps1_git_tree} -eq 0 ] && [ ${ps1_git_dir} -ne 0 ]
 	then
-		# Git info
-		PS1=${PS1}"`_ps1_git`"
+		## Repo Info
+		
+		# Repo name
+		PS1+=${ps1_git_repo_name}
+		# In-repo path
+		if [ "${ps1_git_repo_path}" != "" ]
+		then
+			PS1+="/"${ps1_git_repo_path%/}
+		fi
+		
+		# Opening paren
+		PS1+=" ("
+		
+		# Upstream status(coloration of branch name)
+		local pattern="# Your branch is (ahead|behind) "
+		if [[ $git_status =~ $pattern ]]
+		then
+			# We're at a different place than upstream
+			if [[ ${BASH_REMATCH[1]} == "ahead" ]];
+			then
+				# Ahead
+				PS1+=${COLOR_YLW}
+			else
+				# Behind
+				PS1+=${COLOR_RED}
+			fi
+		else
+			# We're at the same spot as upstream
+			PS1+=${COLOR_GRN}
+		fi
+		
+		# Branch name
+		PS1+=${ps1_git_branch}
+		
+		# Normalize color
+		PS1+=${COLOR_DEF}
+		
+		# Index counters
+		PS1+=${COLOR_GRN}
+		if [ ${ps1_git_index_edit} -ne 0 ]; then PS1+=" *"${ps1_git_index_edit}; fi;
+		if [ ${ps1_git_index_add} -ne 0 ]; then PS1+=" +"${ps1_git_index_add}; fi;
+		if [ ${ps1_git_index_del} -ne 0 ]; then PS1+=" -"${ps1_git_index_del}; fi;
+		
+		# Work-tree counters
+		PS1+=${COLOR_YLW}
+		if [ ${ps1_git_tree_edit} -ne 0 ]; then PS1+=" *"${ps1_git_tree_edit}; fi;
+		if [ ${ps1_git_tree_add} -ne 0 ]; then PS1+=" +"${ps1_git_tree_add}; fi;
+		if [ ${ps1_git_tree_del} -ne 0 ]; then PS1+=" -"${ps1_git_tree_del}; fi;
+		if [ ${ps1_git_untracked} -ne 0 ]; then PS1+=" !"${ps1_git_untracked}; fi;
+		
+		# Normalize color
+		PS1+=${COLOR_DEF}
+		
+		# Closing paren
+		PS1+=")"
 	else
-		PS1=${PS1}"`_ps1_wd`"
+		# Directory info
+		PS1+="`_ps1_wd`"
 	fi
 	
 	# Closing bracket
-	PS1=${PS1}"]"
+	PS1+="]"
 	
 	# Shell character($ or #)
-	PS1=${PS1}"`_ps1_sc`"
+	PS1+="`_ps1_sc`"
 	
 	# Trailing space
-	PS1=${PS1}" "
+	PS1+=" "
 	
 	## Exit
 	
@@ -140,37 +216,40 @@ function _ps1_build() {
 	return 0
 	
 	}
-## PS1 Git Info
+
+## PS1 Git Load
 #
-# Display some information about the git repository we're in
+# Load information about the git repository we're in
 #
-# Outputs: (branch), green if clean, red if dirty
 # Returns: 0
 #
-_ps1_git () {
+_ps1_git_load () {
 	## Load repo info
 	
-	# Repo directory name
-	local git_name=$(basename $(git rev-parse --show-toplevel))
+	# Repo path
+	ps1_git_repo_last=${ps1_git_repo}
+	
+	# Repo name
+	ps1_git_repo_name=$(basename ${ps1_git_repo})
 	
 	# Current path within repo
-	local git_path=$(git rev-parse --show-prefix)
+	ps1_git_repo_path=$(git rev-parse --show-prefix)
 	
 	# Branch we're on
-	local git_branch="$(git symbolic-ref HEAD 2>/dev/null)" || git_branch="(unnamed branch)"
-	git_branch=${git_branch##refs/heads/}
+	ps1_git_branch="$(git symbolic-ref HEAD 2>/dev/null)" || git_branch="(unnamed branch)"
+	ps1_git_branch=${ps1_git_branch##refs/heads/}
 	
 	# Repo status(long form)
-	local git_status=$(git status 2>/dev/null)
+	ps1_git_status=$(git status 2>/dev/null)
 	
 	# Reset file counters
-	local index_edit=0
-	local index_add=0
-	local index_del=0
-	local tree_edit=0
-	local tree_add=0
-	local tree_del=0
-	local untracked=0
+	ps1_git_index_edit=0
+	ps1_git_index_add=0
+	ps1_git_index_del=0
+	ps1_git_tree_edit=0
+	ps1_git_tree_add=0
+	ps1_git_tree_del=0
+	ps1_git_untracked=0
 	
 	# Count files in index
 	for filename in $(git diff --cached --name-status 2>/dev/null)
@@ -178,23 +257,23 @@ _ps1_git () {
 		# Edited in index
 		if $(echo "${filename}" | grep '^M' &>/dev/null)
 		then
-			(( index_edit++ ))
+			(( ps1_git_index_edit++ ))
 		fi
 		if $(echo "${filename}" | grep '^T' &>/dev/null)
 		then
-			(( index_edit++ ))
+			(( ps1_git_index_edit++ ))
 		fi
 		
 		# Deleted in index
 		if $(echo "${filename}" | grep '^D' &>/dev/null)
 		then
-			(( index_del++ ))
+			(( ps1_git_index_del++ ))
 		fi
 		
 		# Added in index
 		if $(echo "${filename}" | grep '^A' &>/dev/null)
 		then
-			(( index_add++ ))
+			(( ps1_git_index_add++ ))
 		fi
 	done
 	
@@ -204,81 +283,27 @@ _ps1_git () {
 		# Edited in tree
 		if $(echo "${filename}" | grep '^M' &>/dev/null)
 		then
-			(( tree_edit++ ))
+			(( ps1_git_tree_edit++ ))
 		fi
 		
 		# Deleted in tree
 		if $(echo "${filename}" | grep '^D' &>/dev/null)
 		then
-			(( tree_del++ ))
+			(( ps1_git_tree_del++ ))
 		fi
 		
 		# Added in tree
 		if $(echo "${filename}" | grep '^A' &>/dev/null)
 		then
-			(( tree_add++ ))
+			(( ps1_git_tree_add++ ))
 		fi
 	done
 	
 	# Count untracked files
-	untracked=$(git ls-files --other --exclude-standard | wc -l )
+	ps1_git_untracked=$(git ls-files --other --exclude-standard | wc -l )
 	
-	## Display repo info
-	
-	# Repo name
-	echo -ne "${git_name}"
-	# In-repo path
-	if [ "$git_path" != "" ]
-	then
-		echo -ne "/${git_path%/}"
-	fi
-	
-	
-	# Opening paren
-	echo -ne " ("
-	
-	# Upstream status(coloration of branch name)
-	local pattern="# Your branch is (ahead|behind) "
-	if [[ $git_status =~ $pattern ]]
-	then
-		# We're at a different place than upstream
-		if [[ ${BASH_REMATCH[1]} == "ahead" ]];
-		then
-			# Ahead
-			echo -ne ${COLOR_YLW}
-		else
-			# Behind
-			echo -ne ${COLOR_RED}
-		fi
-	else
-		# We're at the same spot as upstream
-		echo -ne ${COLOR_GRN}
-	fi
-	
-	# Branch name
-	echo -ne "${git_branch}"
-	
-	# Normalize color
-	echo -ne ${COLOR_DEF}
-	
-	# Index counters
-	echo -ne ${COLOR_GRN}
-	if [ ${index_edit} -ne 0 ]; then echo -ne " *${index_edit}"; fi;
-	if [ ${index_add} -ne 0 ]; then echo -ne " +${index_add}"; fi;
-	if [ ${index_del} -ne 0 ]; then echo -ne " -${index_del}"; fi;
-	
-	# Work-tree counters
-	echo -ne ${COLOR_YLW}
-	if [ ${tree_edit} -ne 0 ]; then echo -ne " *${tree_edit}"; fi;
-	if [ ${tree_add} -ne 0 ]; then echo -ne " +${tree_add}"; fi;
-	if [ ${tree_del} -ne 0 ]; then echo -ne " -${tree_del}"; fi;
-	if [ ${untracked} -ne 0 ]; then echo -ne " !${untracked}"; fi;
-	
-	# Normalize color
-	echo -ne ${COLOR_DEF}
-	
-	# Closing paren
-	echo -ne ")"
+	# Set the next ps1_git load for 5minutes from now
+	ps1_git_date=$(($(date +%s)+300))
 	
 	## Exit
 	
@@ -342,9 +367,16 @@ _ps1_prep () {
 	# Unqualified hostname
 	ps1_host_name=$(hostname -s)
 	
+	# Reset date of next ps1_git load to 0
+	ps1_git_date=0
+	
+	# Reset path of ps1_git last repo
+	ps1_git_repo_last=" "
+	
 	# Return cleanly
 	return 0
 }
+
 ## PS1 Working Dir
 #
 # 
