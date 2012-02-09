@@ -2,15 +2,14 @@
 /* 
  *Links
  */
-a,
-a:link,
-a:visited {
+a[href]:link,
+a[href]:visited {
 	color: #00f;
 	text-decoration: none;
 }
-a:hover,
-a:active,
-a:focus {
+a[href]:hover,
+a[href]:active,
+a[href]:focus {
 	color: #f00;
 	text-decoration: underline;
 }
