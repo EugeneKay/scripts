@@ -1,7 +1,7 @@
 ﻿// ==UserScript==
 // @name          eBay Item Link V2
-// @version       2.0.1.0
-// @date          1/19/2011
+// @version       2.1.0.0
+// @date          2012/02/05
 // @namespace     http://userscripts.org/scripts/show/61353
 // @description   Share smaller links to eBay items.
 // @creator       Jesse Graffam
@@ -13,7 +13,7 @@
 // @include       http://*.ebay.tld/*
 // ==/UserScript==
 //
-// (c) Jesse Graffam
+// © Jesse Graffam
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -29,7 +29,7 @@
 
 (function()
 {
-	var m_XPsnap_1 = document.evaluate("//div[@class='cr-cnt']//div//div[@class='z_b']//table[@cellpadding='3']//tr//td[@valign='top']",
+	var m_XPsnap_1 = document.evaluate("//div//div[@class='z_b']//table[@cellpadding='3']//tr//td[@valign='top']",
 		document, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null
 	);
 	
