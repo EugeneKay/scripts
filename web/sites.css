@@ -3,8 +3,11 @@
  *CNN
  */
 @-moz-document domain("cnn.com") {
-/* "Weekend Outlook" */
-.cnn_awsmbr {
+/* Banners */
+.cnnBannerContainer,
+.cnn_awsmbr, 
+.cnn_bnbcnter,
+.cnn_sdbx {
     display:none;
 }
 
