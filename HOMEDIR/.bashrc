@@ -145,6 +145,10 @@ function _ps1_build() {
 		
 		# Repo name
 		PS1+=${ps1_git_repo_name}
+		
+		# Current path within repo
+		ps1_git_repo_path=$(git rev-parse --show-prefix)
+		
 		# In-repo path
 		if [ "${ps1_git_repo_path}" != "" ]
 		then
@@ -231,9 +235,6 @@ _ps1_git_load () {
 	
 	# Repo name
 	ps1_git_repo_name=$(basename ${ps1_git_repo})
-	
-	# Current path within repo
-	ps1_git_repo_path=$(git rev-parse --show-prefix)
 	
 	# Branch we're on
 	ps1_git_branch="$(git symbolic-ref HEAD 2>/dev/null)" || git_branch="(unnamed branch)"
