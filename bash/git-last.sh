@@ -14,13 +14,13 @@ then
 fi
 
 # List files to show info for
-for name in $(find -maxdepth 1 $* | sort )
+for name in $(find $* -mindepth 1 -maxdepth 1 -type d | sort | sed 's/$/\//g' && find $* -mindepth 1 -maxdepth 1 -type f | sort)
 do
 	# Skip .git dirs(TODO: make this work better)
-	if [ "${name}" == "./.git" ]
+	if [ "${name}" == "./.git/" ]
 	then	
 		continue
 	fi
 	echo -ne ${name}":" | sed 's/\.\///g' | sed -e :a -e 's/^.\{1,16\}$/& /;ta'
 	echo $(git-log -1 --oneline -- ${name})
-done;
+done
