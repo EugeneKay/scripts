@@ -36,7 +36,7 @@ length=$(( $length - 1 ))
 # Give some information about the last commit on directories/files
 #
 # Returns: 0
-# Outputs: Three(4) columns containing:
+# Outputs: Four(4) columns containing:
 #	*Filename
 #	*Commit date(relative)
 #	*Commit hash(short)
