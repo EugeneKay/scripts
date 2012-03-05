@@ -7,11 +7,42 @@
 # examined
 #
 
+## Sanity checks
+
 # Ensure we're in a git worktree
 if [ "$(git rev-parse --is-inside-work-tree)" != "true" ]
 then
 	exit 1
 fi
+
+## Config Options
+
+# Show the date?
+show_date=0
+
+# Use long date format?
+long_date=1
+
+# Show the hash?
+show_hash=0
+
+# Use long hash format?
+long_hash=1
+
+# Show the subject?
+show_subj=0
+
+# Display the author?
+if [ "$(git config --bool --get last.author)" == "true" ]
+then
+	show_auth=0
+else
+	show_auth=1
+fi
+
+
+
+## Runtime info
 
 # Files/directories to list info for
 names=$(find $* -mindepth 1 -maxdepth 1 -type d | sort | sed 's/$/\//g' && find $* -mindepth 1 -maxdepth 1 -type f | sort)
@@ -27,6 +58,36 @@ do
 		length=${#name}
 	fi
 done
+
+
+# Output formatting
+format="%x09"
+if [ ${show_date} -eq 0 ]
+then
+	if [ ${long_date} -eq 0 ]
+	then
+		format=${format}"%cd%x09"
+	else
+		format=${format}"%cr%x09"
+	fi
+fi
+if [ ${show_hash} -eq 0 ]
+then
+	if [ ${long_hash} -eq 0 ]
+	then
+		format=${format}"%H "
+	else
+		format=${format}"%h "
+	fi
+fi
+if [ ${show_subj} -eq 0 ]
+then
+	format=${format}"%s"
+fi
+if [ ${show_auth} -eq 0 ]
+then
+	format=${format}" [%an]"
+fi
 
 # Trim length by one to account for stripped leading ./ and trailing :
 length=$(( $length - 1 ))
@@ -53,10 +114,9 @@ function git_last() {
 		
 		# Show path/filename, padded
 		echo -ne ${name}":" | sed 's/\.\///g' | sed -e :a -e "s/^.\{1,${length}\}$/& /;ta"
-		echo -ne '	'
 		
-		# Show last commit date, padded
-		echo "$(git-log -1 --pretty=tformat:'%cr%x09%h %s [%cn]' -- ${name})"
+		# Show last commit info
+		echo "$(git-log -1 --pretty=tformat:"${format}" -- ${name})"
 	done
 	
 	# Return cleanly
