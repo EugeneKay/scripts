@@ -1,5 +1,6 @@
+#
 # ~/.screenrc
-
+#
 
 startup_message off
 deflogin on

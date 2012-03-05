@@ -1,4 +1,6 @@
+#
 # ~/.rtorrent.rc
+#
 
 min_peers = 10
 max_peers = 100

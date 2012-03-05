@@ -1,4 +1,6 @@
+#
 # ~/.iftoprc
+#
 
 interface: eth0
 dns-resolution: yes

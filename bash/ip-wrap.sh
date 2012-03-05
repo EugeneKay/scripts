@@ -1,9 +1,8 @@
 #!/bin/bash
-##
-## IP Wrap
-##
 #
-# IP Wrap is a wrapper for the `ip` command for OpenVPN running in unprivileged
+# IP Wrap
+#
+# This is a wrapper for the `ip` command for OpenVPN running in unprivileged
 # mode. It allows usage of "ip addr add|del" and "ip link" on tun0-99, and the
 # "ip route add|del" command.
 #

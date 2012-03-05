@@ -1,9 +1,8 @@
 #!/bin/bash
-##
-## NS Updater
-##
 #
-# NS Updater is a script which checks your current public IP address against the
+# NS Updater
+#
+# This is a script which checks your current public IP address against the
 # existing record, and updates it if necessary using a TSIG key. Will eventually
 # support IPv6 updates.
 #

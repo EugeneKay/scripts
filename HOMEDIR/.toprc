@@ -1,4 +1,6 @@
+#
 # ~/.toprc
+#
 
 RCfile for "top with windows"		# shameless braggin'
 Id:a, Mode_altscr=0, Mode_irixps=1, Delay_time=3.000, Curwin=0

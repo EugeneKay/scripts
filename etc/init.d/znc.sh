@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Init file for ZNC Server
+# Init script for ZNC Server
 #
 # chkconfig: 2345 55 25
 # description: ZNC Server

@@ -1,7 +1,6 @@
 #!/bin/bash
-##
-## Syncup
-##
+#
+# Syncup
 #
 # Syncup is a script to create incremental backups of several Remote systems
 # using rsync and hardlinks. 

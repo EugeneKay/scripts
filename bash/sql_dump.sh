@@ -1,9 +1,9 @@
 #!/bin/bash
-##
-## SQL Dumper
-##
 #
-# SQL Dumper will dump MySQL & PostgreSQL databases to be backed up
+# SQL Dumper
+#
+# This script will dump MySQL & PostgreSQL databases to a directory, to be
+# backed up or.... whatever.
 #
 # Copyright 2011 Eugene E. Kashpureff (eugene@kashpureff.org)
 # License: WTFPL, any version or GNU General Public License, version 3+

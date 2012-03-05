@@ -1,9 +1,0 @@
-#!/bin/sh
-if [ $1 ]; then
-        DIR=$1
-else
-        DIR=`pwd`
-fi
-
-echo Directory Sizes for $DIR
-du -h --max-depth=1 "$DIR" | grep -v cannot | sort -k 2

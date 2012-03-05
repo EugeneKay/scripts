@@ -6,7 +6,7 @@
 # similar to GitHub's code-browser. Accepts a list of directories to be
 # examined
 #
-# Copyright 2011 K and H Research Company (support@khresear.ch)
+# Copyright 2012 Eugene E. Kashpureff Jr (eugene@kashpureff.org)
 # License: WTFPL, any version or GNU General Public License, version 3+
 #
 

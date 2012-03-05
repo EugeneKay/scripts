@@ -1,12 +1,11 @@
 #!/bin/bash
-##
-## DNS Pre-Commit Hook
-##
+#
+# DNS Pre-Commit Hook
 #
 # Increments serial number automatically before commit. Working copy must be the
 # same as the staged copy(this will be fixed eventually)
 #
-# Copyright 2011 K and H Research Company (support@khresear.ch)
+# Copyright 2012 Eugene E. Kashpureff Jr (eugene@kashpureff.org)
 # License: WTFPL, any version or GNU General Public License, version 3+
 #
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 # /etc/init.d/dnetc
 #
-# Init file for Distributed.net client
+# Init script for Distributed.net client
 #
 # chkconfig: 2345 55 25
 # description: Distributed.net client

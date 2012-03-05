@@ -1,4 +1,14 @@
+#
 # ~/.bashrc
+#
+# This is Eugene E. Kashpureff Jr's .bashrc. It contains a number of things
+# which you may think are ugly, stupid, or downright terrifying. This is not by
+# accident.
+#
+# Copyright 2012 Eugene E. Kashpureff (eugene@kashpureff.org)
+# License: WTFPL, any version or GNU General Public License, version 3+
+#
+
 
 ##
 ## Basics
