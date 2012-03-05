@@ -15,6 +15,41 @@ then
 	exit 1
 fi
 
+
+## Functions
+
+## git_last
+#
+# Give some information about the last commit on directories/files
+#
+# Returns: 0
+# Outputs: Four(4) columns containing:
+#	*Filename
+#	*Commit date(relative)
+#	*Commit hash(short)
+#	*Commit subject [Commiter]
+#
+function git_last() {
+	for name in ${names}
+	do
+		# Skip .git dirs(TODO: make this work better)
+		if [ "${name}" == "./.git/" ]
+		then	
+			continue
+		fi
+		
+		# Show path/filename, padded
+		echo -ne ${name}":" | sed 's/\.\///g' | sed -e :a -e "s/^.\{1,${length}\}$/& /;ta"
+		
+		# Show last commit info
+		echo "$(git-log -1 --pretty=tformat:"${format}" -- ${name})"
+	done
+	
+	# Return cleanly
+	return 0
+}
+
+
 ## Config Options
 
 # Show the date?
@@ -41,8 +76,7 @@ else
 fi
 
 
-
-## Runtime info
+## Runtime
 
 # Files/directories to list info for
 names=$(find $* -mindepth 1 -maxdepth 1 -type d | sort | sed 's/$/\//g' && find $* -mindepth 1 -maxdepth 1 -type f | sort)
@@ -58,7 +92,6 @@ do
 		length=${#name}
 	fi
 done
-
 
 # Output formatting
 format="%x09"
@@ -91,37 +124,6 @@ fi
 
 # Trim length by one to account for stripped leading ./ and trailing :
 length=$(( $length - 1 ))
-
-## git_last
-#
-# Give some information about the last commit on directories/files
-#
-# Returns: 0
-# Outputs: Four(4) columns containing:
-#	*Filename
-#	*Commit date(relative)
-#	*Commit hash(short)
-#	*Commit subject [Commiter]
-#
-function git_last() {
-	for name in ${names}
-	do
-		# Skip .git dirs(TODO: make this work better)
-		if [ "${name}" == "./.git/" ]
-		then	
-			continue
-		fi
-		
-		# Show path/filename, padded
-		echo -ne ${name}":" | sed 's/\.\///g' | sed -e :a -e "s/^.\{1,${length}\}$/& /;ta"
-		
-		# Show last commit info
-		echo "$(git-log -1 --pretty=tformat:"${format}" -- ${name})"
-	done
-	
-	# Return cleanly
-	return 0
-}
 
 # Run the git_last loop and feed through paginator
 git_last | less -FRSX
