@@ -1,7 +1,4 @@
-#
 # ~/.bashrc
-# scripts
-#
 
 ##
 ## Basics
@@ -13,53 +10,54 @@ then
 	. /etc/bashrc
 fi
 
-
 ##
 ## Aliases & Constants
 ##
 
-## Git
-alias git='ps1_git_date=0 && /usr/bin/git'
+## Command replacements
+
+# Git
+alias git="ps1_git_date=0 && ~/bin/git-wrapper"
 
 ## Useful shortcuts
 
 # Load SSH-2 RSA identity into ssh-agent
-alias ssha='ssh-add -t 60m ~/.ssh/id_rsa 2>/dev/null'
+alias ssha="ssh-add -t 60m ~/.ssh/id_rsa 2>/dev/null"
 
 # Purge loaded SSH identities
-alias sshd='ssh-add -D 2>/dev/null'
+alias sshd="ssh-add -D 2>/dev/null"
 
 # Go home
-alias cdc='cd && clear'
+alias cdc="cd && clear"
 
 # Wget, ignoreing cert issues
-alias wgets='wget --no-check-certificate'
+alias wgets="wget --no-check-certificate"
 
 # Watch Apache Logs
-alias alogs='tail -f /var/log/httpd/*'
+alias alogs="tail -f /var/log/httpd/*"
 
 
 ## Sudos
-alias sfind='sudo find'
-alias serv='sudo service'
-alias svim='sudo -E vim'
-alias siftop='sudo iftop -c ~/.iftoprc -i'
-alias syum='sudo yum' 
-alias schmod='sudo chmod'
-alias schown='sudo chown'
-alias schgrp='sudo chgrp'
-alias sduh='sudo ~/bin/duh'
-alias smount='sudo mount'
-alias sumount='sudo umount'
-alias smkdir='sudo mkdir'
-alias smdadm='sudo mdadm'
-alias sinit='sudo init'
-alias stail='sudo tail -f'
-alias schkconfig='sudo chkconfig'
-alias sexportfs='sudo exportfs'
+alias sfind="sudo find"
+alias serv="sudo service"
+alias svim="sudo -E vim"
+alias siftop="sudo iftop -c ~/.iftoprc -i"
+alias syum="sudo yum" 
+alias schmod="sudo chmod"
+alias schown="sudo chown"
+alias schgrp="sudo chgrp"
+alias sduh="sudo ~/bin/duh"
+alias smount="sudo mount"
+alias sumount="sudo umount"
+alias smkdir="sudo mkdir"
+alias smdadm="sudo mdadm"
+alias sinit="sudo init"
+alias stail="sudo tail -f"
+alias schkconfig="sudo chkconfig"
+alias sexportfs="sudo exportfs"
 
 ## Silly stuff
-alias o.O='echo O.o'
+alias o.O="echo O.o"
 
 ## Colors
 # With char escape
@@ -74,7 +72,6 @@ COLOR_CYN="\[\e[0;36m\]"
 COLOR_GRN="\[\e[0;32m\]"
 COLOR_YLW="\[\e[0;33m\]"
 COLOR_DEF="\[\e[0m\]"
-
 
 ##
 ## Functions
@@ -117,8 +114,7 @@ function _ps1_build() {
 			_ps1_git_load
 		fi
 	fi
-	
-	
+		
 	# Get ssh-agent status
 	ssh-add -l 2>/dev/null >/dev/null
 	ps1_ssh=$?
@@ -126,6 +122,16 @@ function _ps1_build() {
 	# Get sudo status
 	sudo -n /bin/true 2>/dev/null >/dev/null
 	ps1_sudo=$?
+	
+	
+	## History
+	
+	# Save last command
+	history -a
+	
+	# Reload
+	history -n
+	
 	
 	## Assemble the prompt
 	
@@ -218,9 +224,7 @@ function _ps1_build() {
 	
 	# Return cleanly
 	return 0
-	
-	}
-
+}
 ## PS1 Git Load
 #
 # Load information about the git repository we're in
@@ -310,8 +314,7 @@ _ps1_git_load () {
 	
 	# Return cleanly
 	return 0
-	
-	}
+}
 
 ## PS1 Host Info
 #
@@ -320,21 +323,24 @@ _ps1_git_load () {
 # Returns: 0
 #
 _ps1_host () {
-	# Get load average
-	local load=$(echo "($(cut -f 1 -d ' ' < /proc/loadavg)+1.5)/1" | bc)
+	## Get load averages
+	local load_1=$(echo "($(cut -f 1 -d ' ' < /proc/loadavg)+1.5)/1" | bc)
+	local load_5=$(echo "($(cut -f 2 -d ' ' < /proc/loadavg)+1.5)/1" | bc)
+	local load_15=$(echo "($(cut -f 3 -d ' ' < /proc/loadavg)+1.5)/1" | bc)
 	
-	# Determine load average
-	if [ "$load" -gt "$ps1_host_cores" ]
+	## Show load averages & hostname bits
+	# 1 minute
+	if [ "$load_1" -gt "$ps1_host_cores" ]
 	then
 		# Extreme
 		echo -ne ${COLOR_RED}
 	else
-		if [ "$load" -gt "$[$ps1_host_cores/2]" ]
+		if [ "$load_1" -gt "$[$ps1_host_cores/2]" ]
 		then
 			# Heavy
 			echo -ne ${COLOR_MGN}
 		else
-			if [ "$load" -gt "1" ]
+			if [ "$load_1" -gt "1" ]
 			then
 				# Medium
 				echo -ne ${COLOR_YLW}
@@ -345,8 +351,57 @@ _ps1_host () {
 		fi
 	fi
 	
-	# Show unqualified hostname
-	echo -ne ${ps1_host_name}
+	# Hostname bit
+	echo -ne ${ps1_hostname_1}
+	
+	# 5 minutes
+	if [ "$load_5" -gt "$ps1_host_cores" ]
+	then
+		# Extreme
+		echo -ne ${COLOR_RED}
+	else
+		if [ "$load_5" -gt "$[$ps1_host_cores/2]" ]
+		then
+			# Heavy
+			echo -ne ${COLOR_MGN}
+		else
+			if [ "$load_5" -gt "1" ]
+			then
+				# Medium
+				echo -ne ${COLOR_YLW}
+			else
+				# Light
+				echo -ne ${COLOR_GRN}
+			fi
+		fi
+	fi
+	
+	# Hostname bit
+	echo -ne ${ps1_hostname_2}
+	
+	# 15 minutes
+	if [ "$load_15" -gt "$ps1_host_cores" ]
+	then
+		# Extreme
+		echo -ne ${COLOR_RED}
+	else
+		if [ "$load_15" -gt "$[$ps1_host_cores/2]" ]
+		then
+			# Heavy
+			echo -ne ${COLOR_MGN}
+		else
+			if [ "$load_15" -gt "1" ]
+			then
+				# Medium
+				echo -ne ${COLOR_YLW}
+			else
+				# Light
+				echo -ne ${COLOR_GRN}
+			fi
+		fi
+	fi
+	# Hostname bit
+	echo -ne ${ps1_hostname_3}
 	
 	# Set prompt color back to normal
 	echo -ne ${COLOR_DEF}
@@ -366,7 +421,13 @@ _ps1_prep () {
 	ps1_host_cores=$(cat /proc/cpuinfo | grep processor | wc -l)
 	
 	# Unqualified hostname
-	ps1_host_name=$(hostname -s)
+	ps1_hostname=$(hostname -s)
+	
+	# Split up hostname for later usage
+	ps1_hostname_1=${ps1_hostname:0:$(( ${#ps1_hostname} / 3 + ( ${#ps1_hostname} % 3 ) / 2 ))}
+	ps1_hostname_2=${ps1_hostname:${#ps1_hostname_1}:$(( (${#ps1_hostname} - ${#ps1_hostname_1}) / 2 + (${#ps1_hostname} - ${#ps1_hostname_1}) % 2 ))}
+	ps1_hostname_3=${ps1_hostname:$(( ${#ps1_hostname_1} + ${#ps1_hostname_2} )):$(( ${#ps1_hostname} - ${#ps1_hostname_1} - ${#ps1_hostname_2} ))}
+	
 	
 	# Reset date of next ps1_git load to 0
 	ps1_git_date=0
@@ -377,7 +438,6 @@ _ps1_prep () {
 	# Return cleanly
 	return 0
 }
-
 ## PS1 Working Dir
 #
 # 
@@ -402,8 +462,7 @@ _ps1_wd () {
 	
 	# Return cleanly
 	return 0
-	
-	}		
+}
 
 ## PS1 Shell Character
 #
@@ -442,8 +501,7 @@ _ps1_sc () {
 	
 	# Return cleanly
 	return 0
-	
-	}
+}
 
 
 ## 
@@ -460,6 +518,9 @@ export EDITOR="/usr/bin/vim"
 
 # Don't notify about unread mail
 unset MAILCHECK
+
+# Append shell history instead of overwriting
+shopt -s histappend
 
 ## Prompt
 # Prepare variables for prompt
