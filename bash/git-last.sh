@@ -23,11 +23,7 @@ fi
 # Give some information about the last commit on directories/files
 #
 # Returns: 0
-# Outputs: Four(4) columns containing:
-#	*Filename
-#	*Commit date(relative)
-#	*Commit hash(short)
-#	*Commit subject [Commiter]
+# Outputs: git-log with the formatting set to ${format}
 #
 function git_last() {
 	for name in ${names}
@@ -42,7 +38,7 @@ function git_last() {
 		echo -ne ${name}":" | sed 's/\.\///g' | sed -e :a -e "s/^.\{1,${length}\}$/& /;ta"
 		
 		# Show last commit info
-		echo "$(git-log -1 --pretty=tformat:"${format}" -- ${name})"
+		echo "$(git log -1 --pretty=tformat:"${format}" -- ${name})"
 	done
 	
 	# Return cleanly
@@ -99,27 +95,27 @@ if [ ${show_date} -eq 0 ]
 then
 	if [ ${long_date} -eq 0 ]
 	then
-		format=${format}"%cd%x09"
+		format+="%cd%x09"
 	else
-		format=${format}"%cr%x09"
+		format+="%cr%x09"
 	fi
 fi
 if [ ${show_hash} -eq 0 ]
 then
 	if [ ${long_hash} -eq 0 ]
 	then
-		format=${format}"%H "
+		format+="%H "
 	else
-		format=${format}"%h "
+		format+="%h "
 	fi
 fi
 if [ ${show_subj} -eq 0 ]
 then
-	format=${format}"%s"
+	format+="%s"
 fi
 if [ ${show_auth} -eq 0 ]
 then
-	format=${format}" [%an]"
+	format+=" [%an]"
 fi
 
 # Trim length by one to account for stripped leading ./ and trailing :
