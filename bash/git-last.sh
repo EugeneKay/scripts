@@ -67,7 +67,7 @@ long_hash=1
 show_subj=0
 
 # Display the author?
-if [ "$(git config --bool --get last.author)" == "true" ]
+if [ "$(git config --bool --get last.author)" != "false" ]
 then
 	show_auth=0
 else
