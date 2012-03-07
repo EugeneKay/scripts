@@ -10,6 +10,63 @@
 # License: WTFPL, any version or GNU General Public License, version 3+
 #
 
+##
+## Documentation
+##
+
+## Installation
+#
+# To install git-last, copy this file to somewhere in your PATH. It is suggested
+# to use ~/bin/. If this directory does not exist, create it. If it is not in
+# your PATH you will need to add it. Consult your shell's documentation for the
+# exact method to accomplish this, but the following works in bash:
+#
+# PATH+=":~/bin"
+#
+# This file should be named "git-last" when installed, NOT "git-last.sh". If you
+# do this wrong then git will be very angry with you and invoking 'git last'
+# will not work.
+#
+
+## Usage
+#
+# To use git-last, simply run 'git last'. The output should look something like:
+#
+# [eugene@francisdrake it-vends (dev)]$ git last
+# css/:           6 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
+# img/:           4 months ago    87cef7d Favicon fix [Eugene E. Kashpureff]
+# js/:            6 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
+# licenses/:      6 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
+# CHANGELOG.txt:  5 weeks ago     c97cca0 v1.2.0 [Eugene E. Kashpureff Jr]
+# common.php:     6 weeks ago     19fd9f7 Increase rate of special items to 10%
+# favicon.ico:    6 months ago    190fdb3 Add favicon, care of sannse. [Eugene E
+# .htaccess:      5 weeks ago     cd72b17 Merge 'dev' into 'vending' for 1.2.0 r
+# index.php:      6 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
+# README.txt:     5 weeks ago     c97cca0 v1.2.0 [Eugene E. Kashpureff Jr]
+# STYLE.txt:      6 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
+# vendlist.php:   6 weeks ago     11e9e82 Separate items into "normal" and "spec
+# vend.php:       6 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
+# [eugene@francisdrake it-vends (dev)]$
+#
+# Output is automatically paginated through less -FSRX, which is the default git
+# pager. Support for non-default PAGER is not implemented due to the author's
+# laziness. If you implement this for yourself please consider submitting the
+# patch back.
+#
+
+## Configuration
+#
+# git-last supports a single configuration option, and more are planned.
+#
+# last.author
+#	If false, this option disables display of the [Author] field in git-last
+#	output. If true or undefined, the author field is shown.
+#
+
+##
+## Runtime
+##
+
 ## Sanity checks
 
 # Ensure we're in a git worktree
@@ -75,7 +132,7 @@ else
 fi
 
 
-## Runtime
+## Assemble variables
 
 # Files/directories to list info for
 names=$(find $* -mindepth 1 -maxdepth 1 -type d | sort | sed 's/$/\//g' && find $* -mindepth 1 -maxdepth 1 -type f | sort)
@@ -123,6 +180,9 @@ fi
 
 # Trim length by one to account for stripped leading ./ and trailing :
 length=$(( $length - 1 ))
+
+
+## Execute!
 
 # Run the git_last loop and feed through paginator
 git_last | less -FRSX
