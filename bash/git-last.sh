@@ -164,9 +164,9 @@ if [ ${show_hash} -eq 0 ]
 then
 	if [ ${long_hash} -eq 0 ]
 	then
-		format+="%H "
+		format+="%C(yellow)%H%Creset "
 	else
-		format+="%h "
+		format+="%C(yellow)%h%Creset "
 	fi
 fi
 if [ ${show_subj} -eq 0 ]
