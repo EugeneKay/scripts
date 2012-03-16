@@ -3,8 +3,8 @@
 # git-last
 #
 # Shows the most recent commit for each file/folder in the current directory,
-# similar to GitHub's code-browser. Accepts a list of directories to be
-# examined
+# similar to GitHub's code-browser. Accepts a list of files or directories to be
+# examined.
 #
 # Copyright 2012 Eugene E. Kashpureff Jr (eugene@kashpureff.org)
 # License: WTFPL, any version or GNU General Public License, version 3+
@@ -33,19 +33,19 @@
 # To use git-last, simply run 'git last'. The output should look something like:
 #
 # [eugene@francisdrake it-vends (dev)]$ git last
-# css/:           6 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
-# img/:           4 months ago    87cef7d Favicon fix [Eugene E. Kashpureff]
-# js/:            6 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
-# licenses/:      6 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
-# CHANGELOG.txt:  5 weeks ago     c97cca0 v1.2.0 [Eugene E. Kashpureff Jr]
-# common.php:     6 weeks ago     19fd9f7 Increase rate of special items to 10%
+# CHANGELOG.txt:  7 weeks ago     c97cca0 v1.2.0 [Eugene E. Kashpureff Jr]
+# common.php:     7 weeks ago     19fd9f7 Increase rate of special items to 10% 
+# css/:           7 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
 # favicon.ico:    6 months ago    190fdb3 Add favicon, care of sannse. [Eugene E
-# .htaccess:      5 weeks ago     cd72b17 Merge 'dev' into 'vending' for 1.2.0 r
-# index.php:      6 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
-# README.txt:     5 weeks ago     c97cca0 v1.2.0 [Eugene E. Kashpureff Jr]
-# STYLE.txt:      6 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
-# vendlist.php:   6 weeks ago     11e9e82 Separate items into "normal" and "spec
-# vend.php:       6 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
+# .htaccess:      7 weeks ago     cd72b17 Merge 'dev' into 'vending' for 1.2.0 r
+# img/:           5 months ago    87cef7d Favicon fix [Eugene E. Kashpureff]
+# index.php:      7 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
+# js/:            7 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
+# licenses/:      7 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
+# README.txt:     7 weeks ago     c97cca0 v1.2.0 [Eugene E. Kashpureff Jr]
+# STYLE.txt:      7 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
+# vendlist.php:   7 weeks ago     11e9e82 Separate items into "normal" and "spec
+# vend.php:       7 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
 # [eugene@francisdrake it-vends (dev)]$
 #
 # Output is automatically paginated through less -FSRX, which is the default git
@@ -86,16 +86,10 @@ fi
 # Outputs: git-log with the formatting set to ${format}
 #
 function git_last() {
-	for name in ${names}
+	for name in ${items}
 	do
-		# Skip .git dirs(TODO: make this work better)
-		if [ "${name}" == "./.git/" ]
-		then	
-			continue
-		fi
-		
 		# Show path/filename, padded
-		echo -ne ${name}":" | sed 's/\.\///g' | sed -e :a -e "s/^.\{1,${length}\}$/& /;ta"
+		echo -ne ${name}":" | sed -e :a -e "s/^.\{1,${length}\}$/& /;ta"
 		
 		# Show last commit info
 		echo "$(git log -1 --pretty=tformat:"${format}" -- ${name})"
@@ -135,19 +129,62 @@ fi
 ## Assemble variables
 
 # Files/directories to list info for
-names=$(find $* -mindepth 1 -maxdepth 1 -type d | sort | sed 's/$/\//g' && find $* -mindepth 1 -maxdepth 1 -type f | sort)
+for arg in "$@"
+do
+	if [ -d "$arg" ]
+	then
+		dirs+=(${arg})
+	fi
+	if [ -f "$arg" ]
+	then
+		files+=(${arg})
+	fi
+done
+
+if [ ${#dirs[@]} -gt 0 ]
+then
+	names=($(find ${dirs[@]} -mindepth 1 -maxdepth 1 -type d | sed 's/$/\//g'))
+	names+=($(find ${dirs[@]} -mindepth 1 -maxdepth 1 -type f))
+fi
+if [ ${#files[@]} -gt 0 ]
+then
+	names+=($(find ${files[@]} -mindepth 0 -maxdepth 0 -type f))
+fi
+if [ ${#names[@]} -eq 0 ]
+then
+	names=($(find . -mindepth 1 -maxdepth 1 -type d | sed 's/$/\//g'))
+	names+=($(find . -mindepth 1 -maxdepth 1 -type f))
+fi
+
+# Build the list of items to show info for
+for name in ${names[@]}
+do
+	# Skip .git dirs(TODO: make this work better)
+	if [ "${name}" == "./.git/" ]
+	then	
+		continue
+	fi
+	items+=($(echo ${name} | sed 's/\.\///g'))
+done
+
+# Sort the items list
+items=$(for i in ${items[@]}; do echo $i; done | sort)
 
 # Minimum length of first column
 length=8
 
-# Find length of longest filename
-for name in ${names}
+# Find length of longest item
+for item in ${items}
 do
-	if [ ${#name} -gt $length ]
+	if [ ${#item} -gt $length ]
 	then
-		length=${#name}
+		# Set length of first column to item's length
+		length=${#item}
 	fi
 done
+
+# Add 1 to length to account for trailing :
+length=$(( $length + 1 ))
 
 # Output formatting
 format="%x09"
@@ -177,10 +214,6 @@ if [ ${show_auth} -eq 0 ]
 then
 	format+=" [%an]"
 fi
-
-# Trim length by one to account for stripped leading ./ and trailing :
-length=$(( $length - 1 ))
-
 
 ## Execute!
 
