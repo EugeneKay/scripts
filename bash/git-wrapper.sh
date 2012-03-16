@@ -9,7 +9,7 @@
 # Check against list of custom subcommands
 case $1 in
 "lol")
-	git log --graph --all --pretty=tformat:'%x09%cr%x09%C(yellow)%h%Creset%d %s' ${@:2}
+	git log --graph --all --pretty=tformat:'%x09%cr%x09%C(yellow)%h%C(green)%d%Creset %s' ${@:2}
 	;;
 "uno")
 	git status --untracked=no
