@@ -6,17 +6,33 @@
 # License: WTFPL, any version or GNU General Public License, version 3+
 #
 
-# Check against list of custom subcommands
-case $1 in
+# Path to the `git` binary
+GIT=$(which git)
+
+# Sanity check
+if [ ! -f ${GIT} ]
+then
+	echo "Error: git binary not found" >&2
+	exit 255
+fi
+
+# Command to be executed
+command=$1
+
+# Remove command from $@ array
+shift 1
+
+# Check command against list of supported commands
+case $command in
 "lol")
-	git log --graph --all --pretty=tformat:'%x09%cr%x09%C(yellow)%h%C(green)%d%Creset %s' ${@:2}
+	$GIT log --graph --all --pretty=tformat:'%x09%cr%x09%C(yellow)%h%C(green)%d%Creset %s' "$@"
 	;;
 "uno")
-	git status --untracked=no
+	$GIT status --untracked=no "$@"
 	;;
 *)
 	# Execute the git binary
-	/usr/bin/git $*
+	$GIT ${command} "$@"
 	;;
 esac
 
