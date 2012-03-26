@@ -30,6 +30,9 @@ case $command in
 "uno")
 	$GIT status --untracked=no "$@"
 	;;
+"unstage")
+	$GIT reset HEAD "$@"
+	;;
 *)
 	# Execute the git binary
 	$GIT ${command} "$@"
