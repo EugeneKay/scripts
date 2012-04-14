@@ -55,6 +55,24 @@
 }
 
 /*
+ * LinkedIn
+*/
+@-moz-document domain("linkedin.com") {
+/* People You May Know */
+#pymk {
+    display: none;
+}
+
+}
+
+/*
+ * Reddit
+*/
+@-moz-document domain("reddit.com") {
+
+}
+
+/*
  * Wikipedia
  */
 @-moz-document domain("wikipedia.org") {
