@@ -182,13 +182,12 @@ do
 	if [ "${timestamps}" != "false" ]
 	then
 		# Set modification times to last-changed
-		for path in $(find ./ ) 
+		for file in $(find ./ -type f) 
 		do
 			# Get the date of the last commit
-			last=$(git log ${branch} --pretty=format:%ad --date=rfc -1 -- ${path})
-			
+			last=$(git log ${branch} --pretty=format:%ad --date=rfc -1 -- ${file})
 			# Set the modification time
-			touch -t $(date -d "${last}" +%Y%m%d%H%M.%S) ${path}
+			touch -t $(date -d "${last}" +%Y%m%d%H%M.%S) ${file}
 		done
 	fi
 	
@@ -212,5 +211,5 @@ done
 rm ${scratch} -rf
 
 # Unset environment variables
-unset GIT RSYNC TMP GIT_DIR scratch old new ref branch dest optstimestamps path
+unset GIT RSYNC TMP GIT_DIR scratch old new ref branch dest optstimestamps file
 unset last
