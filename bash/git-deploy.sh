@@ -17,6 +17,9 @@
 # To install git-deploy, copy this file to the hooks/ directory of a repository
 # as "post-receive". Note that there is NO extension!
 #
+# You will need to set the git config variable deploy.$FOO.uri in order for this
+# script to do anything. See the 'Configuration' section for more information.
+#
 # In order to function properly you must have rsync, and the git-core suite on
 # your system. If these are in non-standard locations or not within PATH you
 # should set the RSYNC and GIT vars below. Other common utilities such as mkdir,
@@ -26,9 +29,16 @@
 
 ## Configuration
 #
-# You will need to set the git config variable deploy.$FOO.uri in order for this
-# script to do anything, where $FOO is the branch you wish to have automagically
-# deployed. 
+# Several configuration options are supported by git-deploy, only one of which
+# is mandatory(deploy.$FOO.uri). These options are all set via git-config.
+# Several constants(see below) may be changed in the script itself, but you
+# should not need to do so on a sane system. In all of the following, $FOO is
+# the name of the branch which you wish to have automagically deployed.
+#
+# deploy.$FOO.opts
+#	Set of options to pass to rsync. git-deploy defaults to "-rt", which
+#	will work (r)ecuresively and attempt to maintain (t)imestamps. Please
+#	note that no injection checking is done against these.
 #
 # deploy.$FOO.timestamps
 #	Whether or not to attempt to maintain timestamps on the work-tree which
@@ -41,11 +51,6 @@
 #	rsync URI which should be deployed to for branch $FOO. This can be any
 #	scheme which is known to 'rsync', including a local filesystem path, or
 #	a remote host(via SSH)
-#
-# deploy.$FOO.opts
-#	Set of options to pass to rsync. git-deploy defaults to "-rt", which
-#	will work (r)ecuresively and attempt to maintain (t)imestamps. Please
-#	note that no injection checking is done against these.
 #
 
 ## Usage
