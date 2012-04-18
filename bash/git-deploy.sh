@@ -61,6 +61,18 @@
 # stdin, the same data that is fed to any git pre-receive hook.
 #
 
+## Todo
+#
+# 1) Split out the "meat" to a git-deploy script which can be invoked via the
+#	'git' binary in a non-bare repository
+#
+# 2) The second rule of git-deploy is you DO NOT TALK ABOUT git-deploy.
+#
+# 3) Rewrite this hook(and rename to -hook) to use said git-deploy script.
+#
+# 4) Improve documentation wording - find an English teacher to run it by or
+#	something.
+#
 
 ##
 ## Constants
