@@ -20,7 +20,7 @@
 # You will need to set the git config variable deploy.$FOO.uri in order for this
 # script to do anything. See the 'Configuration' section for more information.
 #
-# In order to function properly you must have rsync, and the git-core suite on
+# In order to function properly you must have rsync and the git-core suite on
 # your system. If these are in non-standard locations or not within PATH you
 # should set the RSYNC and GIT vars below. Other common utilities such as mkdir,
 # cp, find, rm, umask, and tar are also required, but if you don't already have
