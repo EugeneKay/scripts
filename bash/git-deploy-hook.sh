@@ -35,6 +35,11 @@
 # should not need to do so on a sane system. In all of the following, $FOO is
 # the name of the branch which you wish to have automagically deployed.
 #
+# deploy.verbose
+#	Whether to show verbose messages at each step of the deploy process.
+#	Using this option will effetipvely add -v to the list of options passed
+#	to rsync(in addition to those listed in deploy.$FOO.opts).
+#
 # deploy.$FOO.opts
 #	Set of options to pass to rsync. git-deploy defaults to "-rt", which
 #	will work (r)ecuresively and attempt to maintain (t)imestamps. Please
@@ -89,6 +94,14 @@ TMP="/tmp"
 
 # Repo directory
 export GIT_DIR=$(pwd)
+
+
+##
+## Variables
+##
+
+
+
 
 ##
 ## Sanity checks
@@ -174,6 +187,7 @@ do
 		echo "Error: Destination ${dest} does not exist! Deploy failed."
 		continue
 	fi
+	echo "Destination: "${dest}
 	
 	# Rsync options
 	opts=$(git config --get "deploy.${branch}.opts")
@@ -181,6 +195,7 @@ do
 	then
 		opts="-rt"
 	fi
+	echo "Options: "${opts}
 	
 	# Create directory to archive into
 	mkdir "${scratch}/${branch}"
@@ -215,6 +230,9 @@ do
 	if [ "${status}" -ne "0" ]
 	then
 		echo "Error: rsync exited with exit code ${status}. Deploy may not have been successful. Please review the error log above."
+	else
+		[ ${debug} -eq 
+		echo "Deploy successful!"
 	fi
 	echo ""
 done
