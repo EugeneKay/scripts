@@ -4,7 +4,7 @@
 */
 @-moz-document domain("amazon.com") {
 #related_ads {
-    display: none;
+	display: none;
 }
 
 }
@@ -29,7 +29,7 @@
 @-moz-document domain("github.com") {
 /* README Box */
 #readme .plain pre {
-    font-size: 12px !important;
+	font-size: 12px !important;
 }
 /* Code viewing boxes */
 #files .file .data .line_numbers span,
@@ -37,7 +37,7 @@
 	line-height: 17.2px !important;
 }
 #files .file .data .highlight div {
-    height: 17.2px !important;
+	height: 17.2px !important;
 }
 
 }
@@ -49,7 +49,7 @@
 /** Calendar **/
 /* Recolorize */
 .st-grid .st-c .te {
-    color: #000 !important;
+	color: #000 !important;
 }
 
 }
@@ -60,7 +60,7 @@
 @-moz-document domain("linkedin.com") {
 /* People You May Know */
 #pymk {
-    display: none;
+	display: none;
 }
 
 }
@@ -88,7 +88,8 @@
  */
 @-moz-document domain("youtube.com") {
 
-.yt-alert {
+.yt-alert,
+#watch-discussion {
 	display: none;
 }
 
