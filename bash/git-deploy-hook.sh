@@ -35,14 +35,9 @@
 # should not need to do so on a sane system. In all of the following, $FOO is
 # the name of the branch which you wish to have automagically deployed.
 #
-# deploy.verbose
-#	Whether to show verbose messages at each step of the deploy process.
-#	Using this option will effetipvely add -v to the list of options passed
-#	to rsync(in addition to those listed in deploy.$FOO.opts).
-#
 # deploy.$FOO.opts
 #	Set of options to pass to rsync. git-deploy defaults to "-rt", which
-#	will work (r)ecuresively and attempt to maintain (t)imestamps. Please
+#	will work (r)ecursively and attempt to maintain (t)imestamps. Please
 #	note that no injection checking is done against these.
 #
 # deploy.$FOO.timestamps
@@ -71,11 +66,7 @@
 # 1) Split out the "meat" to a git-deploy script which can be invoked via the
 #	'git' binary in a non-bare repository
 #
-# 2) The second rule of git-deploy is you DO NOT TALK ABOUT git-deploy.
-#
-# 3) Rewrite this hook(and rename to -hook) to use said git-deploy script.
-#
-# 4) Improve documentation wording - find an English teacher to run it by or
+# 2) Improve documentation wording - find an English teacher to run it by or
 #	something.
 #
 
