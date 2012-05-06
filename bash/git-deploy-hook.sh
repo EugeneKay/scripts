@@ -222,7 +222,6 @@ do
 	then
 		echo "Error: rsync exited with exit code ${status}. Deploy may not have been successful. Please review the error log above."
 	else
-		[ ${debug} -eq 
 		echo "Deploy successful!"
 	fi
 	echo ""
