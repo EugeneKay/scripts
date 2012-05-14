@@ -149,17 +149,11 @@ do
 		echo "Refspec ${ref} is not a branch. Skipped!"
 	fi
 	
-	# Don't attempt to handle deleted/created branches
+	# Don't attempt to handle deleted branches
 	if [ "${new}" = "0000000000000000000000000000000000000000" ]
 	then
 		# Error && skip branch
 		echo "Branch ${branch} deleted. Skipped!"
-		continue
-	fi
-	if [ "${old}" = "0000000000000000000000000000000000000000" ]
-	then
-		# Error && skip branch
-		echo "Branch ${branch} created. Skipped!"
 		continue
 	fi
 	
