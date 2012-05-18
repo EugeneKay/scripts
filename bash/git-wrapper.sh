@@ -25,7 +25,7 @@ shift 1
 # Check command against list of supported commands
 case $command in
 "lol")
-	$GIT log --graph --all --pretty=tformat:'%x09%cr%x09%C(yellow)%h%C(green)%d%Creset %s' "$@"
+	$GIT log --graph --all --date-order --pretty=tformat:'%x09%cr%x09%C(yellow)%h%C(green)%d%Creset %s' "$@"
 	;;
 "uno")
 	$GIT status --untracked=no "$@"
