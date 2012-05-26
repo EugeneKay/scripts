@@ -5,7 +5,7 @@
 # git post-receive hook to check out branches to a rsync destination
 #
 # Copyright 2012 K and H Research Company.
-# License: GNU General Public License, version 2+
+# License: WTFPL, any version or GNU General Public License, version 2+
 #
 
 ##
