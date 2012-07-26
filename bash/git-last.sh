@@ -86,7 +86,7 @@ fi
 # Outputs: git-log with the formatting set to ${format}
 #
 function git_last() {
-	for name in ${items}
+	for name in ${items[@]}
 	do
 		# Show path/filename, padded
 		echo -ne ${name}":" | sed -e :a -e "s/^.\{1,${length}\}$/& /;ta"
@@ -133,48 +133,62 @@ for arg in "$@"
 do
 	if [ -d "$arg" ]
 	then
-		dirs+=(${arg})
+		dir_list+=(${arg})
 	fi
 	if [ -f "$arg" ]
 	then
-		files+=(${arg})
+		file_list+=(${arg})
 	fi
 done
 
-if [ ${#dirs[@]} -gt 0 ]
+if [ ${#dir_list[@]} -gt 0 ]
 then
-	names=($(find ${dirs[@]} -mindepth 1 -maxdepth 1 -type d | sed 's/$/\//g'))
-	names+=($(find ${dirs[@]} -mindepth 1 -maxdepth 1 -type f))
+	dirs=($(find ${dir_list[@]} -mindepth 1 -maxdepth 1 -type d | sed 's/$/\//g'))
+	files=($(find ${dir_list[@]} -mindepth 1 -maxdepth 1 -type f))
 fi
-if [ ${#files[@]} -gt 0 ]
+if [ ${#file_list[@]} -gt 0 ]
 then
-	names+=($(find ${files[@]} -mindepth 0 -maxdepth 0 -type f))
+	files+=($(find ${files[@]} -mindepth 0 -maxdepth 0 -type f))
 fi
-if [ ${#names[@]} -eq 0 ]
+if [ ${#files[@]} -eq 0 ]
 then
-	names=($(find . -mindepth 1 -maxdepth 1 -type d | sed 's/$/\//g'))
-	names+=($(find . -mindepth 1 -maxdepth 1 -type f))
+	dirs=($(find . -mindepth 1 -maxdepth 1 -type d | sed 's/$/\//g'))
+	files+=($(find . -mindepth 1 -maxdepth 1 -type f))
 fi
 
-# Build the list of items to show info for
-for name in ${names[@]}
+# Build the list of dirs to show info for
+for dir in ${dirs[@]}
 do
 	# Skip .git dirs(TODO: make this work better)
-	if [ "${name}" == "./.git/" ]
+	if [ "${dir}" == "./.git/" ]
 	then	
 		continue
 	fi
-	items+=($(echo ${name} | sed 's/\.\///g'))
+	dirs_unsorted+=($(echo ${dir} | sed 's/\.\///g'))
+done
+# Sort the dirs list
+dirs_sorted=$(for i in ${dirs_unsorted[@]}; do echo $i; done | sort)
+
+# Build the list of files
+for file in ${files[@]}
+do
+	files_unsorted+=($(echo ${file} | sed 's/\.\///g'))
 done
 
-# Sort the items list
-items=$(for i in ${items[@]}; do echo $i; done | sort)
+# Sort the files list
+files_sorted=$(for i in ${files_unsorted[@]}; do echo $i; done | sort)
+
+# Concatenate dirs & files to form items list
+for item in ${dirs_sorted} ${files_sorted}
+do
+	items+=(${item})
+done
 
 # Minimum length of first column
 length=8
 
 # Find length of longest item
-for item in ${items}
+for item in ${items[@]}
 do
 	if [ ${#item} -gt $length ]
 	then
