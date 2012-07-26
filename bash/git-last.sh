@@ -33,19 +33,19 @@
 # To use git-last, simply run 'git last'. The output should look something like:
 #
 # [eugene@francisdrake it-vends (dev)]$ git last
-# CHANGELOG.txt:  7 weeks ago     c97cca0 v1.2.0 [Eugene E. Kashpureff Jr]
-# common.php:     7 weeks ago     19fd9f7 Increase rate of special items to 10% 
-# css/:           7 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
-# favicon.ico:    6 months ago    190fdb3 Add favicon, care of sannse. [Eugene E
-# .htaccess:      7 weeks ago     cd72b17 Merge 'dev' into 'vending' for 1.2.0 r
-# img/:           5 months ago    87cef7d Favicon fix [Eugene E. Kashpureff]
-# index.php:      7 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
-# js/:            7 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
-# licenses/:      7 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
-# README.txt:     7 weeks ago     c97cca0 v1.2.0 [Eugene E. Kashpureff Jr]
-# STYLE.txt:      7 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
-# vendlist.php:   7 weeks ago     11e9e82 Separate items into "normal" and "spec
-# vend.php:       7 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
+# css/:           6 months ago    8b529a0 Code Style improvements [Eugene E. Kas
+# img/:           9 months ago    87cef7d Favicon fix [Eugene E. Kashpureff]
+# js/:            6 months ago    8b529a0 Code Style improvements [Eugene E. Kas
+# licenses/:      6 months ago    8b529a0 Code Style improvements [Eugene E. Kas
+# CHANGELOG.txt:  6 months ago    c97cca0 v1.2.0 [Eugene E. Kashpureff Jr]
+# common.php:     10 weeks ago    f7c966d Add benchmarking [Eugene E. Kashpureff
+# favicon.ico:    11 months ago   190fdb3 Add favicon, care of sannse. [Eugene E
+# .htaccess:      6 months ago    cd72b17 Merge 'dev' into 'vending' for 1.2.0 r
+# index.php:      10 weeks ago    f7c966d Add benchmarking [Eugene E. Kashpureff
+# README.txt:     6 months ago    c97cca0 v1.2.0 [Eugene E. Kashpureff Jr]
+# STYLE.txt:      6 months ago    8b529a0 Code Style improvements [Eugene E. Kas
+# vendlist.php:   6 months ago    11e9e82 Separate items into "normal" and "spec
+# vend.php:       6 months ago    8b529a0 Code Style improvements [Eugene E. Kas
 # [eugene@francisdrake it-vends (dev)]$
 #
 # Output is automatically paginated through less -FSRX, which is the default git
