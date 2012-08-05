@@ -15,6 +15,14 @@ Physical: yum install sl_enable_serialconsole-96
 
 Packages of interest: nfs-utils bind samba
 
+==Cloning
+/etc/resolv.conf
+/etc/sysconfig/network
+/etc/sysconfig/network-scripts/ifcfg-eth0
+/etc/sysconfig/network-scripts/ifcfg-eth0.0
+/etc/sudoers
+/etc/ssh/ssh_host_[dsa|rsa]_key
+/etc/ssh/
 
 ==Windows 7
 Need Ultimate for Aero Glass remoting!
