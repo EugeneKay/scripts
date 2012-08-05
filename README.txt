@@ -11,4 +11,5 @@ license best suits your needs.
 If you have any questions concerning the files in this repository, please 
 contact Eugene E. Kashpureff Jr via email, eugene@kashpureff.org, or telephone,
 +1 (234) 567-9335. Suggestions for improvement are welcomed via Pull Request on
-GitHub or emailed patches. 
+GitHub or emailed patches. All contributions are assumed to be made under the
+terms of the WTFPL.
