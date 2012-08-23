@@ -33,19 +33,19 @@
 # To use git-last, simply run 'git last'. The output should look something like:
 #
 # [eugene@francisdrake it-vends (dev)]$ git last
-# CHANGELOG.txt:  7 weeks ago     c97cca0 v1.2.0 [Eugene E. Kashpureff Jr]
-# common.php:     7 weeks ago     19fd9f7 Increase rate of special items to 10% 
-# css/:           7 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
-# favicon.ico:    6 months ago    190fdb3 Add favicon, care of sannse. [Eugene E
-# .htaccess:      7 weeks ago     cd72b17 Merge 'dev' into 'vending' for 1.2.0 r
-# img/:           5 months ago    87cef7d Favicon fix [Eugene E. Kashpureff]
-# index.php:      7 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
-# js/:            7 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
-# licenses/:      7 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
-# README.txt:     7 weeks ago     c97cca0 v1.2.0 [Eugene E. Kashpureff Jr]
-# STYLE.txt:      7 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
-# vendlist.php:   7 weeks ago     11e9e82 Separate items into "normal" and "spec
-# vend.php:       7 weeks ago     8b529a0 Code Style improvements [Eugene E. Kas
+# css/:           6 months ago    8b529a0 Code Style improvements [Eugene E. Kas
+# img/:           9 months ago    87cef7d Favicon fix [Eugene E. Kashpureff]
+# js/:            6 months ago    8b529a0 Code Style improvements [Eugene E. Kas
+# licenses/:      6 months ago    8b529a0 Code Style improvements [Eugene E. Kas
+# CHANGELOG.txt:  6 months ago    c97cca0 v1.2.0 [Eugene E. Kashpureff Jr]
+# common.php:     10 weeks ago    f7c966d Add benchmarking [Eugene E. Kashpureff
+# favicon.ico:    11 months ago   190fdb3 Add favicon, care of sannse. [Eugene E
+# .htaccess:      6 months ago    cd72b17 Merge 'dev' into 'vending' for 1.2.0 r
+# index.php:      10 weeks ago    f7c966d Add benchmarking [Eugene E. Kashpureff
+# README.txt:     6 months ago    c97cca0 v1.2.0 [Eugene E. Kashpureff Jr]
+# STYLE.txt:      6 months ago    8b529a0 Code Style improvements [Eugene E. Kas
+# vendlist.php:   6 months ago    11e9e82 Separate items into "normal" and "spec
+# vend.php:       6 months ago    8b529a0 Code Style improvements [Eugene E. Kas
 # [eugene@francisdrake it-vends (dev)]$
 #
 # Output is automatically paginated through less -FSRX, which is the default git
@@ -86,7 +86,7 @@ fi
 # Outputs: git-log with the formatting set to ${format}
 #
 function git_last() {
-	for name in ${items}
+	for name in ${items[@]}
 	do
 		# Show path/filename, padded
 		echo -ne ${name}":" | sed -e :a -e "s/^.\{1,${length}\}$/& /;ta"
@@ -133,48 +133,62 @@ for arg in "$@"
 do
 	if [ -d "$arg" ]
 	then
-		dirs+=(${arg})
+		dir_list+=(${arg})
 	fi
 	if [ -f "$arg" ]
 	then
-		files+=(${arg})
+		file_list+=(${arg})
 	fi
 done
 
-if [ ${#dirs[@]} -gt 0 ]
+if [ ${#dir_list[@]} -gt 0 ]
 then
-	names=($(find ${dirs[@]} -mindepth 1 -maxdepth 1 -type d | sed 's/$/\//g'))
-	names+=($(find ${dirs[@]} -mindepth 1 -maxdepth 1 -type f))
+	dirs=($(find ${dir_list[@]} -mindepth 1 -maxdepth 1 -type d | sed 's/$/\//g'))
+	files=($(find ${dir_list[@]} -mindepth 1 -maxdepth 1 -type f))
 fi
-if [ ${#files[@]} -gt 0 ]
+if [ ${#file_list[@]} -gt 0 ]
 then
-	names+=($(find ${files[@]} -mindepth 0 -maxdepth 0 -type f))
+	files+=($(find ${files[@]} -mindepth 0 -maxdepth 0 -type f))
 fi
-if [ ${#names[@]} -eq 0 ]
+if [ ${#files[@]} -eq 0 ]
 then
-	names=($(find . -mindepth 1 -maxdepth 1 -type d | sed 's/$/\//g'))
-	names+=($(find . -mindepth 1 -maxdepth 1 -type f))
+	dirs=($(find . -mindepth 1 -maxdepth 1 -type d | sed 's/$/\//g'))
+	files+=($(find . -mindepth 1 -maxdepth 1 -type f))
 fi
 
-# Build the list of items to show info for
-for name in ${names[@]}
+# Build the list of dirs to show info for
+for dir in ${dirs[@]}
 do
 	# Skip .git dirs(TODO: make this work better)
-	if [ "${name}" == "./.git/" ]
+	if [ "${dir}" == "./.git/" ]
 	then	
 		continue
 	fi
-	items+=($(echo ${name} | sed 's/\.\///g'))
+	dirs_unsorted+=($(echo ${dir} | sed 's/\.\///g'))
+done
+# Sort the dirs list
+dirs_sorted=$(for i in ${dirs_unsorted[@]}; do echo $i; done | sort)
+
+# Build the list of files
+for file in ${files[@]}
+do
+	files_unsorted+=($(echo ${file} | sed 's/\.\///g'))
 done
 
-# Sort the items list
-items=$(for i in ${items[@]}; do echo $i; done | sort)
+# Sort the files list
+files_sorted=$(for i in ${files_unsorted[@]}; do echo $i; done | sort)
+
+# Concatenate dirs & files to form items list
+for item in ${dirs_sorted} ${files_sorted}
+do
+	items+=(${item})
+done
 
 # Minimum length of first column
 length=8
 
 # Find length of longest item
-for item in ${items}
+for item in ${items[@]}
 do
 	if [ ${#item} -gt $length ]
 	then
