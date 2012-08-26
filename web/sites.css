@@ -24,6 +24,20 @@
 }
 
 /*
+ * CyanogenMod
+*/
+@-moz-document domain("get.cm") {
+/* Device name popups */
+a.device span.fullname {
+    display: none !important;
+}
+a.device span.codename {
+    display: inline !important;
+}
+
+}
+
+/*
  * Github
  */
 @-moz-document domain("github.com") {
@@ -66,9 +80,17 @@
 }
 
 /*
- * Reddit
+ * TV Tropes
 */
-@-moz-document domain("reddit.com") {
+@-moz-document domain("tvtropes.org") {
+
+/* Spoilers */
+.spoiler {
+    color: black !important;
+}
+.spoiler a {
+    color: #191970 !important;
+}
 
 }
 
