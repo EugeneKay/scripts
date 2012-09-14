@@ -8,7 +8,7 @@ visudo
 
 yum erase yum-autoupdate yum-conf-sl-other dhclient selinux-*
 yum update
-yum install screen bind-utils man traceroute telnet rsync openssh-clients vim ntp bc jwhois wget perl epel-release 
+yum install screen bind-utils man traceroute telnet rsync openssh-clients vim ntp bc jwhois wget perl epel-release rpmforge-release htop git
 
 VMs: yum install gcc make kernel-devel, install vmware tools, remove dvd drive & resize ram 
 Physical: yum install sl_enable_serialconsole-96
