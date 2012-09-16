@@ -1,27 +1,26 @@
 #!/bin/bash
 # /etc/init.d/dnetc
 #
-# Init script for Distributed.net client
+# Init script for distributed.net client
 #
 # chkconfig: 2345 55 25
 # description: Distributed.net client
 #
 # processname: dnetc
 #
-# You need to specify DNETC_USER and DNETC_INI in /etc/sysconfig/dnetc!
+# You need to specify the follow variables in /etc/sysconfig/dnetc:
+#	DNETC_BIN	distributed.net executable(full path)
+#	DNETC_USER	User to run as
+#	DNETC_INI	Location of settings file
 #
 
-prog=dnetc
-DNETC_BIN=/usr/bin/dnetc
-DNETC_CONFIG=/etc/sysconfig/$prog
+prog="dnetc"
 
-[ -x $DNETC_BIN ] || exit 0
+[ -x $DNETC_BIN ] || exit 128
 
-[ -f $DNETC_CONFIG ] && . "$DNETC_CONFIG"
+[ -f "/etc/sysconfig/${prog}" ] && . "/etc/sysconfig/${prog}" || exit 128
 
-#[ id $DNETC_USER ] || exit 0
-
-[ -f $DNETC_INI ] || exit 0
+[ -f $DNETC_INI ] || exit 128
 
 # Source function library
 . /etc/rc.d/init.d/functions
@@ -73,6 +72,16 @@ reload()
 	echo
 	return $RETVAL
 }
+flush()
+{
+        echo -n "Flushing $prog buffers: "
+        su $DNETC_USER --command="$DNETC_BIN -quiet -ini $DNETC_INI -update" 2>/dev/null >/dev/null && daemon /bin/true || daemon /bin/false
+        echo ""
+}
+config()
+{
+        su $DNETC_USER --command="$DNETC_BIN -ini $DNETC_INI -config"
+}
 
 case "$1" in
 	start)
@@ -84,8 +93,11 @@ case "$1" in
 	reload)
 		reload
 		;;
-	flush )
+	flush)
 		flush
+		;;
+	config)
+		config
 		;;
 	restart)
 		stop
