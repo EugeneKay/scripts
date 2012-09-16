@@ -40,6 +40,9 @@ alias sshd="ssh-add -D 2>/dev/null"
 # Go home
 alias cdc="cd && clear"
 
+# Current working dir
+alias cwd="/bin/pwd -P"
+
 # Wget, ignoreing cert issues
 alias wgets="wget --no-check-certificate"
 
@@ -48,23 +51,27 @@ alias alogs="tail -f /var/log/httpd/*"
 
 
 ## Sudos
-alias sfind="sudo find"
-alias serv="sudo service"
-alias svim="sudo -E vim"
-alias siftop="sudo iftop -c ~/.iftoprc -i"
-alias syum="sudo yum" 
+alias sapt-get="sudo apt-get"
+alias scat="sudo cat"
+alias schgrp="sudo chgrp"
+alias schkconfig="sudo chkconfig"
 alias schmod="sudo chmod"
 alias schown="sudo chown"
-alias schgrp="sudo chgrp"
 alias sduh="sudo ~/bin/duh"
-alias smount="sudo mount"
-alias sumount="sudo umount"
-alias smkdir="sudo mkdir"
-alias smdadm="sudo mdadm"
-alias sinit="sudo init"
-alias stail="sudo tail -f"
-alias schkconfig="sudo chkconfig"
+alias serv="sudo service"
 alias sexportfs="sudo exportfs"
+alias sfind="sudo find"
+alias siftop="sudo iftop -c ~/.iftoprc -i"
+alias sinit="sudo init"
+alias siptables="sudo iptables"
+alias sless="sudo less"
+alias smdadm="sudo mdadm"
+alias smkdir="sudo mkdir"
+alias smount="sudo mount"
+alias stail="sudo tail -f"
+alias sumount="sudo umount"
+alias svim="sudo -E vim"
+alias syum="sudo yum" 
 
 ## Silly stuff
 alias o.O="echo O.o"
@@ -130,8 +137,8 @@ function _ps1_build() {
 	ps1_ssh=$?
 	
 	# Get sudo status
-	sudo -n /bin/true 2>/dev/null >/dev/null
-	ps1_sudo=$?
+	#sudo -n /bin/true 2>/dev/null >/dev/null
+	ps1_sudo=1
 	
 	
 	## History
@@ -334,9 +341,10 @@ _ps1_git_load () {
 #
 _ps1_host () {
 	## Get load averages
-	local load_1=$(echo "($(cut -f 1 -d ' ' < /proc/loadavg)+1.5)/1" | bc)
-	local load_5=$(echo "($(cut -f 2 -d ' ' < /proc/loadavg)+1.5)/1" | bc)
-	local load_15=$(echo "($(cut -f 3 -d ' ' < /proc/loadavg)+1.5)/1" | bc)
+	read one five fifteen rest < /proc/loadavg
+	local load_1=$(echo "(${one}+1.5)/1" | bc)
+	local load_5=$(echo "(${five}+1.5)/1" | bc)
+	local load_15=$(echo "(${fifteen}+1.5)/1" | bc)
 	
 	## Show load averages & hostname bits
 	# 1 minute
@@ -430,8 +438,8 @@ _ps1_prep () {
 	# Core quantity(includes HyperThreading, too.... meh)
 	ps1_host_cores=$(cat /proc/cpuinfo | grep processor | wc -l)
 	
-	# Unqualified hostname
-	ps1_hostname=$(hostname -s)
+	# Semi-qualified hostname
+	ps1_hostname=$(hostname | cut -d '.' -f 1,2)
 	
 	# Split up hostname for later usage
 	ps1_hostname_1=${ps1_hostname:0:$(( ${#ps1_hostname} / 3 + ( ${#ps1_hostname} % 3 ) / 2 ))}
@@ -521,7 +529,7 @@ _ps1_sc () {
 ## Variables
 
 # Incude lots of places in PATH
-export PATH=$PATH:$HOME/bin:/sbin:/usr/sbin
+export PATH=".:${HOME}/bin:/sbin:/usr/sbin:${PATH}"
 
 # Set default editor
 export EDITOR="/usr/bin/vim"
@@ -531,6 +539,9 @@ unset MAILCHECK
 
 # Append shell history instead of overwriting
 shopt -s histappend
+
+# Store lots of history
+export HISTORY=1000
 
 ## Prompt
 # Prepare variables for prompt
