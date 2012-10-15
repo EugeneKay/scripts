@@ -42,10 +42,9 @@
 #
 # deploy.$FOO.timestamps
 #	Whether or not to attempt to maintain timestamps on the work-tree which
-#	is checked-out. If true or undefined git-log is used to find the last
-#	commit which affected each path in the worktre, and then 'touch -m' is
-#	used to set the modification time to this date. Set to false to disable
-#	this behaviour if it causes performance problems or you do not need it.
+#	is checked-out. If true git-log is used to find the last commit which
+#	affected each path in the worktre, and then 'touch -m' is used to set
+#	the modification time to this date.
 #	
 # deploy.$FOO.uri
 #	rsync URI which should be deployed to for branch $FOO. This can be any
@@ -167,18 +166,13 @@ do
 		echo "Error: Destination not set! Deploy failed."
 		continue
 	fi
-	if [ ! -d "${dest}" ]
-	then
-		echo "Error: Destination ${dest} does not exist! Deploy failed."
-		continue
-	fi
 	echo "Destination: "${dest}
 	
 	# Rsync options
 	opts=$(git config --get "deploy.${branch}.opts")
 	if [ -z "${opts}" ]
 	then
-		opts="-rt"
+		opts="-rt --delete"
 	fi
 	echo "Options: "${opts}
 	
@@ -196,7 +190,7 @@ do
 	
 	# Alter modification times?
 	timestamps=$(git config --bool --get "deploy.${branch}.timestamps") 
-	if [ "${timestamps}" != "false" ]
+	if [ "${timestamps}" == "true" ]
 	then
 		# Set modification times to last-changed
 		for file in $(find ./ -type f) 
