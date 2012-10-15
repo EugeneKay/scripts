@@ -36,9 +36,12 @@
 # the name of the branch which you wish to have automagically deployed.
 #
 # deploy.$FOO.opts
-#	Set of options to pass to rsync. git-deploy defaults to "-rt", which
-#	will work (r)ecursively and attempt to maintain (t)imestamps. Please
-#	note that no injection checking is done against these.
+#	Set of options to pass to rsync. git-deploy defaults to "-rt --delete",
+#	which will work (r)ecursively, attempt to maintain (t)imestamps, and
+#	(delete) files which do not exist in the source. You will likely want to
+#	add the --exclude=foo/ option to guard agaisnt deletion of ephermeral
+#	data directories used by your application. Please note that no injection
+#	checking is done against this option(patches welcome).
 #
 # deploy.$FOO.timestamps
 #	Whether or not to attempt to maintain timestamps on the work-tree which
