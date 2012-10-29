@@ -1,4 +1,50 @@
-@namespace url(http://www.w3.org/1999/xhtml);
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);
+
+/*
+ * "Firefox" button
+*/
+#appmenu-button-container {
+	position: fixed !important;
+}
+#appmenu-button {
+	padding: 2px 10px 2px 10px !important;
+	margin-top:0px !important;
+	margin-left: -5px !important;
+	background: transparent!important;
+}
+
+/*
+ * Tabs
+*/
+#navigator-toolbox[tabsontop="true"] #TabsToolbar {
+	padding-left: 100px !important;
+	margin-top: -17px !important;
+	padding-right:105px !important;
+	}
+
+#main-window[sizemode="maximized"] #TabsToolbar {
+	padding-left: 0px !important;
+	margin-top: 0 !important;
+	padding-right:0px !important;
+}
+
+#main-window[sizemode="fullscreen"] #TabsToolbar {
+	padding-left: 0px !important;
+	margin-top: 0 !important;
+	padding-right:0px !important;
+	background: #000;
+}
+#urlbar > #urlbar-icons > #star-button
+{
+display: none !important;
+}
+
+/*
+ * Browser frame
+*/
+* html {
+    overflow-y: scroll;
+}
 /* 
  *Links
  */
