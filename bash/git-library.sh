@@ -28,8 +28,8 @@
 
 ## Usage
 #
-# git-library currently does nothing. Attempting to run this scriptwill print
-# an error message to stdout and exit with an error code of 255.
+# git-library currently does nothing. Attempting to run this script will print
+# an error message to stderr and exit with an error code of 255.
 #
 #	git library add [-b <branch>] [-l|--local] [[-f|--force] [-c|--clean]
 #		[-n|--no-commit] <repository> [<path>]
