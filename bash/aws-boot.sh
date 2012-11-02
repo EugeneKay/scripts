@@ -11,23 +11,23 @@
 ##
 ## Options
 ##
-# These should all be set, unless documented otherwise
+# These should be set here, or in the user-data field 
 
 ## DNS
-# Domain to perform update in. Can be overriden by the user-data 'domain' field.
-DOMAIN=""
+# Domain to perform update in. 
+DNS_DOMAIN=""
 
 # Dynamic update keyname
-KEY=""
+DNS_KEY=""
 
 # HMAC-MD5 secret, generated using dnssec-keygen
-SECRET="" 
+DNS_SECRET=""
 
 # Server to update against
 DNS_SERVER=""
 
 # Time-To-Live for records
-TTL="300"
+DNS_TTL="300"
 
 ## Hostname
 # List of services which must be restarted to. Space-separated.
@@ -91,20 +91,52 @@ timestamp="$(date +'%s %Y-%m-%d %0H:%M:%S %:z(%Z)')"
 ## Runtime
 ##
 
-## Domain
-# From the user-data file
-domain=$(grep "^domain" ${USERDATA} | head -n1 | cut -d "|" -f 2)
-
-# Fall back to option-specified
-if [ -z "${domain}" ]
+## DNS information
+# Domain
+dns_domain=$(grep "^dns_domain" ${USERDATA} | head -n1 | cut -d "|" -f 2)
+if [ -z "${dns_domain}" ]
 then
-	domain=${DOMAIN}
+	dns_domain="${DNS_DOMAIN}"
+fi
+
+# Keyname
+dns_key=$(grep "^dns_key" ${USERDATA} | head -n1 | cut -d "|" -f 2)
+if [ -z "${dns_key}" ]
+then
+	dns_key="${DNS_KEY}"
+fi
+
+# Secret
+dns_secret=$(grep "^dns_secret" ${USERDATA} | head -n1 | cut -d "|" -f 2)
+if [ -z "${dns_secret}" ]
+then
+	dns_secret="${DNS_SECRET}"
+fi
+
+# Server
+dns_server=$(grep "^dns_server" ${USERDATA} | head -n1 | cut -d "|" -f 2)
+if [ -z "${dns_server}" ]
+then
+	dns_server="${DNS_SERVER}"
+fi
+
+# TTL
+dns_ttl=$(grep "^dns_ttl" ${USERDATA} | head -n1 | cut -d "|" -f 2)
+if [ -z "${dns_ttl}" ]
+then
+	dns_ttl="${DNS_TTL}"
 fi
 
 
 ## Hostname
 # Hostname from the user-data file
 hostname=$(grep "^hostname" ${USERDATA} | head -n1 | cut -d "|" -f 2)
+
+# Fall back to option
+if [ -z "${hostname}" ]
+then
+	hostname="${HOSTNAME}"
+fi
 
 # Fall back to instance ID
 if [ -z "${hostname}" ]
@@ -113,7 +145,7 @@ then
 fi
 
 # Set system hostname
-/bin/hostname "${hostname}.${domain}"
+/bin/hostname "${hostname}.${dns_domain}"
 
 # Restart daemons which depend upon hostname
 for daemon in "${DAEMONS}"
@@ -123,33 +155,33 @@ done
 
 
 ## DNS update
-# Perform a Dynamic DNS update
+# Perform the Dynamic DNS update
 
 # Build the update query
-update="server ${DNS_SERVER}\n"
-update+="zone ${domain}\n"
-update+="update delete ${hostname}.${domain}\n"
-update+="update add ${hostname}.${domain} ${TTL} IN A ${public_ipv4}\n"
-update+="update add ${hostname}.${domain} ${TTL} IN TXT \"Updated ${timestamp}\"\n"
+update="server ${dns_server}\n"
+update+="zone ${dns_domain}\n"
+update+="update delete ${hostname}.${dns_domain}\n"
+update+="update add ${hostname}.${dns_domain} ${dns_ttl} IN A ${public_ipv4}\n"
+update+="update add ${hostname}.${dns_domain} ${dns_ttl} IN TXT \"Updated ${timestamp}\"\n"
 if [ -f /etc/ssh/ssh_host_rsa_key.pub ]
 then
 	rsakey=$(cat /etc/ssh/ssh_host_rsa_key.pub | cut -d ' ' -f 2 | openssl base64 -d -A | openssl sha1 | cut -d ' ' -f 2)
-	update+="update add ${hostname}.${domain} ${TTL} IN SSHFP 1 1 ${rsakey}\n"
+	update+="update add ${hostname}.${dns_domain} ${dns_ttl} IN SSHFP 1 1 ${rsakey}\n"
 fi
 if [ -f /etc/ssh/ssh_host_dsa_key.pub ]
 then
 	dsakey=$(cat /etc/ssh/ssh_host_dsa_key.pub | cut -d ' ' -f 2 | openssl base64 -d -A | openssl sha1 | cut -d ' ' -f 2)
-	update+="update add ${hostname}.${domain} ${TTL} IN SSHFP 2 1 ${dsakey}\n"
+	update+="update add ${hostname}.${dns_domain} ${dns_ttl} IN SSHFP 2 1 ${dsakey}\n"
 fi
 if [ "${hostname}" != "${instance_id}" ]
 then
-	update+="update delete ${instance_id}.${domain}\n"
-	update+="update add ${instance_id}.${domain} ${TTL} IN CNAME ${instance_id}.${domain}\n"
+	update+="update delete ${instance_id}.${dns_domain}\n"
+	update+="update add ${instance_id}.${dns_domain} ${dns_ttl} IN CNAME ${hostname}.${dns_domain}\n"
 fi
 update+="send\n"
 
 # Run the update
-echo -e ${update} | nsupdate -y ${KEY}:${SECRET}
+echo -e ${update} | nsupdate -y ${dns_key}:${dns_secret}
 
 
 ##
