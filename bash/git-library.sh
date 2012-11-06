@@ -2,7 +2,9 @@
 #
 # git-library
 #
-# 
+# A git plugin which serves a similar purpose to submodule, but which saves a
+# checkout of the included sub-repo into your worktree, rather than a reference
+# to it.
 #
 # Copyright 2012 Eugene E. Kashpureff Jr (eugene@kashpureff.org)
 # License: GNU General Public License, version 3+
@@ -35,6 +37,7 @@
 #		[-n|--no-commit] <repository> [<path>]
 #	git library delete [-f|--force] [-n|--no-commit] [<path>]
 #	git library update [-N|--no-fetch] [-f|--force] [-c|--clean] [-n|--no-commit] [<path>]
+#	git library init [-N|--no-fetch] [-f|--force] [<path>]
 #	git library set [-b <branch>] [<repository>] [<path>]
 #	git library status [<path>]
 #
@@ -72,7 +75,7 @@
 #
 # update
 #	Update the library located at <path> or the current directory to the
-#	latest commit on the branch it tracks. 
+#	latest commit on the branch it tracks.
 #
 #	New commits are normally fetched for the library. You can disable this
 #	with the --no-fetch flag. Use of this is normally a no-op, because your
@@ -84,6 +87,18 @@
 #	aborted without the --force flag. This will cause any changed files to
 #	be unceremoniously replaced. The --clean flag will remove any files
 #	which are not part of the library.
+#
+# init
+#	Initialize & fetch the given(or all) libraries found in the library
+#	specifications. This is used when setting up a repo with libraries that
+#	you have just cloned, and wish to update libraries in. If you are simply
+#	trying to get a copy of a repo then there is no need to run this command
+#	as all files are already included as part of the parent repo's history.
+#
+#	Specifying the --force flag will cause the library(ies) git repo to be
+#	rm -rf'ed and a fresh init+fetch to be performed. The --no-fetch flag
+#	will skip the fetch step in case you need to change the refspec or
+#	otherwise modify the repo before doing a fetch.
 #
 # set
 #	Change one or more properties of a library. 
@@ -117,16 +132,65 @@
 ## Function Definitions
 ##
 #
-# There are none. Go away.
-#
+function gl_repo_info() {
+	## Load runtime info
+
+	# worktree, if it exists
+	gl_git_tree="$(git rev-parse --show-toplevel 2>/dev/null)"
+	
+	# Top of .git/ dir, if it exists
+	gl_git_repo="$(git rev-parse --git-dir 2>/dev/null)"
+	
+	return 0;
+}
 
 
 ##
 ## Runtime
 ##
 
-# Show an error message
-echo "This currently does nothing. Why are you using it?" 1>&2
+# Load repo information
+gl_repo_info
 
-# Exit nastily
-exit 255
+if [ -z "${gl_git_repo}" ]
+then
+	echo "Error: git repository not found."
+	exit 255
+fi
+
+# Subcommand to be executed
+subcommand="$1"
+
+# Remove subcommand off begin of args array
+shift 1
+
+case "${subcommand}" in
+"add")
+	echo "Subcommand 'add' has not written yet."
+	exit 255
+	;;
+"delete")
+	echo "Subcommand 'delete' has not written yet."
+	exit 255
+	;;
+"init")
+	echo "Subcommand 'init' has not been written yet."
+	exit 255
+	;;
+"update")
+	echo "Subcommand 'update' has not been written yet."
+	exit 255
+	;;
+"status")
+	echo "Subcommand 'status' has not been written yet."
+	exit 255
+	;;
+*)
+	echo "Invalid subcommand specified."
+	exit 255
+	;;
+esac
+
+
+# Exit cleanly
+exit 0
