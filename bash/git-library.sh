@@ -75,7 +75,9 @@
 #
 # update
 #	Update the library located at <path> or the current directory to the
-#	latest commit on the branch it tracks.
+#	latest commit on the branch it tracks. This must be done in a 'clean'
+#	repo state - you an use 'git stash' to save your work before doing an
+#	update.
 #
 #	New commits are normally fetched for the library. You can disable this
 #	with the --no-fetch flag. Use of this is normally a no-op, because your
@@ -83,10 +85,8 @@
 #	branch which the library is set to track then this will check it out in
 #	place of the current one.
 #
-#	If changes have been made to the library's files the update will be
-#	aborted without the --force flag. This will cause any changed files to
-#	be unceremoniously replaced. The --clean flag will remove any files
-#	which are not part of the library.
+#	If changes have been made to files inside of the library they will be
+#	unceremoniously and mercilessly blown away.
 #
 # init
 #	Initialize & fetch the given(or all) libraries found in the library
