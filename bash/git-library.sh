@@ -94,7 +94,7 @@
 #	you have just cloned, and wish to update libraries in. If you are simply
 #	trying to get a copy of a repo then there is no need to run this command
 #	as all files are already included as part of the parent repo's history.
-#
+#	
 #	Specifying the --force flag will cause the library(ies) git repo to be
 #	rm -rf'ed and a fresh init+fetch to be performed. The --no-fetch flag
 #	will skip the fetch step in case you need to change the refspec or
@@ -132,6 +132,23 @@
 ## Function Definitions
 ##
 #
+function gl_help() {
+	## Show basic help for git-library
+	echo "usage: git library <command> [<args>]
+
+Valid subcommands:
+
+	add	Add a new library to your repository
+	delete	Delete an existing library
+	help	Show this quick help listing
+	update	Update a library to the newest commit
+	init	Clone the upstream repos locally for updating, etc
+	set	Change settings for a library
+	status	Show information about libraries
+
+See the git-library source for more detailed usage on specific commands."
+
+}
 function gl_repo_info() {
 	## Load runtime info
 
@@ -166,12 +183,16 @@ shift 1
 
 case "${subcommand}" in
 "add")
-	echo "Subcommand 'add' has not written yet."
+	echo "Subcommand 'add' has not been written yet."
 	exit 255
 	;;
 "delete")
-	echo "Subcommand 'delete' has not written yet."
+	echo "Subcommand 'delete' has not been written yet."
 	exit 255
+	;;
+"help")
+	gl_help
+	exit 0
 	;;
 "init")
 	echo "Subcommand 'init' has not been written yet."
@@ -186,10 +207,12 @@ case "${subcommand}" in
 	exit 255
 	;;
 *)
-	echo "Invalid subcommand specified."
-	exit 255
+	gl_help
+	exit 0
 	;;
 esac
+	
+
 
 
 # Exit cleanly
