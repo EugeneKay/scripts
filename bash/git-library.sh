@@ -30,8 +30,8 @@
 
 ## Usage
 #
-# git-library currently does nothing. Attempting to run this scriptwill print
-# an error message to stdout and exit with an error code of 255.
+# git-library currently does nothing. Attempting to run this script will print
+# an error message to stderr and exit with an error code of 255.
 #
 #	git library add [-b <branch>] [-l|--local] [[-f|--force] [-c|--clean]
 #		[-n|--no-commit] <repository> [<path>]
@@ -75,7 +75,9 @@
 #
 # update
 #	Update the library located at <path> or the current directory to the
-#	latest commit on the branch it tracks.
+#	latest commit on the branch it tracks. This must be done in a 'clean'
+#	repo state - you an use 'git stash' to save your work before doing an
+#	update.
 #
 #	New commits are normally fetched for the library. You can disable this
 #	with the --no-fetch flag. Use of this is normally a no-op, because your
@@ -83,10 +85,8 @@
 #	branch which the library is set to track then this will check it out in
 #	place of the current one.
 #
-#	If changes have been made to the library's files the update will be
-#	aborted without the --force flag. This will cause any changed files to
-#	be unceremoniously replaced. The --clean flag will remove any files
-#	which are not part of the library.
+#	If changes have been made to files inside of the library they will be
+#	unceremoniously and mercilessly blown away.
 #
 # init
 #	Initialize & fetch the given(or all) libraries found in the library
@@ -161,6 +161,20 @@ function gl_repo_info() {
 	return 0;
 }
 
+function gl_add_lib() {
+	## Add a library
+	echo "Add a library"
+}
+
+function gl_update_lib() {
+	## Update a library
+	echo "Update a library"
+}
+
+function gl_init_lib() {
+	## Init a library
+	echo "Init a library"
+}
 
 ##
 ## Runtime
@@ -183,7 +197,9 @@ shift 1
 
 case "${subcommand}" in
 "add")
-	echo "Subcommand 'add' has not been written yet."
+	gl_add_lib
+	gl_init_lib
+	gl_update_lib
 	exit 255
 	;;
 "delete")
@@ -195,11 +211,12 @@ case "${subcommand}" in
 	exit 0
 	;;
 "init")
-	echo "Subcommand 'init' has not been written yet."
+	gl_init_lib
+	gl_update_lib
 	exit 255
 	;;
 "update")
-	echo "Subcommand 'update' has not been written yet."
+	gl_update_lib
 	exit 255
 	;;
 "status")
