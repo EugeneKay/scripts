@@ -144,6 +144,20 @@ function gl_repo_info() {
 	return 0;
 }
 
+function gl_add_lib() {
+	## Add a library
+	echo "Add a library"
+}
+
+function gl_update_lib() {
+	## Update a library
+	echo "Update a library"
+}
+
+function gl_init_lib() {
+	## Init a library
+	echo "Init a library"
+}
 
 ##
 ## Runtime
@@ -166,7 +180,9 @@ shift 1
 
 case "${subcommand}" in
 "add")
-	echo "Subcommand 'add' has not written yet."
+	gl_add_lib
+	gl_init_lib
+	gl_update_lib
 	exit 255
 	;;
 "delete")
@@ -174,11 +190,12 @@ case "${subcommand}" in
 	exit 255
 	;;
 "init")
-	echo "Subcommand 'init' has not been written yet."
+	gl_init_lib
+	gl_update_lib
 	exit 255
 	;;
 "update")
-	echo "Subcommand 'update' has not been written yet."
+	gl_update_lib
 	exit 255
 	;;
 "status")
