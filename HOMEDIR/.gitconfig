@@ -7,3 +7,12 @@
 	email = 
 [color]
 	ui = true
+[last]
+	author = false
+[advice]
+	pushNonFastForward = false
+	statusHints = false
+	implicitIdentity = false
+	detachedHead = false
+[include]
+	path = ~/.gitconfig.local

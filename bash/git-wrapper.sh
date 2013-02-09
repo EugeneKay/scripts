@@ -24,6 +24,15 @@ shift 1
 
 # Check command against list of supported commands
 case $command in
+"config")
+	if [ "$1" = "--global" ]
+	then
+		shift 1
+		${GIT} config "--file=${HOME}/.gitconfig.local" "$@"
+	else
+		${GIT} config "$@"
+	fi
+	;;
 "lol")
 	$GIT log --graph --all --date-order --pretty=tformat:'%x09%cr%x09%C(yellow)%h%C(green)%d%Creset %s' "$@"
 	;;
