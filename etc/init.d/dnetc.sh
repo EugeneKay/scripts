@@ -74,13 +74,13 @@ reload()
 }
 flush()
 {
-        echo -n "Flushing $prog buffers: "
-        su $DNETC_USER --command="$DNETC_BIN -quiet -ini $DNETC_INI -update" 2>/dev/null >/dev/null && daemon /bin/true || daemon /bin/false
-        echo ""
+	echo -n "Flushing $prog buffers: "
+	su $DNETC_USER --command="$DNETC_BIN -quiet -ini $DNETC_INI -update" 2>/dev/null >/dev/null && daemon /bin/true || daemon /bin/false
+	echo ""
 }
 config()
 {
-        su $DNETC_USER --command="$DNETC_BIN -ini $DNETC_INI -config"
+	su $DNETC_USER --command="$DNETC_BIN -ini $DNETC_INI -config"
 }
 
 case "$1" in
@@ -94,7 +94,12 @@ case "$1" in
 		reload
 		;;
 	flush)
+		if [ "${2}" == "-q" ]
+		then
+			flush >/dev/null 2>/dev/null
+		else
 		flush
+		fi
 		;;
 	config)
 		config
