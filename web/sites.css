@@ -3,7 +3,11 @@
  * Amazon
 */
 @-moz-document domain("amazon.com") {
-#related_ads {
+#related_ads,
+#variant_adsLazyLoad,
+#A9AdsMiddleBoxTop,
+#quickPromoBucketContent
+ {
 	display: none;
 }
 
@@ -45,14 +49,6 @@ a.device span.codename {
 #readme .plain pre {
 	font-size: 12px !important;
 }
-/* Code viewing boxes */
-#files .file .data .line_numbers span,
-.file-box .data .line_numbers span {
-	line-height: 17.2px !important;
-}
-#files .file .data .highlight div {
-	height: 17.2px !important;
-}
 
 }
 
@@ -64,6 +60,13 @@ a.device span.codename {
 /* Recolorize */
 .st-grid .st-c .te {
 	color: #000 !important;
+}
+}
+/** Contacts **/
+@-moz-document url-prefix("https://www.google.com/contacts/") {
+/* Stupid fucking scroll bar */
+body {
+    overflow: visible !important;
 }
 
 }
@@ -80,6 +83,18 @@ a.device span.codename {
 }
 
 /*
+ * Linode
+*/
+@-moz-document domain("linode.com") {
+/* Alert box */
+#page .alert {
+    display: none;
+}
+
+}
+
+
+/*
  * TV Tropes
 */
 @-moz-document domain("tvtropes.org") {
@@ -90,6 +105,16 @@ a.device span.codename {
 }
 .spoiler a {
     color: #191970 !important;
+}
+
+}
+
+/*
+ * Reddit
+*/
+@-moz-document domain("reddit.com") {
+.promoted {
+    display: none;
 }
 
 }
