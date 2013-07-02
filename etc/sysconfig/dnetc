@@ -1,9 +1,0 @@
-#
-# /etc/sysconfig/dnetc
-#
-# Init script configuration file for distributed.net client
-#
-
-DNETC_BIN="/usr/local/bin/dnetc"
-DNETC_USER="dnetc"
-DNETC_INI="/usr/local/etc/dnetc/dnetc.ini"
