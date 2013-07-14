@@ -37,8 +37,15 @@ alias ssha="ssh-add -t 60m ~/.ssh/id_rsa 2>/dev/null"
 # Purge loaded SSH identities
 alias sshd="ssh-add -D 2>/dev/null"
 
+# Load SSH vars
+alias sshg="source ~/.ssh/vars"
+
+# Show loaded SSH keys
+alias sshl="ssh-add -l"
+
 # Go home
 alias cdc="cd && clear"
+alias cdp='cd $(pwd -P)'
 
 # Current working dir
 alias cwd="/bin/pwd -P"
@@ -49,6 +56,8 @@ alias wgets="wget --no-check-certificate"
 # Watch Apache Logs
 alias alogs="tail -f /var/log/httpd/*"
 
+# rtorrent launcher
+alias rtorrents='true; while [ $? -eq 0 ]; do rtorrent; sleep 5; done'
 
 ## Sudos
 alias sapt-get="sudo apt-get"
@@ -135,20 +144,16 @@ function _ps1_build() {
 	# Get ssh-agent status
 	ssh-add -l 2>/dev/null >/dev/null
 	ps1_ssh=$?
+	if [ "${ps1_ssh}" -ne "0" ] && [ "${TERM}" == "screen" ] && [ -f ~/.ssh/vars ]
+	then
+		source ~/.ssh/vars
+		ssh-add -l 2>/dev/null >/dev/null
+		ps1_ssh=$?
+	fi
 	
 	# Get sudo status
-	#sudo -n /bin/true 2>/dev/null >/dev/null
-	ps1_sudo=1
-	
-	
-	## History
-	
-	# Save last command
-	history -a
-	
-	# Reload
-	history -n
-	
+	sudo -n /bin/true 2>/dev/null >/dev/null
+	ps1_sudo=$?
 	
 	## Assemble the prompt
 	
@@ -348,17 +353,17 @@ _ps1_host () {
 	
 	## Show load averages & hostname bits
 	# 1 minute
-	if [ "$load_1" -gt "$ps1_host_cores" ]
+	if [ "$load_1" -gt "$[$ps1_host_cores*2]" ]
 	then
 		# Extreme
 		echo -ne ${COLOR_RED}
 	else
-		if [ "$load_1" -gt "$[$ps1_host_cores/2]" ]
+		if [ "$load_1" -gt "$ps1_host_cores" ]
 		then
 			# Heavy
 			echo -ne ${COLOR_MGN}
 		else
-			if [ "$load_1" -gt "1" ]
+			if [ "$load_1" -gt "2" ]
 			then
 				# Medium
 				echo -ne ${COLOR_YLW}
@@ -373,17 +378,17 @@ _ps1_host () {
 	echo -ne ${ps1_hostname_1}
 	
 	# 5 minutes
-	if [ "$load_5" -gt "$ps1_host_cores" ]
+	if [ "$load_5" -gt "$[$ps1_host_cores*2]" ]
 	then
 		# Extreme
 		echo -ne ${COLOR_RED}
 	else
-		if [ "$load_5" -gt "$[$ps1_host_cores/2]" ]
+		if [ "$load_5" -gt "$ps1_host_cores" ]
 		then
 			# Heavy
 			echo -ne ${COLOR_MGN}
 		else
-			if [ "$load_5" -gt "1" ]
+			if [ "$load_5" -gt "2" ]
 			then
 				# Medium
 				echo -ne ${COLOR_YLW}
@@ -398,17 +403,17 @@ _ps1_host () {
 	echo -ne ${ps1_hostname_2}
 	
 	# 15 minutes
-	if [ "$load_15" -gt "$ps1_host_cores" ]
+	if [ "$load_15" -gt "$[$ps1_host_cores*2]" ]
 	then
 		# Extreme
 		echo -ne ${COLOR_RED}
 	else
-		if [ "$load_15" -gt "$[$ps1_host_cores/2]" ]
+		if [ "$load_15" -gt "$ps1_host_cores" ]
 		then
 			# Heavy
 			echo -ne ${COLOR_MGN}
 		else
-			if [ "$load_15" -gt "1" ]
+			if [ "$load_15" -gt "2" ]
 			then
 				# Medium
 				echo -ne ${COLOR_YLW}
@@ -438,8 +443,8 @@ _ps1_prep () {
 	# Core quantity(includes HyperThreading, too.... meh)
 	ps1_host_cores=$(cat /proc/cpuinfo | grep processor | wc -l)
 	
-	# Semi-qualified hostname
-	ps1_hostname=$(hostname | cut -d '.' -f 1,2)
+	# Unqualified hostname
+	ps1_hostname=$(hostname -s)
 	
 	# Split up hostname for later usage
 	ps1_hostname_1=${ps1_hostname:0:$(( ${#ps1_hostname} / 3 + ( ${#ps1_hostname} % 3 ) / 2 ))}
@@ -549,6 +554,12 @@ _ps1_prep
 
 # Set prompt
 PROMPT_COMMAND=_ps1_build
+
+## Load SSH vars
+if [ "${TERM}" == "screen" ] && [ -f ~/.ssh/vars ]
+then
+	source ~/.ssh/vars
+fi
 
 ## Load local bashrc
 source ~/.bashrc.local
