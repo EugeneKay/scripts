@@ -26,9 +26,6 @@ fi
 
 ## Command replacements
 
-# Git
-alias git="ps1_git_date=0 && ~/bin/git-wrapper"
-
 ## Useful shortcuts
 
 # Load SSH-2 RSA identity into ssh-agent
@@ -102,6 +99,65 @@ COLOR_DEF="\[\e[0m\]"
 ##
 ## Functions
 ##
+
+### Commands
+
+## git
+#
+# Horrible wrapper for `git`
+#
+# Returns: whatever, fuck you
+#
+function git() {
+	# Path to the `git` binary
+	GIT=$(which git)
+
+	# Sanity check
+	if [ ! -f ${GIT} ]
+	then
+		echo "Error: git binary not found" >&2
+		return 255
+	fi
+
+	# Command to be executed
+	command=$1
+
+	# Remove command from $@ array
+	shift 1
+
+	# Check command against list of supported commands
+	case $command in
+	"cd")
+		cd $(git rev-parse --show-toplevel)/${1}
+		;;
+	"config")
+		if [ "$1" = "--global" ]
+		then
+			shift 1
+			${GIT} config "--file=${HOME}/.gitconfig.local" "$@"
+		else
+			${GIT} config "$@"
+		fi
+		;;
+	"lol")
+		$GIT log --graph --all --date-order --pretty=tformat:'%x09%cr%x09%C(yellow)%h%C(green)%d%Creset %s' "$@"
+		;;
+	"uno")
+		$GIT status --untracked=no "$@"
+		;;
+	"unstage")
+		$GIT reset HEAD "$@"
+		;;
+	*)
+		# Execute the git binary
+		$GIT ${command} "$@"
+		;;
+	esac
+
+	# Return something
+	return $?
+
+}
 
 ### Prompt Related
 
