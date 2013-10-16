@@ -109,6 +109,9 @@ COLOR_DEF="\[\e[0m\]"
 # Returns: whatever, fuck you
 #
 function git() {
+	# Reset ps1 date var
+	ps1_git_date=0
+
 	# Path to the `git` binary
 	GIT=$(which git)
 
@@ -419,7 +422,7 @@ _ps1_host () {
 			# Heavy
 			echo -ne ${COLOR_MGN}
 		else
-			if [ "$load_1" -gt "2" ]
+			if [ "$load_1" -gt "1" ]
 			then
 				# Medium
 				echo -ne ${COLOR_YLW}
@@ -444,7 +447,7 @@ _ps1_host () {
 			# Heavy
 			echo -ne ${COLOR_MGN}
 		else
-			if [ "$load_5" -gt "2" ]
+			if [ "$load_5" -gt "1" ]
 			then
 				# Medium
 				echo -ne ${COLOR_YLW}
@@ -469,7 +472,7 @@ _ps1_host () {
 			# Heavy
 			echo -ne ${COLOR_MGN}
 		else
-			if [ "$load_15" -gt "2" ]
+			if [ "$load_15" -gt "1" ]
 			then
 				# Medium
 				echo -ne ${COLOR_YLW}
