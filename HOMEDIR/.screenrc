@@ -1,6 +1,5 @@
-#
 # ~/.screenrc
-#
+
 
 startup_message off
 deflogin on
@@ -64,11 +63,15 @@ bind 'K' kill
 bind 'I' login on
 bind 'O' login off
 bind '}' history
-bind 'a' windowlist -b
+bind 'w' windowlist -b
 hardstatus string "$USER@%H:%n%? %t"
+
+# Previous / Next window via alt+pgup/down
+bindkey ^[^[[5~ prev
+bindkey ^[^[[6~ next
+
+# Windows list
+caption always "%{= kw}%-w%{= BW}%n %t%{-}%+w"
 
 screen 0
 select 0
-exec screen-ssh-agent
-exec true
-source $HOME/.ssh/screen-agent
