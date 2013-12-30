@@ -162,6 +162,51 @@ function git() {
 
 }
 
+## ping
+#
+# Make ping a bit more intelligent.
+#
+# Returns: whatever ping does
+#
+function ping() {
+	# Find binaries
+	PING=$(which ping)
+	PING6=$(which ping6)
+
+	# Sanity checks
+	if [ ! -f ${PING} ] || [ ! -f ${PING6} ] || [ ! -x ${PING} ] || [ ! -x ${PING6} ]
+	then
+		echo "Error: ping/6 binaries not found." >&2
+		return 255
+	fi
+
+	case ${1} in
+	# Explicitly 4
+	"-4")
+		shift 1
+		${PING} "${@}"
+		;;
+	# Explicitly 6
+	"-6")
+		shift 1
+		${PING6} "${@}"
+		;;
+	# Autodetect
+	*)
+		# Check for an AAAA record(IPv6)
+		if [ $(host -t aaaa "${1}" | grep "IPv6" | wc -l 2>/dev/null) -gt 0 ]
+		then
+			${PING6} "${@}"
+		# Fallback to IPv4
+		else
+			${PING} "${@}"
+		fi
+		;;
+	esac
+	# Return something
+	return $?
+}
+
 ### Prompt Related
 
 ## PS1 Build
