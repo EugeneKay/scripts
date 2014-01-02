@@ -1,60 +1,54 @@
-// Short Amazon Permalinks
-// version 1.0
-// 2009-06-12
-// Original publishing info:
-// Short Amazon Permalinks
-// version 0.2 BETA!
-// 2006-02-19
-// by Jim Biancolo
-//
-// Updated by KatGamer with the assistance of Jeff Martin and Some Girl http://userscripts.org/topics/13923
-// -----------------------------------------------------------
-//
-// This is a Greasemonkey user script.
-//
-// To install, you need Greasemonkey: http://greasemonkey.mozdev.org/
-// Then restart Firefox and revisit this script.
-// Under Tools, there will be a new menu item to "Install User Script".
-// Accept the default configuration and install.
-//
-// To uninstall, go to Tools/Manage User Scripts,
-// select "Short Amazon Permalinks", and click Uninstall.
-//
-// --------------------------------------------------------------------
-//
 // ==UserScript==
-// @name          Short Amazon Permalinks
-// @namespace     http://www.consolecolors.com
-// @description   When viewing Amazon product pages, this script will convert the title of the product to a shortened link back to the product.  Handy for pasting the link to e-mails and such.
-// @include       http://www.amazon.com*
+// @name          Amazon Item Shortener
+// @version       1.1b
+// @date          2013/05/29
+// @description   Make links smaller in Amazon
+// @creator       Omeryl
+// @license       WTFPL; http://www.wtfpl.net/
+// @include       http://*.amazon.com/*
+// @include       https://*.amazon.com/*
+// @namespace http://userscripts.org/scripts/show/168947
 // ==/UserScript==
+//
+// © Omeryl
+//
+//        DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE 
+//                    Version 2, December 2004 
 
+// Copyright (C) 2013 Omeryl <omeryl@bassh.net> 
 
-function getASIN(href) {
-  var asinMatch;
-  asinMatch = href.match(/\/exec\/obidos\/ASIN\/(\w{10})/i);
-  if (!asinMatch) { asinMatch = href.match(/\/gp\/product\/(\w{10})/i); }
-  if (!asinMatch) { asinMatch = href.match(/\/exec\/obidos\/tg\/detail\/\-\/(\w{10})/i); }
-  if (!asinMatch) { asinMatch = href.match(/\/dp\/(\w{10})/i); }
-  if (!asinMatch) { return null; }
-  return asinMatch[1];
+// Everyone is permitted to copy and distribute verbatim or modified 
+// copies of this license document, and changing it is allowed as long 
+// as the name is changed. 
+
+//            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE 
+//   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION 
+
+//  0. You just DO WHAT THE FUCK YOU WANT TO.
+
+function addJQuery(callback) {
+  var script = document.createElement("script");
+  script.setAttribute("src", "//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js");
+  script.addEventListener('load', function() {
+    var script = document.createElement("script");
+    script.textContent = "window.jQ=jQuery.noConflict(true);(" + callback.toString() + ")();";
+    document.body.appendChild(script);
+  }, false);
+  document.body.appendChild(script);
 }
 
-var origTitle, origTitleHTML, asin
+function main() {
+	jQ('a[href*="/gp/product"]').each(function() {
+		var url = jQ(this).attr('href').split('/');
+		url = url[url.indexOf('gp')+2]
+		jQ(this).attr('href', "/dp/" + url);
+	});
+	
+	jQ('a[href*="/dp/"]').each(function() {
+		var url = jQ(this).attr('href').split('/');
+		var url = url[url.indexOf('dp')+1]
+		jQ(this).attr('href', "/dp/" + url);
+	});
+}
 
-var asin = getASIN(window.content.location.href);
-
-if (!asin) { return; }
-
-origTitle = document.evaluate(
-  "//*[@id='btAsinTitle']", 
-  document, 
-  null, 
-  XPathResult.FIRST_ORDERED_NODE_TYPE, 
-  null ).singleNodeValue;
-
-if (!origTitle) { return; }
-
-origTitleHTML = origTitle.innerHTML;
-
-origTitle.innerHTML = '<a href="http://amazon.com/o/ASIN/' + asin + '">' + origTitleHTML + '</a>';
+addJQuery(main);
