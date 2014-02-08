@@ -57,27 +57,22 @@ alias alogs="tail -f /var/log/httpd/*"
 alias rtorrents='true; while [ $? -eq 0 ]; do rtorrent; sleep 5; done'
 
 ## Sudos
-alias sapt-get="sudo apt-get"
 alias scat="sudo cat"
 alias schgrp="sudo chgrp"
-alias schkconfig="sudo chkconfig"
 alias schmod="sudo chmod"
 alias schown="sudo chown"
 alias sduh="sudo ~/bin/duh"
-alias serv="sudo service"
-alias sexportfs="sudo exportfs"
 alias sfind="sudo find"
 alias siftop="sudo iftop -c ~/.iftoprc -i"
-alias sinit="sudo init"
-alias siptables="sudo iptables"
 alias sless="sudo less"
-alias smdadm="sudo mdadm"
 alias smkdir="sudo mkdir"
 alias smount="sudo mount"
 alias stail="sudo tail -f"
-alias sumount="sudo umount"
 alias svim="sudo -E vim"
-alias syum="sudo yum" 
+for prog in $(ls /sbin/) $(ls /usr/sbin/)
+do
+	alias ${prog}="sudo ${prog}"
+done
 
 ## Silly stuff
 alias o.O="echo O.o"
