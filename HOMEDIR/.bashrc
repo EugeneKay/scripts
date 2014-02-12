@@ -69,10 +69,16 @@ alias smkdir="sudo mkdir"
 alias smount="sudo mount"
 alias stail="sudo tail -f"
 alias svim="sudo -E vim"
+
+# sbin stuff
 for prog in $(ls /sbin/) $(ls /usr/sbin/)
 do
-	alias ${prog}="sudo ${prog}"
+        if [ ! -x /bin/${prog} ] && [ ! -x /usr/bin/${prog} ]
+        then
+                alias ${prog}="sudo ${prog}"
+        fi
 done
+
 
 ## Silly stuff
 alias o.O="echo O.o"
@@ -189,7 +195,7 @@ function ping() {
 	# Autodetect
 	*)
 		# Check for an AAAA record(IPv6)
-		if [ $(host -t aaaa "${1}" | grep "IPv6" | wc -l 2>/dev/null) -gt 0 ]
+		if [ -n "$(host -t aaaa "${1}" | grep "IPv6")" ] && [ -n "$(ip -6 address show scope global)" ]
 		then
 			${PING6} "${@}"
 		# Fallback to IPv4
