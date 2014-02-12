@@ -56,6 +56,8 @@ alias alogs="tail -f /var/log/httpd/*"
 # rtorrent launcher
 alias rtorrents='true; while [ $? -eq 0 ]; do rtorrent; sleep 5; done'
 
+# ping4 a la ping6
+alias ping4="$(which ping)"
 ## Sudos
 alias scat="sudo cat"
 alias schgrp="sudo chgrp"
