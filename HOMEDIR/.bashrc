@@ -60,28 +60,31 @@ alias rtorrents='true; while [ $? -eq 0 ]; do rtorrent; sleep 5; done'
 alias ping4="$(which ping)"
 
 ## Sudos
+# Replacements
+alias apt-get="sudo apt-get"
+alias yum="sudo yum"
+alias chgrp="sudo chgrp"
+alias chmod="sudo chmod"
+alias chown="sudo chown"
+
+# Non-replaced
 alias scat="sudo cat"
-alias schgrp="sudo chgrp"
-alias schmod="sudo chmod"
-alias schown="sudo chown"
 alias sduh="sudo ~/bin/duh"
 alias sfind="sudo find"
 alias siftop="sudo iftop -c ~/.iftoprc -i"
 alias sless="sudo less"
 alias smkdir="sudo mkdir"
-alias smount="sudo mount"
 alias stail="sudo tail -f"
 alias svim="sudo -E vim"
 
 # sbin stuff
 for prog in $(ls /sbin/) $(ls /usr/sbin/)
 do
-        if [ ! -x /bin/${prog} ] && [ ! -x /usr/bin/${prog} ]
-        then
-                alias ${prog}="sudo ${prog}"
-        fi
+	if [ ! -x /bin/${prog} ] && [ ! -x /usr/bin/${prog} ]
+	then
+		alias ${prog}="sudo ${prog}"
+	fi
 done
-
 
 ## Silly stuff
 alias o.O="echo O.o"
@@ -176,6 +179,7 @@ function ping() {
 	# Find binaries
 	PING=$(which ping)
 	PING6=$(which ping6)
+	IP=$(which --skip-alias ip)
 
 	# Sanity checks
 	if [ ! -f ${PING} ] || [ ! -f ${PING6} ] || [ ! -x ${PING} ] || [ ! -x ${PING6} ]
@@ -198,7 +202,7 @@ function ping() {
 	# Autodetect
 	*)
 		# Check for an AAAA record(IPv6)
-		if [ -n "$(host -t aaaa "${1}" | grep "IPv6")" ] && [ -n "$(ip -6 address show scope global)" ]
+		if [ -n "$(host -t aaaa "${1}" | grep "IPv6")" ] && [ -n "$(${IP} -6 address show scope global)" ]
 		then
 			${PING6} "${@}"
 		# Fallback to IPv4
@@ -642,7 +646,7 @@ _ps1_sc () {
 ## Variables
 
 # Incude lots of places in PATH
-export PATH=".:${HOME}/bin:/sbin:/usr/sbin:${PATH}"
+export PATH="${PATH}:${HOME}/bin:/sbin:/usr/sbin:."
 
 # Set default editor
 export EDITOR="/usr/bin/vim"
