@@ -47,6 +47,9 @@ alias cdp='cd $(pwd -P)'
 # Current working dir
 alias cwd="/bin/pwd -P"
 
+# Find a non-aliased binary
+alias witch="which --skip-alias"
+
 # Wget, ignoreing cert issues
 alias wgets="wget --no-check-certificate"
 
