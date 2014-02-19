@@ -66,6 +66,7 @@ alias ping4="$(which ping)"
 # Replacements
 alias apt-get="sudo apt-get"
 alias yum="sudo yum"
+alias scp="sudo cp" # Bite me
 alias chgrp="sudo chgrp"
 alias chmod="sudo chmod"
 alias chown="sudo chown"
