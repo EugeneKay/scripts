@@ -206,7 +206,7 @@ function ping() {
 	# Autodetect
 	*)
 		# Check for an AAAA record(IPv6)
-		if [ -n "$(host -t aaaa "${1}" | grep "IPv6")" ] && [ -n "$(${IP} -6 address show scope global)" ]
+		if [[ "${host}" == *:* || -n "$(host -t aaaa "${1}" | grep "IPv6")" ]] && [ -n "$(${IP} -6 address show scope global)" ]
 		then
 			${PING6} "${@}"
 		# Fallback to IPv4
