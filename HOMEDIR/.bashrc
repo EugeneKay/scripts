@@ -82,7 +82,7 @@ alias stail="sudo tail -f"
 alias svim="sudo -E vim"
 
 # sbin stuff
-for prog in $(ls /sbin/) $(ls /usr/sbin/)
+for prog in $(ls /sbin/ 2>/dev/null) $(ls /usr/sbin/ 2>/dev/null)
 do
 	if [ ! -x /bin/${prog} ] && [ ! -x /usr/bin/${prog} ]
 	then
@@ -256,7 +256,7 @@ function _ps1_build() {
 			_ps1_git_load
 		fi
 	fi
-		
+	
 	# Get ssh-agent status
 	ssh-add -l 2>/dev/null >/dev/null
 	ps1_ssh=$?
@@ -303,22 +303,22 @@ function _ps1_build() {
 		PS1+=" ("
 		
 		# Upstream status(coloration of branch name)
-		local pattern="# Your branch is (ahead|behind) "
-		if [[ $git_status =~ $pattern ]]
-		then
-			# We're at a different place than upstream
-			if [[ ${BASH_REMATCH[1]} == "ahead" ]];
-			then
-				# Ahead
-				PS1+=${COLOR_YLW}
-			else
-				# Behind
-				PS1+=${COLOR_RED}
-			fi
-		else
-			# We're at the same spot as upstream
-			PS1+=${COLOR_GRN}
-		fi
+#		local pattern="# Your branch is (ahead|behind) "
+#		if [[ $git_status =~ $pattern ]]
+#		then
+#			# We're at a different place than upstream
+#			if [[ ${BASH_REMATCH[1]} == "ahead" ]];
+#			then
+#				# Ahead
+#				PS1+=${COLOR_YLW}
+#			else
+#				# Behind
+#				PS1+=${COLOR_RED}
+#			fi
+#		else
+#			# We're at the same spot as upstream
+#			PS1+=${COLOR_GRN}
+#		fi
 		
 		# Branch name
 		PS1+=${ps1_git_branch}
@@ -461,90 +461,96 @@ _ps1_git_load () {
 # Returns: 0
 #
 _ps1_host () {
-	## Get load averages
-	read one five fifteen rest < /proc/loadavg
-	local load_1=$(echo "(${one}+1.5)/1" | bc)
-	local load_5=$(echo "(${five}+1.5)/1" | bc)
-	local load_15=$(echo "(${fifteen}+1.5)/1" | bc)
-	
-	## Show load averages & hostname bits
-	# 1 minute
-	if [ "$load_1" -gt "$[$ps1_host_cores*2]" ]
-	then
-		# Extreme
-		echo -ne ${COLOR_RED}
-	else
-		if [ "$load_1" -gt "$ps1_host_cores" ]
+	case "${platform}" in
+	"linux")
+		## Get load averages
+		read one five fifteen rest < /proc/loadavg
+		local load_1=$(echo "(${one}+1.5)/1" | bc)
+		local load_5=$(echo "(${five}+1.5)/1" | bc)
+		local load_15=$(echo "(${fifteen}+1.5)/1" | bc)
+		
+		## Show load averages & hostname bits
+		# 1 minute
+		if [ "$load_1" -gt "$[$ps1_host_cores*2]" ]
 		then
-			# Heavy
-			echo -ne ${COLOR_MGN}
+			# Extreme
+			echo -ne ${COLOR_RED}
 		else
-			if [ "$load_1" -gt "1" ]
+			if [ "$load_1" -gt "$ps1_host_cores" ]
 			then
-				# Medium
-				echo -ne ${COLOR_YLW}
+				# Heavy
+				echo -ne ${COLOR_MGN}
 			else
-				# Light
-				echo -ne ${COLOR_GRN}
+				if [ "$load_1" -gt "1" ]
+				then
+					# Medium
+					echo -ne ${COLOR_YLW}
+				else
+					# Light
+					echo -ne ${COLOR_GRN}
+				fi
 			fi
 		fi
-	fi
-	
-	# Hostname bit
-	echo -ne ${ps1_hostname_1}
-	
-	# 5 minutes
-	if [ "$load_5" -gt "$[$ps1_host_cores*2]" ]
-	then
-		# Extreme
-		echo -ne ${COLOR_RED}
-	else
-		if [ "$load_5" -gt "$ps1_host_cores" ]
+		
+		# Hostname bit
+		echo -ne ${ps1_hostname_1}
+		
+		# 5 minutes
+		if [ "$load_5" -gt "$[$ps1_host_cores*2]" ]
 		then
-			# Heavy
-			echo -ne ${COLOR_MGN}
+			# Extreme
+			echo -ne ${COLOR_RED}
 		else
-			if [ "$load_5" -gt "1" ]
+			if [ "$load_5" -gt "$ps1_host_cores" ]
 			then
-				# Medium
-				echo -ne ${COLOR_YLW}
+				# Heavy
+				echo -ne ${COLOR_MGN}
 			else
-				# Light
-				echo -ne ${COLOR_GRN}
+				if [ "$load_5" -gt "1" ]
+				then
+					# Medium
+					echo -ne ${COLOR_YLW}
+				else
+					# Light
+					echo -ne ${COLOR_GRN}
+				fi
 			fi
 		fi
-	fi
-	
-	# Hostname bit
-	echo -ne ${ps1_hostname_2}
-	
-	# 15 minutes
-	if [ "$load_15" -gt "$[$ps1_host_cores*2]" ]
-	then
-		# Extreme
-		echo -ne ${COLOR_RED}
-	else
-		if [ "$load_15" -gt "$ps1_host_cores" ]
+		
+		# Hostname bit
+		echo -ne ${ps1_hostname_2}
+		
+		# 15 minutes
+		if [ "$load_15" -gt "$[$ps1_host_cores*2]" ]
 		then
-			# Heavy
-			echo -ne ${COLOR_MGN}
+			# Extreme
+			echo -ne ${COLOR_RED}
 		else
-			if [ "$load_15" -gt "1" ]
+			if [ "$load_15" -gt "$ps1_host_cores" ]
 			then
-				# Medium
-				echo -ne ${COLOR_YLW}
+				# Heavy
+				echo -ne ${COLOR_MGN}
 			else
-				# Light
-				echo -ne ${COLOR_GRN}
+				if [ "$load_15" -gt "1" ]
+				then
+					# Medium
+					echo -ne ${COLOR_YLW}
+				else
+					# Light
+					echo -ne ${COLOR_GRN}
+				fi
 			fi
 		fi
-	fi
-	# Hostname bit
-	echo -ne ${ps1_hostname_3}
-	
-	# Set prompt color back to normal
-	echo -ne ${COLOR_DEF}
-	
+		# Hostname bit
+		echo -ne ${ps1_hostname_3}
+		
+		# Set prompt color back to normal
+		echo -ne ${COLOR_DEF}
+		;;
+	"windows")
+		echo -ne ${ps1_hostname}
+		;;
+	esac
 	# Return cleanly
 	return 0;
 }
@@ -556,16 +562,27 @@ _ps1_host () {
 # Returns: 0
 #
 _ps1_prep () {
-	# Core quantity(includes HyperThreading, too.... meh)
-	ps1_host_cores=$(cat /proc/cpuinfo | grep processor | wc -l)
-	
-	# Unqualified hostname
-	ps1_hostname=$(hostname -s)
-	
-	# Split up hostname for later usage
-	ps1_hostname_1=${ps1_hostname:0:$(( ${#ps1_hostname} / 3 + ( ${#ps1_hostname} % 3 ) / 2 ))}
-	ps1_hostname_2=${ps1_hostname:${#ps1_hostname_1}:$(( (${#ps1_hostname} - ${#ps1_hostname_1}) / 2 + (${#ps1_hostname} - ${#ps1_hostname_1}) % 2 ))}
-	ps1_hostname_3=${ps1_hostname:$(( ${#ps1_hostname_1} + ${#ps1_hostname_2} )):$(( ${#ps1_hostname} - ${#ps1_hostname_1} - ${#ps1_hostname_2} ))}
+	# OS detection
+	uname="$(uname)"
+	case "${uname}" in
+	"Linux")
+		platform="linux"
+		
+		# Core quantity(includes HyperThreading, too.... meh)
+		ps1_host_cores=$(cat /proc/cpuinfo 2>/dev/null| grep processor | wc -l)
+		
+		# Unqualified hostname
+		ps1_hostname=$(hostname -s)
+		
+		# Split up hostname for later usage
+		ps1_hostname_1=${ps1_hostname:0:$(( ${#ps1_hostname} / 3 + ( ${#ps1_hostname} % 3 ) / 2 ))}
+		ps1_hostname_2=${ps1_hostname:${#ps1_hostname_1}:$(( (${#ps1_hostname} - ${#ps1_hostname_1}) / 2 + (${#ps1_hostname} - ${#ps1_hostname_1}) % 2 ))}
+		ps1_hostname_3=${ps1_hostname:$(( ${#ps1_hostname_1} + ${#ps1_hostname_2} )):$(( ${#ps1_hostname} - ${#ps1_hostname_1} - ${#ps1_hostname_2} ))}
+		;;
+	*)
+		platform="other"
+		ps1_hostname="$(hostname)"
+	esac
 	
 	
 	# Reset date of next ps1_git load to 0
@@ -641,7 +658,6 @@ _ps1_sc () {
 	# Return cleanly
 	return 0
 }
-
 
 ## 
 ## Shell settings
