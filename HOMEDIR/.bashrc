@@ -68,7 +68,6 @@ alias apt-get="sudo apt-get"
 alias yum="sudo yum"
 alias scp="sudo cp" # Bite me
 alias chgrp="sudo chgrp"
-alias chmod="sudo chmod"
 alias chown="sudo chown"
 
 # Non-replaced
@@ -112,6 +111,34 @@ COLOR_DEF="\[\e[0m\]"
 ##
 
 ### Commands
+
+## chmod
+#
+# Wrapper for chmod to invoke via sudo as-needed
+#
+# Returns: same as chmod
+#
+function chmod() {
+	# Examine all arguments
+	for arg in ${@}
+	do
+		# Skip non-file arguments
+		if [ ! -e ${arg} ]; then continue; fi
+
+		# Invoke via sudo if we encounter any non-writable files
+		if [ ! -w ${arg} ]
+		then
+			sudo $(which --skip-alias chmod) ${@}
+			return $?
+		fi
+	done
+
+	# Invoke unprivileged otherwise
+	$(which --skip-alias chmod) ${@}
+	return $?
+
+	# Bug: does not check permissions recursively.
+}
 
 ## git
 #
