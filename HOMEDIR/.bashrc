@@ -69,6 +69,7 @@ alias yum="sudo yum"
 alias scp="sudo cp" # Bite me
 alias chgrp="sudo chgrp"
 alias chown="sudo chown"
+alias mount="sudo mount"
 
 # Non-replaced
 alias scat="sudo cat"
@@ -77,7 +78,7 @@ alias sfind="sudo find"
 alias siftop="sudo iftop -c ~/.iftoprc -i"
 alias sless="sudo less"
 alias smkdir="sudo mkdir"
-alias stail="sudo tail -f"
+alias stail="sudo tail -F"
 alias svim="sudo -E vim"
 
 # sbin stuff
