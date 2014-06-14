@@ -201,6 +201,31 @@ function git() {
 
 }
 
+## ips
+#
+# Show active IP addresses
+#
+# Returns: 0
+#
+ips ()
+{
+	# Find binaries
+	IP=$(which --skip-alias ip);
+
+	# Find device
+	if [ -n "${1}" ]; then
+		device="${@}";
+	else
+		device="eth0";
+	fi;
+
+	# Do the disco
+	${IP} address show dev ${device} | grep -v lft
+
+	# Fuck you
+	return 0
+}
+
 ## ping
 #
 # Make ping a bit more intelligent.
