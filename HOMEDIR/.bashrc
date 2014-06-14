@@ -207,7 +207,7 @@ function git() {
 #
 # Returns: 0
 #
-ips ()
+function ips ()
 {
 	# Find binaries
 	IP=$(which --skip-alias ip);
