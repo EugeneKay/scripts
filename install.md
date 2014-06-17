@@ -1,5 +1,3 @@
-Notes on installing various OSes
-
 CentOS 6
 ========
 
@@ -48,3 +46,17 @@ Need Ultimate for Aero Glass remoting!
   * Disable sleep
   * Hibernation, swapfile
   * Add Domain admins to Administrators group
+
+VirtualBox
+==========
+
+```
+vboxmanage createvm --name "$NAME" --ostype Windows2008_64 --register --basefolder /data/vbox
+vboxmanage createhd --filename $NAME/$NAME.vdi --size 256500
+vboxmanage storagectl $NAME --name "SATA" --add sata --controller IntelAhci
+vboxmanage storageattach $NAME --storagectl SATA --port 0 --device 0 --medium $NAME/$NAME.vdi --type hdd
+vboxmanage storageattach $NAME --storagectl SATA --port 1 --device 0 --medium "/data/software/OSes/Windows Server 2008 R2 SP1 x64.iso" --type dvddrive
+vboxmanage modifyvm $NAME --vrde on --vrdeport 3391 --vrdeaddress 127.0.0.1
+vboxmanage modifyvm $NAME --hostonlyadapter1 vboxnet0 --nic1 hostonly
+vboxmanage startvm $NAME --type headless
+```
