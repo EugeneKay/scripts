@@ -129,13 +129,13 @@ function chmod() {
 		# Invoke via sudo if we encounter any non-writable files
 		if [ ! -w ${arg} ]
 		then
-			sudo $(which --skip-alias chmod) ${@}
+			sudo $(which --skip-alias chmod) "${@}"
 			return $?
 		fi
 	done
 
 	# Invoke unprivileged otherwise
-	$(which --skip-alias chmod) ${@}
+	$(which --skip-alias chmod) "${@}"
 	return $?
 
 	# Bug: does not check permissions recursively.
