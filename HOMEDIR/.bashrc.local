@@ -1,2 +1,5 @@
 # ~/.bashrc.local
 
+# Enable sudo checking
+#ps1_check_sudo=0
+

@@ -321,8 +321,13 @@ function _ps1_build() {
 	fi
 	
 	# Get sudo status
-	sudo -n /bin/true 2>/dev/null >/dev/null
-	ps1_sudo=$?
+	if [ "$ps1_check_sudo" == "0" ]
+	then
+		sudo -n /bin/true 2>/dev/null >/dev/null
+		ps1_sudo=$?
+	else
+		ps1_sudo=1
+	fi
 	
 	## Assemble the prompt
 	
@@ -620,6 +625,9 @@ _ps1_prep () {
 	case "${uname}" in
 	"Linux")
 		platform="linux"
+
+		# Default to not checking sudo
+		ps1_check_sudo=1
 		
 		# Core quantity(includes HyperThreading, too.... meh)
 		ps1_host_cores=$(cat /proc/cpuinfo 2>/dev/null| grep processor | wc -l)
@@ -634,6 +642,7 @@ _ps1_prep () {
 		;;
 	*)
 		platform="other"
+		ps1_check_sudo=1
 		ps1_hostname="$(hostname)"
 	esac
 	
