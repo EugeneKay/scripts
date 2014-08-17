@@ -17,7 +17,7 @@
 ## Global defaults
 if [ -f /etc/bashrc ]
 then
-	. /etc/bashrc
+	source /etc/bashrc
 fi
 
 ##
@@ -27,12 +27,6 @@ fi
 ## Command replacements
 
 ## Useful shortcuts
-
-# Load SSH-2 RSA identity into ssh-agent
-alias ssha="ssh-add -t 60m ~/.ssh/id_rsa 2>/dev/null"
-
-# Purge loaded SSH identities
-alias sshd="ssh-add -D 2>/dev/null"
 
 # Load SSH vars
 alias sshg="source ~/.ssh/vars"
@@ -112,34 +106,6 @@ COLOR_DEF="\[\e[0m\]"
 ##
 
 ### Commands
-
-## chmod
-#
-# Wrapper for chmod to invoke via sudo as-needed
-#
-# Returns: same as chmod
-#
-function chmod() {
-	# Examine all arguments
-	for arg in ${@}
-	do
-		# Skip non-file arguments
-		if [ ! -e ${arg} ]; then continue; fi
-
-		# Invoke via sudo if we encounter any non-writable files
-		if [ ! -w ${arg} ]
-		then
-			sudo $(which --skip-alias chmod) "${@}"
-			return $?
-		fi
-	done
-
-	# Invoke unprivileged otherwise
-	$(which --skip-alias chmod) "${@}"
-	return $?
-
-	# Bug: does not check permissions recursively.
-}
 
 ## git
 #
@@ -732,6 +698,10 @@ export PATH="${PATH}:${HOME}/bin:/sbin:/usr/sbin:."
 
 # Set default editor
 export EDITOR="/usr/bin/vim"
+
+# Set paginater
+PAGER=less
+LESS="-FSRX"
 
 # Don't notify about unread mail
 unset MAILCHECK
