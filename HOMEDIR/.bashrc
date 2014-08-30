@@ -73,7 +73,7 @@ alias siftop="sudo iftop -c ~/.iftoprc -i"
 alias sless="sudo less"
 alias smkdir="sudo mkdir"
 alias stail="sudo tail -F"
-alias svim="sudo -E vim"
+alias svim="sudoedit"
 
 # sbin stuff
 for prog in $(ls /sbin/ 2>/dev/null) $(ls /usr/sbin/ 2>/dev/null)
@@ -249,41 +249,55 @@ function ping() {
 function _ps1_build() {
 	## Load runtime variables
 	
-	# Check if we're in a git worktree
-	if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" == "true" ]
+	# Perform git checks
+	if [ "${ps1_check_git}" == "0" ]
 	then
-		ps1_git_tree=0
-		ps1_git_repo=$(git rev-parse --show-toplevel 2>/dev/null)
+		# Check if we're in a git worktree
+		if [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" == "true" ]
+		then
+			ps1_git_tree=0
+			ps1_git_repo=$(git rev-parse --show-toplevel 2>/dev/null)
+		else
+			ps1_git_tree=1
+		fi
+
+		# Check if we're inside a git dir
+		[ "$(git rev-parse --is-inside-git-dir 2>/dev/null)" == "true" ] && ps1_git_dir=0 || ps1_git_dir=1
+	
+		# Check if we need to load git repo info
+		if [ ${ps1_git_tree} -eq 0 ] && [ ${ps1_git_dir} -ne 0 ] 
+		then
+			# Check if we've changed git repos
+			if [ "${ps1_git_repo}" != "${ps1_git_repo_last}" ]
+			then
+				_ps1_git_load
+			fi
+			# Check if ps1_git data is too old
+			if [ ${ps1_git_date} -le $(date +%s) ]
+			then
+				_ps1_git_load
+			fi
+		fi
 	else
 		ps1_git_tree=1
-	fi
-	
-	# Check if we're inside a git dir
-	[ "$(git rev-parse --is-inside-git-dir 2>/dev/null)" == "true" ] && ps1_git_dir=0 || ps1_git_dir=1
-	
-	# Check if we need to load git repo info
-	if [ ${ps1_git_tree} -eq 0 ] && [ ${ps1_git_dir} -ne 0 ] 
+		ps1_git_repo=""
+		ps1_git_dir=1
+	fi	
+
+	# Perform SSH check
+	if [ "${ps1_check_ssh}" == "0" ]
 	then
-		# Check if we've changed git repos
-		if [ "${ps1_git_repo}" != "${ps1_git_repo_last}" ]
-		then
-			_ps1_git_load
-		fi
-		# Check if ps1_git data is too old
-		if [ ${ps1_git_date} -le $(date +%s) ]
-		then
-			_ps1_git_load
-		fi
-	fi
-	
-	# Get ssh-agent status
-	ssh-add -l 2>/dev/null >/dev/null
-	ps1_ssh=$?
-	if [ "${ps1_ssh}" -ne "0" ] && [ "${TERM}" == "screen" ] && [ -f ~/.ssh/vars ]
-	then
-		source ~/.ssh/vars
+		# Get ssh-agent status
 		ssh-add -l 2>/dev/null >/dev/null
 		ps1_ssh=$?
+		if [ "${ps1_ssh}" -ne "0" ] && [ "${TERM}" == "screen" ] && [ -f ~/.ssh/vars ]
+		then
+			source ~/.ssh/vars
+			ssh-add -l 2>/dev/null >/dev/null
+			ps1_ssh=$?
+		fi
+	else
+		ps1_ssh=1
 	fi
 	
 	# Get sudo status
@@ -489,9 +503,9 @@ _ps1_host () {
 	"linux")
 		## Get load averages
 		read one five fifteen rest < /proc/loadavg
-		local load_1=$(echo "(${one}+1.5)/1" | bc)
-		local load_5=$(echo "(${five}+1.5)/1" | bc)
-		local load_15=$(echo "(${fifteen}+1.5)/1" | bc)
+		local load_1=${one/./}
+		local load_5=${five/./}
+		local load_15=${fifteen/./}
 		
 		## Show load averages & hostname bits
 		# 1 minute
@@ -505,7 +519,7 @@ _ps1_host () {
 				# Heavy
 				echo -ne ${COLOR_MGN}
 			else
-				if [ "$load_1" -gt "1" ]
+				if [ "$load_1" -gt "100" ]
 				then
 					# Medium
 					echo -ne ${COLOR_YLW}
@@ -530,7 +544,7 @@ _ps1_host () {
 				# Heavy
 				echo -ne ${COLOR_MGN}
 			else
-				if [ "$load_5" -gt "1" ]
+				if [ "$load_5" -gt "100" ]
 				then
 					# Medium
 					echo -ne ${COLOR_YLW}
@@ -555,7 +569,7 @@ _ps1_host () {
 				# Heavy
 				echo -ne ${COLOR_MGN}
 			else
-				if [ "$load_15" -gt "1" ]
+				if [ "$load_15" -gt "100" ]
 				then
 					# Medium
 					echo -ne ${COLOR_YLW}
@@ -596,7 +610,7 @@ _ps1_prep () {
 		ps1_check_sudo=1
 		
 		# Core quantity(includes HyperThreading, too.... meh)
-		ps1_host_cores=$(cat /proc/cpuinfo 2>/dev/null| grep processor | wc -l)
+		ps1_host_cores=$[$(cat /proc/cpuinfo 2>/dev/null| grep processor | wc -l)*100]
 		
 		# Unqualified hostname
 		ps1_hostname=$(hostname -s)
@@ -726,4 +740,7 @@ then
 fi
 
 ## Load local bashrc
-source ~/.bashrc.local
+if [ -f ~/.bashrc.local ]
+then
+	source ~/.bashrc.local
+fi
