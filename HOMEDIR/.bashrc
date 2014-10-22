@@ -167,6 +167,39 @@ function git() {
 
 }
 
+
+## htop
+#
+# Totally unnecessary wrapper for htop
+#
+# Returns whatever htop does
+#
+function htop() {
+	# Find binary
+	HTOP=$(which htop)
+
+	# Sanity test
+	if [ ! -x ${HTOP} ]
+	then
+		echo "Could not find htop binary"
+		return 1
+	fi
+
+	# Change window title
+	echo -ne '\033k'Procs'\033\\'
+
+	# Run htop
+	$HTOP
+	status=$?
+
+	# Set title back
+	echo -ne '\033k'local'\033\\'
+
+	# Return properly
+	return ${status}
+}
+
+
 ## ips
 #
 # Show active IP addresses
