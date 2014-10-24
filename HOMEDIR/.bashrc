@@ -272,6 +272,21 @@ function ping() {
 	return $?
 }
 
+## title
+#
+# Set the terminal's title
+#
+# Returns: 0
+#
+function title() {
+	if [ -z "${@}" ]
+	then
+		echo -ne "\033k${ps1_hostname}\033\\"
+	else
+        	echo -ne "\033k${@}\033\\"
+	fi
+}
+
 ### Prompt Related
 
 ## PS1 Build
