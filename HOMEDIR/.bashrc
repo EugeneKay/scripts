@@ -64,6 +64,7 @@ alias scp="sudo cp" # Bite me
 alias chgrp="sudo chgrp"
 alias chown="sudo chown"
 alias mount="sudo mount"
+alias virsh="sudo virsh"
 
 # Non-replaced
 alias scat="sudo cat"
