@@ -7,45 +7,22 @@
 # add a vendor section with an appropriate configuration.
 %define layout unknown
 
-# suse
-%if 0%{?suse_version} || 0%{?sles_version}
-%if 0%{?suse_version}
-%define relos .suse%{suse_version}
-%endif
-%if 0%{?sles_version}
-%define relos .sles%{sles_version}
-%endif
-%define layout suse
-%define apacheconfdir %{_sysconfdir}/apache2/conf.d
-%define apacheuser wwwrun
-%define apachegroup nagcmd
-%define apachecmd apache2
-%define nagiosuser nagios
-%define nagiosgroup nagios
-%define nagioscmd nagios
-%define logdirgroup nagcmd
-%endif
-
 # redhat, fedora, centos
 %if "%{_vendor}" == "redhat"
 %define relos %{?dist:%{dist}}
 %define layout redhat
-%define apacheconfdir %{_sysconfdir}/httpd/conf.d
-%define apacheuser apache
-%define apachegroup apache
-%define apachecmd httpd
 %define nagiosuser nagios
 %define nagiosgroup nagios
 %define nagioscmd nagios
 %define logdirgroup nagios
 %endif
 
-%global relnum 1
+%global relnum 2
 %global release %{relnum}%{?relos:%{relos}}
 
 %global ng_bin_dir %{_libexecdir}/%{name}
 %global ng_cgi_dir /usr/lib/%{name}/cgi-bin
-%global ng_etc_dir %{_sysconfdir}/%{name}
+%global ng_etc_dir %{_sysconfdir}/nagios/graph
 %global ng_doc_dir %{_defaultdocdir}/%{name}-%{version}
 %global ng_examples_dir %{_datadir}/%{name}/examples
 %global ng_www_dir %{_datadir}/%{name}/htdocs
@@ -54,15 +31,15 @@
 %global ng_log_dir %{_localstatedir}/log/%{name}
 %global ng_log_file %{ng_log_dir}/nagiosgraph.log
 %global ng_cgilog_file %{ng_log_dir}/nagiosgraph-cgi.log
-%global n_cfg_file %{_sysconfdir}/nagios/nagios.cfg
-%global n_cmd_file %{_sysconfdir}/nagios/objects/commands.cfg
-%global stag "# begin nagiosgraph configuration"
-%global etag "# end nagiosgraph configuration"
+#%global n_cfg_file %{_sysconfdir}/nagios/nagios.cfg
+#%global n_cmd_file %{_sysconfdir}/nagios/objects/commands.cfg
+#%global stag "# begin nagiosgraph configuration"
+#%global etag "# end nagiosgraph configuration"
 
 Summary: Nagios add-on for performance data storage and graphing
 Name: nagiosgraph
 Version: 1.5.2
-Release: 1%{release}
+Release: %{release}
 Group: Applications/System
 Source: http://sourceforge.net/projects/nagiosgraph/files/nagiosgraph/%{version}/%{name}-%{version}.tar.gz
 URL: http://nagiosgraph.sourceforge.net/
@@ -86,39 +63,36 @@ embedded directly into Nagios so that graphs show up like other trend reports.
 
 %install
 rm -rf %{buildroot}
-DESTDIR=%{buildroot} NG_LAYOUT=%{layout} NG_DOC_DIR=%{ng_doc_dir} perl install.pl --no-check-prereq --no-chown
+DESTDIR=%{buildroot} NG_LAYOUT=%{layout} NG_ETC_DIR=%{ng_etc_dir} NG_DOC_DIR=%{ng_doc_dir} perl install.pl --no-check-prereq --no-chown
 
 %post
-ts=`date +"%Y%m%d.%H%M"`
-cp %{_sysconfdir}/%{name}/nagiosgraph-apache.conf %{apacheconfdir}/nagiosgraph.conf
-cp -p %{n_cfg_file} %{n_cfg_file}-$ts
-sed "/%{stag}/,/%{etag}/d" %{n_cfg_file} > %{n_cfg_file}.tmp
-mv %{n_cfg_file}.tmp %{n_cfg_file}
-echo %{stag} >> %{n_cfg_file}
-cat %{_sysconfdir}/%{name}/nagiosgraph-nagios.cfg >> %{n_cfg_file}
-echo %{etag} >> %{n_cfg_file}
-cp -p %{n_cmd_file} %{n_cmd_file}-$ts
-sed "/%{stag}/,/%{etag}/d" %{n_cmd_file} > %{n_cmd_file}.tmp
-mv %{n_cmd_file}.tmp %{n_cmd_file}
-echo %{stag} >> %{n_cmd_file}
-cat %{_sysconfdir}/%{name}/nagiosgraph-commands.cfg >> %{n_cmd_file}
-echo %{etag} >> %{n_cmd_file}
-%{_initrddir}/%{apachecmd} restart
-%{_initrddir}/%{nagioscmd} restart
+#ts=`date +"%Y%m%d.%H%M"`
+#cp -p %{n_cfg_file} %{n_cfg_file}-$ts
+#sed "/%{stag}/,/%{etag}/d" %{n_cfg_file} > %{n_cfg_file}.tmp
+#mv %{n_cfg_file}.tmp %{n_cfg_file}
+#echo %{stag} >> %{n_cfg_file}
+#cat %{_sysconfdir}/%{name}/nagiosgraph-nagios.cfg >> %{n_cfg_file}
+#echo %{etag} >> %{n_cfg_file}
+#cp -p %{n_cmd_file} %{n_cmd_file}-$ts
+#sed "/%{stag}/,/%{etag}/d" %{n_cmd_file} > %{n_cmd_file}.tmp
+#mv %{n_cmd_file}.tmp %{n_cmd_file}
+#echo %{stag} >> %{n_cmd_file}
+#cat %{_sysconfdir}/%{name}/nagiosgraph-commands.cfg >> %{n_cmd_file}
+#echo %{etag} >> %{n_cmd_file}
+#%{_initrddir}/%{apachecmd} restart
+#%{_initrddir}/%{nagioscmd} restart
 
 # save the cfg and cmd files to time-stamped caches just in case someone made
 # modifications since we made the ngsave cache.
 %postun
-ts=`date +"%Y%m%d.%H%M"`
-rm %{apacheconfdir}/nagiosgraph.conf
-mv %{n_cfg_file} %{n_cfg_file}-$ts
-mv %{n_cmd_file} %{n_cmd_file}-$ts
-sed "/%{stag}/,/%{etag}/d" %{n_cfg_file} > %{n_cfg_file}.tmp
-mv %{n_cfg_file}.tmp %{n_cfg_file}
-sed "/%{stag}/,/%{etag}/d" %{n_cmd_file} > %{n_cmd_file}.tmp
-mv %{n_cmd_file}.tmp %{n_cmd_file}
-%{_initrddir}/%{apachecmd} restart
-%{_initrddir}/%{nagioscmd} restart
+#ts=`date +"%Y%m%d.%H%M"`
+#mv %{n_cfg_file} %{n_cfg_file}-$ts
+#mv %{n_cmd_file} %{n_cmd_file}-$ts
+#sed "/%{stag}/,/%{etag}/d" %{n_cfg_file} > %{n_cfg_file}.tmp
+#mv %{n_cfg_file}.tmp %{n_cfg_file}
+#sed "/%{stag}/,/%{etag}/d" %{n_cmd_file} > %{n_cmd_file}.tmp
+#mv %{n_cmd_file}.tmp %{n_cmd_file}
+#%{_initrddir}/%{nagioscmd} restart
 
 %clean
 rm -rf ${RPM_BUILD_ROOT}
@@ -177,12 +151,17 @@ rm -rf ${RPM_BUILD_ROOT}
 %{ng_www_dir}/nagiosgraph.js
 %attr(755,root,root) %{ng_util_dir}/testentry.pl
 %attr(755,root,root) %{ng_util_dir}/flat2hier.pl
-%attr(755,%{nagiosuser},%{apachegroup}) %{ng_rrd_dir}
+%attr(755,%{nagiosuser},%{nagiosgroup}) %{ng_rrd_dir}
 %attr(775,root,%{logdirgroup}) %{ng_log_dir}
 %attr(644,%{nagiosuser},%{nagiosgroup}) %{ng_log_file}
-%attr(644,%{apacheuser},%{apachegroup}) %{ng_cgilog_file}
+%attr(644,%{nagiosuser},%{nagiosgroup}) %{ng_cgilog_file}
 
 %changelog
+* Mon Dec 22 2014 Eugene E. Kashpureff Jr <eugene@kashpureff.org>
+- Remove SuSE stuff
+- Stop screwing up nagios base package
+- Move configs into /etc/nagios/graph/
+
 * Mon Dec 15 2014 Eugene E. Kashpureff Jr <eugene@kashpureff.org>
 - Update for 1.5.2
 
