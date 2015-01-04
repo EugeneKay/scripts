@@ -6,7 +6,7 @@
 #
 ## Usage
 #
-# $ check_volgroup <Warn> <Crit> [<VolGroup>]
+# $ check_volgroup <Warn> <Crit> [<VolGroup>...]
 #
 # VolGroup should be a valid VolGroup name or omitted. Warn and Crit values
 # should be the integer percentage above which their respective statuses will
@@ -25,7 +25,8 @@ SUDO=$(which sudo)
 # Arguments
 warn="${1}"
 crit="${2}"
-volgroup="${3}"
+shift 2
+volgroup="${@}"
 
 # Default to Unknown & no data
 code=3
@@ -54,8 +55,8 @@ do
 	then
 		code=2
 		string="CRITICAL"
-	# Warning level
-	elif [ "${usedbytes}" -gt "${warnbytes}" ]
+	# Warning level, if not already Critical from other VGs
+	elif [ "${usedbytes}" -gt "${warnbytes}" ] && [ "${code}" -ne "2" ]
 	then
 		code=1
 		string="WARNING"
@@ -67,12 +68,12 @@ do
 	fi
 
 	# Append performance data
-	perfdata+="${name}=${usedbytes};${warnbytes};${critbytes};${sizebytes}"
+	perfdata+=" ${name}=${usedbytes};${warnbytes};${critbytes};${sizebytes}"
 
 done <<< "${vgsdata}" 2>/dev/null
 
 # Output status & performance data
-echo "check_volgroup: ${string} | ${perfdata}"
+echo "check_volgroup: ${string} |${perfdata}"
 
 # Exit appropriately
 exit ${code}
