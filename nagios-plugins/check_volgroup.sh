@@ -68,7 +68,7 @@ do
 	fi
 
 	# Append performance data
-	perfdata+=" ${name}=${usedbytes};${warnbytes};${critbytes};${sizebytes}"
+	perfdata+=" ${name}=${usedbytes};${warnbytes};${critbytes};0;${sizebytes}"
 
 done <<< "${vgsdata}" 2>/dev/null
 
