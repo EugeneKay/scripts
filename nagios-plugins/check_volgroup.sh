@@ -34,39 +34,40 @@ perfdata=""
 
 # Inquire about VolGroup
 vgsdata=$(${SUDO} ${VGS} ${volgroups} --units B -o vg_name,vg_size,vg_free --noheadings --nosuffix --separator ' ' 2>/dev/null)
+
 # Parse VolGroup info
 while read name sizebytes freebytes
 do
-        # Sanity check
-        if [ -z "${name}" ]
-        then
-                continue
-        fi
+	# Sanity check
+	if [ -z "${name}" ]
+	then
+		continue
+	fi
 
-        # Determine levels
-        usedbytes=$(( ${sizebytes} - ${freebytes} ))
-        warnbytes=$(( ${sizebytes} * ${warn} / 100 ))
-        critbytes=$(( ${sizebytes} * ${crit} / 100 ))
+	# Determine levels
+	usedbytes=$(( ${sizebytes} - ${freebytes} ))
+	warnbytes=$(( ${sizebytes} * ${warn} / 100 ))
+	critbytes=$(( ${sizebytes} * ${crit} / 100 ))
 
-        # Critical level
-        if [ "${usedbytes}" -gt "${critbytes}" ]
-        then
-                code=2
-                string="CRITICAL"
-        # Warning level
-        elif [ "${usedbytes}" -gt "${warnbytes}" ]
-        then
-                code=1
-                string="WARNING"
-        # Set to OK only if currently Unknown
-        elif [ "${code}" -eq "3" ]
-        then
-                code=0
-                string="OK"
-        fi
+	# Critical level
+	if [ "${usedbytes}" -gt "${critbytes}" ]
+	then
+		code=2
+		string="CRITICAL"
+	# Warning level
+	elif [ "${usedbytes}" -gt "${warnbytes}" ]
+	then
+		code=1
+		string="WARNING"
+	# Set to OK only if currently Unknown
+	elif [ "${code}" -eq "3" ]
+	then
+		code=0
+		string="OK"
+	fi
 
-        # Append performance data
-        perfdata+="${name}=${usedbytes};${warnbytes};${critbytes};${sizebytes}"
+	# Append performance data
+	perfdata+="${name}=${usedbytes};${warnbytes};${critbytes};${sizebytes}"
 
 done <<< "${vgsdata}" 2>/dev/null
 
