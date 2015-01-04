@@ -6,10 +6,11 @@
 #
 ## Usage
 #
-# $ check_volgroup <Warn> <Crit> [<VolGroup>...]
+# $ check_volgroup <Warn> <Crit> [<VolGroup>]
 #
-# VolGroup should be a valid VolGroup name or multiple space-separated
-# Warn and Crit values should be an integer percentage without trailing %
+# VolGroup should be a valid VolGroup name or omitted. Warn and Crit values
+# should be the integer percentage above which their respective statuses will
+# trigger.
 #
 # User must be able to execute `vgs` via sudo without tty or password. Minimal
 # checks are made against arguments. Invoke via a script only.
@@ -24,8 +25,7 @@ SUDO=$(which sudo)
 # Arguments
 warn="${1}"
 crit="${2}"
-shift 2
-volgroups="${@}"
+volgroup="${3}"
 
 # Default to Unknown & no data
 code=3
@@ -33,7 +33,7 @@ string="UNKNOWN"
 perfdata=""
 
 # Inquire about VolGroup
-vgsdata=$(${SUDO} ${VGS} ${volgroups} --units B -o vg_name,vg_size,vg_free --noheadings --nosuffix --separator ' ' 2>/dev/null)
+vgsdata=$(${SUDO} ${VGS} ${volgroup} --units B -o vg_name,vg_size,vg_free --noheadings --nosuffix --separator ' ' 2>/dev/null)
 
 # Parse VolGroup info
 while read name sizebytes freebytes
