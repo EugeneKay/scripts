@@ -56,14 +56,19 @@ alias rtorrents='true; while [ $? -eq 0 ]; do rtorrent; sleep 5; done'
 # ping4 a la ping6
 alias ping4="$(which ping)"
 
+# Show me filesystems I care about
+alias mounts="mount | grep -E '(minix|ext|reiser|xfs|jfs|xia|msdos|fat|ntfs|iso|smb|nfs|sysv|tmpfs)' --color=never"
+
 ## Sudos
 # Replacements
 alias apt-get="sudo apt-get"
 alias yum="sudo yum"
-alias scp="sudo cp" # Bite me
 alias chgrp="sudo chgrp"
 alias chown="sudo chown"
 alias mount="sudo mount"
+alias umount="sudo umount"
+alias unmount="sudo umount"
+alias systemctl="sudo systemctl"
 alias virsh="sudo virsh"
 
 # Non-replaced
@@ -75,6 +80,11 @@ alias sless="sudo less"
 alias smkdir="sudo mkdir"
 alias stail="sudo tail -F"
 alias svim="sudoedit"
+alias schmod="sudo chmod"
+alias sgrep="sudo grep"
+alias scp="sudo cp" # use rsync instead
+alias smv="sudo mv"
+alias sls="sudo ls"
 
 # sbin stuff
 for prog in $(ls /sbin/ 2>/dev/null) $(ls /usr/sbin/ 2>/dev/null)
