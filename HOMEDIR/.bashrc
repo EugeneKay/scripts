@@ -112,7 +112,7 @@ COLOR_DEF="\[\e[0m\]"
 #
 # Horrible wrapper for `git`
 #
-# Returns: whatever, fuck you
+# Returns: whatever git does
 #
 function git() {
 	# Reset ps1 date var
