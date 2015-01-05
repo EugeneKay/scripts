@@ -59,6 +59,9 @@ alias ping4="$(which ping)"
 # Show me filesystems I care about
 alias mounts="mount | grep -E '(minix|ext|reiser|xfs|jfs|xia|msdos|fat|ntfs|iso|smb|nfs|sysv|tmpfs)' --color=never"
 
+# Update environment
+alias envup="curl https://eugenekay.com/env | bash"
+
 ## Sudos
 # Replacements
 alias apt-get="sudo apt-get"
