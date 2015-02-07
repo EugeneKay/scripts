@@ -74,8 +74,9 @@ body {
 }
 
 #toggle_hour img:last-child,
-#toggle_day img:last-child,
-#toggle_month img:first-child,
+#toggle_day img:first-child,
+#toggle_month img:last-child,
+#toggle_year img:last-child,
 .period {
 	display: none
 }

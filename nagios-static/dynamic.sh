@@ -10,7 +10,7 @@ USER="--user username:password"
 GM="/usr/bin/gm"
 NAGIOS_CGI="http://status.example.com//nagios/cgi-bin"
 GRAPH_CGI="http://status.example.com/nagiosgraph/cgi-bin"
-PERIODS=("5400" "118800" "3024000")
+PERIODS=("5400" "118800" "3024000" "34560000")
 DYNAMIC="/data/html/kashpureff/status.example.com/dynamic"
 
 # Build status map
