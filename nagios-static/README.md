@@ -5,7 +5,7 @@
 Nagios Static
 -------------
 
-Generate static HTML & PNG resources from dynamic Nagios CGI documents, suitable for serving to the internet without authentication.
+Generate static HTML & PNG resources from dynamic Nagios CGI documents, suitable for serving to the internet without authentication. [Example site](http://status.kashpureff.org/)
 
 
 Installation
