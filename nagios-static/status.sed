@@ -15,9 +15,6 @@ s/<!--.*-->//g
 # Change assets path
 s/\/nagios\//\/assets\//g
 
-# Insert map
-/<body/ s/$/\n<img src="dynamic\/map.png" alt="Host status map" style="display: block; margin: 0 auto;">/g
-
 # Center headertable
 /headertable/ s/>$/style="margin: 0 auto;">/g
 
@@ -34,8 +31,8 @@ s/<a class='.*Totals' href='.*'>\(.*\)<\/a>/\1/g
 /<a href='notifications.cgi.*/d
 /<br \/><a href='status.cgi.*/d
 
-# Remove title
-/Service Status Details For All Hosts/d
+# Replace title with map
+s/Service Status Details For All Hosts/<img src="dynamic\/map.png" alt="Host status map">/g
 
 # Remove Limit box
 /limit'/d
