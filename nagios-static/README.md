@@ -11,7 +11,8 @@ Generate static HTML & PNG resources from dynamic Nagios CGI documents, suitable
 Installation
 ------------
 
-  * Put index.html somewhere web-servable
+  * checkout repo somewhere web-servable
+  * symlink nagios' image/ and stylesheets/ from htdocs into assets/
   * Create a dynamic/ folder which can be written into
   * Modify dynamic.sh' USER variable to suit. Must exist in nagios with CGI read permissions
-  * Invoke dynamic.sh via cron. Every 5-15 minutes is suggested.
+  * Invoke dynamic.sh via cron. Every 5-15 minutes is suggested
