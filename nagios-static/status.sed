@@ -8,36 +8,49 @@
 # Remove nagios comments
 s/<!--.*-->//g
 
-# Change path of JS/CSS
-s/\/nagios\//\/dynamic\//g
+# Remove javascript
+/script/d
+/function()/d
+
+# Change assets path
+s/\/nagios\//\/assets\//g
+
+# Insert map
+/<body/ s/$/\n<img src="dynamic\/map.png" alt="Host status map" style="display: block; margin: 0 auto;">/g
+
+# Center headertable
+/headertable/ s/>$/style="margin: 0 auto;">/g
 
 # De-link host/service totals
 s/<a class='.*Totals' href='.*'>\(.*\)<\/a>/\1/g
 
 # Remove some infobox stuff
-s/^Updated every.*//g
-s/^Nagios&reg; Core&trade;.*//g
-s/^Logged in as.*//g
+/Updated every/d
+/Nagios&reg; Core&trade;/d
+/^Logged in as.*/d
 
 # Remove linkbox links
-s/<a href='history\.cgi.*//g
-s/<a href='notifications.cgi.*//g
-s/<br \/><a href='status.cgi.*//g
+/<a href='history\.cgi.*/d
+/<a href='notifications.cgi.*/d
+/<br \/><a href='status.cgi.*/d
+
+# Remove title
+/Service Status Details For All Hosts/d
 
 # Remove Limit box
-s/.*limit.*//g
-s/^<option.*//g
-s/^<\/select><\/div>//g
-s/^<div id='top_page_numbers'><\/div>//g
+/limit'/d
+/<option.*/d
+/<\/select><\/div>/d
+/<div id='top_page_numbers'><\/div>/d
 
-# Remove sort links
+# Split table header
 s/th><th/th>\n<th/g
 
 # Remove info links
 s/<a href='extinfo.cgi?.*'>\(.*\)<\/a>/\1/g
 
 # Convert graph links
-s/<a href='\/nagiosgraph\/cgi-bin\/showhost\.cgi?host=\(.*\)' TARGET='main'>/<a href='graph-\1.html'>/g
+s/<a href='\/nagiosgraph\/cgi-bin\/showhost\.cgi?host=\(.*\)' TARGET='main'>/<a href='dynamic\/graph-\1.html'>/g
 
 # Remove count
 s/.*itemTotalsTitle.*//g

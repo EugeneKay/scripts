@@ -10,11 +10,15 @@
 /menudata/d
 /js_disabled/d
 /js_version/d
+/script/d
 /\]\]$/d
 /\];/d
 
+# Remove graph box
+/<div class="controls">/,/<h1>Nagiosgraph/d
+
 # Repoint assets
-s/\/nagiosgraph\//\/dynamic\//g
+s/\/nagiosgraph\///g
 
 # Remove host link
 s/<a href="\/nagios\/cgi-bin\/extinfo.cgi.*">\(.*\)<\/a>/\1/g
