@@ -47,7 +47,8 @@ s/<a class='.*Totals' href='.*'>\(.*\)<\/a>/\1/g
 s/th><th/th>\n<th/g
 
 # Remove info links
-s/<a href='extinfo.cgi?.*'>\(.*\)<\/a>/\1/g
+s/<a href='extinfo\.cgi.*'><IMG SRC='\(.*\)'><\/a>/<img src='\1'>/g
+s/<a href='extinfo\.cgi.*'>\(.*\)<\/a>/\1/g
 
 # Convert graph links
 s/<a href='\/nagiosgraph\/cgi-bin\/showhost\.cgi?host=\(.*\)' TARGET='main'>/<a href='dynamic\/graph-\1.html'>/g
