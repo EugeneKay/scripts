@@ -55,3 +55,6 @@ s/<a href='\/nagiosgraph\/cgi-bin\/showhost\.cgi?host=\(.*\)' TARGET='main'>/<a 
 
 # Remove count
 s/.*itemTotalsTitle.*//g
+
+# Insert footer link
+/<\/body>/ s/^/<div id="footer" style="text-align:center">Produced by <a href="https:\/\/madeitwor.se\/scripts\/tree\/master\/nagios-static">nagios-static<\/a>\n/g
