@@ -10,7 +10,7 @@
 /menudata/d
 /js_disabled/d
 /js_version/d
-/script/d
+/^<\/script>/d
 /\]\]$/d
 /\];/d
 
@@ -18,7 +18,7 @@
 /<div class="controls">/,/<h1>Nagiosgraph/d
 
 # Repoint assets
-s/\/nagiosgraph\///g
+s/\/nagiosgraph\/nagiosgraph/\/assets\/graph/g
 
 # Remove host link
 s/<a href="\/nagios\/cgi-bin\/extinfo.cgi.*">\(.*\)<\/a>/\1/g
@@ -32,6 +32,9 @@ s/<p class="graph_title"><a href=".*">\(.*\)<\/a><\/p>/<p class="graph_title">\1
 
 # Repoint graphs
 s/src=".*host=\(.*\)&service=\([a-zA-Z0-9\-]*\)&db=.*snow-\(.*\)%20-enow-0"/src="graph-\1-\2-\3.png"/g
+
+# Display month's graphs
+s/<script type="text\/javascript">.*/<script type="text\/javascript">togglePeriodDisplay('period_data_month')<\/script>/g
 
 # Remove footer
 /footer/d

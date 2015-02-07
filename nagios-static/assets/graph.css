@@ -1,0 +1,81 @@
+/* vim: ft=css
+* nagios-static/assets/graph.css
+* EugeneKay/scripts
+*
+*  nagiosgraph stylesheet
+*  $Id$
+*
+* License: OSI Artistic License
+*          http://www.opensource.org/licenses/artistic-license-2.0.php
+* Author:  (c) 2008 Alan Brenner, Ithaka
+* Author:  (c) 2010 Matthew Wall
+*/
+
+body {
+  color: black;
+  background-color: white;
+  font-family: arial, verdana, lucida, helvetica, sans-serif, serif;
+  font-weight: normal;
+  font-size: 9pt;
+}
+
+.period_banner {
+  clear: both;
+  padding-top: 0.25em;
+  padding-left: 0.5em;
+  padding-bottom: 1.75em;
+  background-color: #efefef;
+  border: 1px solid #dddddd;
+}
+.period_title {
+  float: left;
+  font-weight: bold;
+}
+.period_detail {
+  font-size: 0.9em;
+  font-weight: normal;
+}
+.period {
+  clear: both;
+}
+.graph {
+  clear: both;
+}
+.graph_image {
+  float: left;
+  padding: 1px 0 1px 0;
+}
+.graph_details {
+  float: right;
+  text-align: right;
+}
+.graph_title {
+  font-weight: bold;
+  margin-top: 0;
+}
+.graph_description {
+  font-size: 0.9em;
+  margin-top: 0;
+}
+.item_label {
+  font-weight: bold;
+}
+.timestamp {
+  font-weight: bold;
+}
+.footer {
+  clear: both;
+  padding-top: 20px;
+  font-size: 0.8em;
+  font-style: italic;
+}
+.period_toggle {
+  font-size: 5pt;
+}
+
+#toggle_hour img:last-child,
+#toggle_day img:last-child,
+#toggle_month img:first-child,
+.period {
+	display: none
+}
