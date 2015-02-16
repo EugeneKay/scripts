@@ -40,12 +40,21 @@ do
 			case "${arraycode}" in
 			0)
 				arraystring="OK"
+				if [ "${code}" -eq 3 ]
+				then
+					code=0
+				fi
 				;;
 			1)
 				arraystring="WARNING"
+				if [ "${code}" -ne 2 ]
+				then
+					code=1
+				fi
 				;;
 			2)
 				arraystring="CRITICAL"
+				code=2
 				;;
 			*)
 				arraystring="UKNOWN"
