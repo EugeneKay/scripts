@@ -27,25 +27,37 @@ do
 	# Is this a new array?
 	match=$(echo ${line} | egrep -o "^(md[0-9]+)")
 	grepcode=$?
-	if [ "${grepcode}" -eq "0" ]
+
+	last=$(echo ${line} | egrep -o '^unused devices:')
+	lastcode=$?
+
+	if [ "${grepcode}" -eq "0" ] || [ "${lastcode}" -eq "0" ]
 	then
 		# Were we in the middle of an array?
 		if [ -n "${current}" ]
 		then
-			# Was anything found about it?
-			if [ -z "${condition}" ]
-			then
-				# Must be good!
-				if [ "${code}" -eq "3" ]
-				then
-					code=0
-				fi
-				string+="${current} is OK "
-				perfdata+=" ${current}=100.0"
-			fi
+			# Determine array's code
+			case "${arraycode}" in
+			0)
+				arraystring="OK"
+				;;
+			1)
+				arraystring="WARNING"
+				;;
+			2)
+				arraystring="CRITICAL"
+				;;
+			*)
+				arraystring="UKNOWN"
+				;;
+			esac
+			string+="${current} is ${arraystring}(${activity}) "
+			perfdata+=" ${current}=${percent}"
 		fi
-		condition=""
-		percent=""
+		# Reset array info
+		activity="idle"
+		arraycode=3
+		percent="100.0"
 		# Do we care about this new array?
 		if [ -z "${array}" ] ||  [ "${match}" == "${array}" ]
 		then
@@ -55,64 +67,73 @@ do
 			continue
 		fi
 	fi
-	# Have we found any arrays yet?
+	# Are we looking at an array currently?
 	if [ -z "${current}" ]
 	then
 		continue
 	fi
 
 	# Look for status
-	match="$(echo ${line} | egrep -o '(check|rsync|reshape)')"
+	match=$(echo ${line} | egrep -o "\[[0-9]+/[0-9]+\]")
 	grepcode=$?
-
 	# Is this a status line?
 	if [ "${grepcode}" -eq "0" ]
 	then
-		condition="${match}"
-	else
-		# Are we at the end?
-		match=$(echo ${line} | egrep -o '^unused devices:')
-		if [ "$?" -eq "0" ]
+		# Pull out segments / devices
+		trimmed=$(echo ${match} | tr -d [])
+		segments=$(echo "${trimmed}" | cut -d '/' -f 1)
+		devices=$(echo "${trimmed}" | cut -d '/' -f 2)
+		if [ "${segments}" -gt "${devices}" ]
 		then
-			# Any info about this array yet?
-			if [ -z "${condition}" ]
-			then
-				# Last array was good!
-				if [ "${code}" -eq "3" ]
-				then
-					code=0
-				fi
-				string+="${current} is OK "
-				perfdata+=" ${current}=100.0"
-			fi
+			arraycode=2
+		elif [ "${segments}" -eq "${devices}" ]
+		then
+			arraycode=0
 		fi
+	fi
+
+	# Look for activity
+	match="$(echo ${line} | egrep -o '(check|recovery|resync|reshape)')"
+	grepcode=$?
+
+	# Is this an activity line?
+	if [ "${grepcode}" -eq "0" ]
+	then
+		activity="${match}"
+		# Find percentage
+		percent="$(echo ${line} | egrep -o " = ([0-9.]+)" | cut -d ' ' -f 3)"
+		if [ -z "${percent}" ]
+		then
+			percent="0.0"
+		fi
+		# Determine if we need to modify status
+		case "${activity}" in
+		"check")
+			if [ "${arraycode}" -eq 3 ]
+			then
+				arraycode=0
+			fi
+			;;
+		"recovery")
+			arraycode=2
+			;;
+		"resync")
+			if [ "${arraycode}" -ne 2 ]
+			then
+				arraycode=1
+			fi
+			;;
+		"reshape")
+			if [ "${arraycode}" -ne 2 ]
+			then
+				arraycode=1
+			fi
+			;;
+		*)
+			;;
+		esac
 		continue
 	fi
-	# Find percentage
-	percent="$(echo ${line} | egrep -o " = ([0-9.]+)" | cut -d ' ' -f 3)"
-	
-	case "${condition}" in
-	"check")
-		# All good
-		code=0
-		string+="${current} is OK(${condition}) "
-		perfdata+=" ${current}=${percent}"
-		;;
-	"resync")
-		code=2
-		string+="${current} is CRITICAL(${condition}) "
-		perfdata+=" ${current}=${percent}"
-		;;
-	"reshape")
-		code=1
-		string+="${current} is WARNING(${condition}) "
-		perfdata+=" ${current}=${percent}"
-		;;
-	*)
-		# Just a spacer line, ignore	
-		continue
-		;;
-	esac
 done < /proc/mdstat
 
 echo "${string}|${perfdata}"
