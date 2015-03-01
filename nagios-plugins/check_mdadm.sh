@@ -127,7 +127,7 @@ do
 			arraycode=2
 			;;
 		"resync")
-			if [ "${arraycode}" -ne 2 ]
+			if [ "${arraycode}" -ne 2 ] && [ "${percent}" != "0.0" ]
 			then
 				arraycode=1
 			fi
