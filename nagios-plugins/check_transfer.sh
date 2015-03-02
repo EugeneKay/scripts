@@ -17,6 +17,7 @@
 
 ## Constants
 # Adjust as needed
+AWK=$(which awk)
 VNSTAT=$(which vnstat)
 
 ## Variables
@@ -25,28 +26,30 @@ warn=$((${1} * 1024 * 1024 * 1024))
 crit=$((${2} * 1024 * 1024 * 1024))
 interface="${3}"
 
-status=3
+string="UNKNOWN"
+code=3
 
 transfer=$(vnstat --dumpdb -i ${interface} | grep "m;0;")
 
 in=$(($(echo "${transfer}" | cut -d ';' -f 4) * 1024 * 1024))
 out=$(($(echo "${transfer}" | cut -d ';' -f 5) * 1024 * 1024))
 
-echo -n "check_transfer: ${interface} "
+rx=$(echo ${in} | ${AWK} 'function human(x) {s="bkMGTEPYZ";while (x>=1000 && length(s)>1){x/=1024; s=substr(s,2)}return int(x+0.5) substr(s,1,1)}{gsub(/^[0-9]+/, human($1)); print}')
+tx=$(echo ${out} | ${AWK} 'function human(x) {s="bkMGTEPYZ";while (x>=1000 && length(s)>1){x/=1024; s=substr(s,2)}return int(x+0.5) substr(s,1,1)}{gsub(/^[0-9]+/, human($1)); print}')
 
 if [ "${in}" -gt "${crit}" ] || [ "${out}" -gt "${crit}" ]
 then
-	echo -n "CRITICAL!"
-	status=2
+	string="CRITICAL!"
+	code=2
 elif [ "${in}" -gt "${warn}" ] || [ "${out}" -gt "${warn}" ]
 then
-	echo -n "WARNING!"
-	status=1
+	string="WARNING!"
+	code=1
 else
-	echo -n "OK!"
-	status=0
+	string="OK!"
+	code=0
 fi
 
 # Performance data
-echo " | ${interface}=${in};${out};${warn};${crit}"
-exit ${status}
+echo "check_transfer: ${interface} is ${string}(RX ${rx} TX ${tx}) | ${interface}=${in};${out};${warn};${crit}"
+exit ${code}

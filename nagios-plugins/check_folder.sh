@@ -16,6 +16,7 @@
 ## Constants
 # Adjust as needed
 DU=$(which du)
+AWK=$(which awk)
 
 ## Variables
 # Arguments
@@ -42,18 +43,21 @@ dubytes=$(${DU} -sb ${folder})
 dureturn="$?"
 
 # Extract byte count
-size="$(echo ${dubytes} | cut -d ' ' -f1)"
+bytes="$(echo ${dubytes} | cut -d ' ' -f1)"
+
+# Get a human size
+size=$(echo ${bytes} | ${AWK} 'function human(x) {s="bkMGTEPYZ";while (x>=1000 && length(s)>1){x/=1024; s=substr(s,2)}return int(x+0.5) substr(s,1,1)}{gsub(/^[0-9]+/, human($1)); print}')
 
 # Figure out status
 if [ "${dureturn}" -ne "0" ]
 then
 	code=3
 	status="UNKNOWN!"
-elif [ "${crit}" -ne 0 ] && [ "${size}" -gt "${crit}" ]
+elif [ "${crit}" -ne 0 ] && [ "${bytes}" -gt "${crit}" ]
 then
 	code=2
 	status="CRITICAL!"
-elif [ "${warn}" -ne 0 ] && [ "${size}" -gt "${warn}" ]
+elif [ "${warn}" -ne 0 ] && [ "${bytes}" -gt "${warn}" ]
 then
 	code=1
 	status="WARNING!"
@@ -63,5 +67,5 @@ else
 fi
 
 # Output status & value
-echo "check_folder: ${folder} is ${status} | ${folder}=${size};${warn};${crit}"
+echo "check_folder: ${folder} is ${status}(${size}) | ${folder}=${bytes};${warn};${crit}"
 exit ${code}

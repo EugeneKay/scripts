@@ -30,7 +30,7 @@ volgroup="${@}"
 
 # Default to Unknown & no data
 code=3
-string="UNKNOWN"
+string=""
 perfdata=""
 
 # Inquire about VolGroup
@@ -45,35 +45,39 @@ do
 		continue
 	fi
 
+	string+="${name} is "
+
 	# Determine levels
 	usedbytes=$(( ${sizebytes} - ${freebytes} ))
 	warnbytes=$(( ${sizebytes} * ${warn} / 100 ))
 	critbytes=$(( ${sizebytes} * ${crit} / 100 ))
+	percent=$(( ${usedbytes} * 100 / ${sizebytes} ))
 
 	# Critical level
 	if [ "${usedbytes}" -gt "${critbytes}" ]
 	then
 		code=2
-		string="CRITICAL"
+		string+="CRITICAL!"
 	# Warning level, if not already Critical from other VGs
 	elif [ "${usedbytes}" -gt "${warnbytes}" ] && [ "${code}" -ne "2" ]
 	then
 		code=1
-		string="WARNING"
+		string+="WARNING!"
 	# Set to OK only if currently Unknown
 	elif [ "${code}" -eq "3" ]
 	then
 		code=0
-		string="OK"
+		string+="OK!"
 	fi
 
 	# Append performance data
+	string+="(${percent}%) "
 	perfdata+=" ${name}=${usedbytes};${warnbytes};${critbytes};0;${sizebytes}"
 
 done <<< "${vgsdata}" 2>/dev/null
 
 # Output status & performance data
-echo "check_volgroup: ${string} |${perfdata}"
+echo "check_volgroup: ${string}|${perfdata}"
 
 # Exit appropriately
 exit ${code}

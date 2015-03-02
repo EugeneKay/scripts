@@ -60,6 +60,10 @@ do
 				arraystring="UKNOWN"
 				;;
 			esac
+			if [ "${percent}" != "100.0" ]
+			then
+				activity+=" ${percent}%"
+			fi
 			string+="${current} is ${arraystring}(${activity}) "
 			perfdata+=" ${current}=${percent}"
 		fi

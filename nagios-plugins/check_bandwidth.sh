@@ -81,7 +81,7 @@ else
 fi
 
 # Output status & performance data
-echo "check_bandwidth: ${interface} is ${status} | ${interface}_rx=${rx_rate};${warn_rx};${crit_rx};${max_rx} ${interface}_tx=${tx_rate};${warn_tx};${crit_tx};${max_tx}"
+echo "check_bandwidth: ${interface} is ${status}(RX ${rx_rate}Mbps TX ${tx_rate}Mbps) | ${interface}_rx=${rx_rate};${warn_rx};${crit_rx};${max_rx} ${interface}_tx=${tx_rate};${warn_tx};${crit_tx};${max_tx}"
 
 # Exit appropriately
 exit ${code}
