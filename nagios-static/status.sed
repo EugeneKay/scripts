@@ -49,6 +49,7 @@ s/<a href='extinfo\.cgi.*'>\(.*\)<\/a>/\1/g
 
 # Convert graph links
 s/<a href='\/nagiosgraph\/cgi-bin\/showhost\.cgi?host=\(.*\)' TARGET='main'>/<a href='dynamic\/graph-\1.html'>/g
+s/Perform Extra Host Actions/View Host Graphs/g
 
 # Remove count
 s/.*itemTotalsTitle.*//g
