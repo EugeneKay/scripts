@@ -34,8 +34,8 @@ transfer=$(vnstat --dumpdb -i ${interface} | grep "m;0;")
 in=$(($(echo "${transfer}" | cut -d ';' -f 4) * 1024 * 1024))
 out=$(($(echo "${transfer}" | cut -d ';' -f 5) * 1024 * 1024))
 
-rx=$(echo ${in} | ${AWK} 'function human(x) {s="bkMGTEPYZ";while (x>=1000 && length(s)>1){x/=1024; s=substr(s,2)}return int(x+0.5) substr(s,1,1)}{gsub(/^[0-9]+/, human($1)); print}')
-tx=$(echo ${out} | ${AWK} 'function human(x) {s="bkMGTEPYZ";while (x>=1000 && length(s)>1){x/=1024; s=substr(s,2)}return int(x+0.5) substr(s,1,1)}{gsub(/^[0-9]+/, human($1)); print}')
+rx=$(echo ${in} | ${AWK} 'function human(x) {s="bkMGTEPYZ";while (x>=1000 && length(s)>1){x/=1024; s=substr(s,2)}return int(x*100)/100 substr(s,1,1)}{gsub(/^[0-9]+/, human($1)); print}')
+tx=$(echo ${out} | ${AWK} 'function human(x) {s="bkMGTEPYZ";while (x>=1000 && length(s)>1){x/=1024; s=substr(s,2)}return int(x*100)/100 substr(s,1,1)}{gsub(/^[0-9]+/, human($1)); print}')
 
 if [ "${in}" -gt "${crit}" ] || [ "${out}" -gt "${crit}" ]
 then

@@ -46,7 +46,7 @@ dureturn="$?"
 bytes="$(echo ${dubytes} | cut -d ' ' -f1)"
 
 # Get a human size
-size=$(echo ${bytes} | ${AWK} 'function human(x) {s="bkMGTEPYZ";while (x>=1000 && length(s)>1){x/=1024; s=substr(s,2)}return int(x+0.5) substr(s,1,1)}{gsub(/^[0-9]+/, human($1)); print}')
+size=$(echo ${bytes} | ${AWK} 'function human(x) {s="bkMGTEPYZ";while (x>=1000 && length(s)>1){x/=1024; s=substr(s,2)}return int(x*100)/100 substr(s,1,1)}{gsub(/^[0-9]+/, human($1)); print}')
 
 # Figure out status
 if [ "${dureturn}" -ne "0" ]
