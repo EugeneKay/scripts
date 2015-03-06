@@ -23,6 +23,7 @@ AWK=$(which awk)
 folder="${1}"
 warn="${2}"
 crit="${3}"
+exclude="${4}"
 
 # Default to zero
 if [ -z "${warn}" ]
@@ -39,7 +40,7 @@ then
 fi
 
 # Get number of bytes used
-dubytes=$(${DU} -sb ${folder})
+dubytes=$(${DU} -sb ${folder} --exclude=${exclude})
 dureturn="$?"
 
 # Extract byte count
