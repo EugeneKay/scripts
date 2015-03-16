@@ -1,0 +1,14 @@
+[Unit]
+Description=Minecraft server daemon
+After=network.target
+
+[Service]
+ExecStart=/usr/sbin/minecraftctl start
+Type=oneshot
+RemainAfterExit=yes
+User=minecraft
+Group=minecraft
+ExecStop=/usr/sbin/minecraftctl stop
+
+[Install]
+WantedBy=multi-user.target
