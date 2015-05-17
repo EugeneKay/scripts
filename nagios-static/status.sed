@@ -43,13 +43,14 @@ s/Service Status Details For All Hosts/<img src="dynamic\/map.png" alt="Host sta
 # Split table header
 s/th><th/th>\n<th/g
 
-# Remove info links
-s/<a href='extinfo\.cgi.*'><IMG SRC='\(.*\)'><\/a>/<img src='\1'>/g
-s/<a href='extinfo\.cgi.*'>\(.*\)<\/a>/\1/g
-
 # Convert graph links
-s/<a href='\/nagiosgraph\/cgi-bin\/showhost\.cgi?host=\(.*\)' TARGET='main'>/<a href='dynamic\/graph-\1.html'>/g
+s/<a href='\/nagiosgraph\/cgi-bin\/showhost\.cgi?host=\(.*\)' TARGET='main'><IMG/<a href='dynamic\/graph-\1.html'><img/g
 s/Perform Extra Host Actions/View Host Graphs/g
+
+# Remove host links
+s/<a href='extinfo\.cgi.*<IMG.*<a href='dynamic/<a href='dynamic/g
+s/<a href='extinfo\.cgi.*<IMG SRC='\(.*\)'.*<\/a>/<img src='\1'>/g
+s/<a href='extinfo\.cgi.*'>\(.*\)<\/a>/\1/g
 
 # Remove count
 s/.*itemTotalsTitle.*//g
