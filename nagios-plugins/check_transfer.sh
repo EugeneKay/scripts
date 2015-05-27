@@ -33,6 +33,8 @@ transfer=$(vnstat --dumpdb -i ${interface} | grep "m;0;")
 
 in=$(($(echo "${transfer}" | cut -d ';' -f 4) * 1024 * 1024))
 out=$(($(echo "${transfer}" | cut -d ';' -f 5) * 1024 * 1024))
+coming=$(($(vnstat --dumpdb -i ${interface} | grep ^d | cut -d ';' -f 4 | paste -sd+ | bc) * 1024 * 1024))
+going=$(($(vnstat --dumpdb -i ${interface} | grep ^d | cut -d ';' -f 5 | paste -sd+ | bc) * 1024 * 1024))
 
 rx=$(echo ${in} | ${AWK} 'function human(x) {s="bkMGTEPYZ";while (x>=1000 && length(s)>1){x/=1024; s=substr(s,2)}return int(x*100)/100 substr(s,1,1)}{gsub(/^[0-9]+/, human($1)); print}')
 tx=$(echo ${out} | ${AWK} 'function human(x) {s="bkMGTEPYZ";while (x>=1000 && length(s)>1){x/=1024; s=substr(s,2)}return int(x*100)/100 substr(s,1,1)}{gsub(/^[0-9]+/, human($1)); print}')
@@ -51,5 +53,5 @@ else
 fi
 
 # Performance data
-echo "check_transfer: ${interface} is ${string}(RX ${rx} TX ${tx}) | ${interface}=${in};${out};${warn};${crit}"
+echo "check_transfer: ${interface} is ${string}(RX ${rx} TX ${tx}) | ${interface}=${in};${out};${warn};${crit};${coming};${going}"
 exit ${code}
