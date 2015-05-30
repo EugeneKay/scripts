@@ -59,4 +59,4 @@ s/.*itemTotalsTitle.*//g
 /<\/body>/ s/^/<div id="footer" style="text-align:center">Produced by <a href="https:\/\/madeitwor.se\/scripts\/tree\/master\/nagios-static">nagios-static<\/a>\n/g
 
 #Insert meta-refresh
-s/<head>/<head><meta http-equiv="refresh" content="30">/g
+s/<head>/<head>\n<meta http-equiv="refresh" content="300">/g
