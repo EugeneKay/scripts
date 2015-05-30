@@ -5,6 +5,9 @@
 # Sed replacements for nagios status.cgi
 #
 
+# Change page title
+s/Current Network Status/Kashpureff Network Status/g
+
 # Insert meta-refresh
 s/<head>/<head>\n<meta http-equiv="refresh" content="300">/g
 
