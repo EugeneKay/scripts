@@ -5,6 +5,9 @@
 # Sed replacements for nagios status.cgi
 #
 
+# Insert meta-refresh
+s/<head>/<head>\n<meta http-equiv="refresh" content="300">/g
+
 # Remove nagios comments
 s/<!--.*-->//g
 
@@ -57,6 +60,3 @@ s/.*itemTotalsTitle.*//g
 
 # Insert footer link
 /<\/body>/ s/^/<div id="footer" style="text-align:center">Produced by <a href="https:\/\/madeitwor.se\/scripts\/tree\/master\/nagios-static">nagios-static<\/a>\n/g
-
-#Insert meta-refresh
-s/<head>/<head>\n<meta http-equiv="refresh" content="300">/g
