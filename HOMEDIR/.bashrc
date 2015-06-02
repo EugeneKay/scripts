@@ -495,7 +495,7 @@ _ps1_git_load () {
 	ps1_git_untracked=0
 	
 	# Count files in index
-	for filename in $(git diff --cached --name-status 2>/dev/null)
+	for filename in $(git diff --cached --name-status | tr -d '[:blank:]' 2>/dev/null)
 	do
 		# Edited in index
 		if $(echo "${filename}" | grep '^M' &>/dev/null)
@@ -521,7 +521,7 @@ _ps1_git_load () {
 	done
 	
 	# Work-tree files
-	for filename in $(git diff --name-status 2>/dev/null)
+	for filename in $(git diff --name-status | tr -d '[:blank:]' 2>/dev/null)
 	do
 		# Edited in tree
 		if $(echo "${filename}" | grep '^M' &>/dev/null)
