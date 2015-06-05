@@ -296,7 +296,7 @@ function title() {
 	then
 		echo -ne "\033k${ps1_hostname}\033\\"
 	else
-        	echo -ne "\033k${@}\033\\"
+		echo -ne "\033k${@}\033\\"
 	fi
 }
 
