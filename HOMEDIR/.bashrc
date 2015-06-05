@@ -310,7 +310,7 @@ function title() {
 #
 function _ps1_build() {
 	## Load runtime variables
-	
+
 	# Perform git checks
 	if [ "${ps1_check_git}" == "0" ]
 	then
@@ -325,9 +325,9 @@ function _ps1_build() {
 
 		# Check if we're inside a git dir
 		[ "$(git rev-parse --is-inside-git-dir 2>/dev/null)" == "true" ] && ps1_git_dir=0 || ps1_git_dir=1
-	
+
 		# Check if we need to load git repo info
-		if [ ${ps1_git_tree} -eq 0 ] && [ ${ps1_git_dir} -ne 0 ] 
+		if [ ${ps1_git_tree} -eq 0 ] && [ ${ps1_git_dir} -ne 0 ]
 		then
 			# Check if we've changed git repos
 			if [ "${ps1_git_repo}" != "${ps1_git_repo_last}" ]
@@ -344,7 +344,7 @@ function _ps1_build() {
 		ps1_git_tree=1
 		ps1_git_repo=""
 		ps1_git_dir=1
-	fi	
+	fi
 
 	# Perform SSH check
 	if [ "${ps1_check_ssh}" == "0" ]
@@ -361,7 +361,7 @@ function _ps1_build() {
 	else
 		ps1_ssh=1
 	fi
-	
+
 	# Get sudo status
 	if [ "$ps1_check_sudo" == "0" ]
 	then
@@ -370,38 +370,38 @@ function _ps1_build() {
 	else
 		ps1_sudo=1
 	fi
-	
+
 	## Assemble the prompt
-	
+
 	# Opening bracket
 	PS1="["
-	
+
 	# User @
 	PS1+="\u@"
-	
+
 	# Host info
 	PS1+="`_ps1_host` "
-	
+
 	# Directory info
 	if [ ${ps1_git_tree} -eq 0 ] && [ ${ps1_git_dir} -ne 0 ]
 	then
 		## Repo Info
-		
+
 		# Repo name
 		PS1+=${ps1_git_repo_name}
-		
+
 		# Current path within repo
 		ps1_git_repo_path=$(git rev-parse --show-prefix)
-		
+
 		# In-repo path
 		if [ "${ps1_git_repo_path}" != "" ]
 		then
 			PS1+="/"${ps1_git_repo_path%/}
 		fi
-		
+
 		# Opening paren
 		PS1+=" ("
-		
+
 		# Upstream status(coloration of branch name)
 #		local pattern="# Your branch is (ahead|behind) "
 #		if [[ $git_status =~ $pattern ]]
@@ -419,47 +419,47 @@ function _ps1_build() {
 #			# We're at the same spot as upstream
 #			PS1+=${COLOR_GRN}
 #		fi
-		
+
 		# Branch name
 		PS1+=${ps1_git_branch}
-		
+
 		# Normalize color
 		PS1+=${COLOR_DEF}
-		
+
 		# Index counters
 		PS1+=${COLOR_GRN}
 		if [ ${ps1_git_index_edit} -ne 0 ]; then PS1+=" *"${ps1_git_index_edit}; fi;
 		if [ ${ps1_git_index_add} -ne 0 ]; then PS1+=" +"${ps1_git_index_add}; fi;
 		if [ ${ps1_git_index_del} -ne 0 ]; then PS1+=" -"${ps1_git_index_del}; fi;
-		
+
 		# Work-tree counters
 		PS1+=${COLOR_YLW}
 		if [ ${ps1_git_tree_edit} -ne 0 ]; then PS1+=" *"${ps1_git_tree_edit}; fi;
 		if [ ${ps1_git_tree_add} -ne 0 ]; then PS1+=" +"${ps1_git_tree_add}; fi;
 		if [ ${ps1_git_tree_del} -ne 0 ]; then PS1+=" -"${ps1_git_tree_del}; fi;
 		if [ ${ps1_git_untracked} -ne 0 ]; then PS1+=" !"${ps1_git_untracked}; fi;
-		
+
 		# Normalize color
 		PS1+=${COLOR_DEF}
-		
+
 		# Closing paren
 		PS1+=")"
 	else
 		# Directory info
 		PS1+="`_ps1_wd`"
 	fi
-	
+
 	# Closing bracket
 	PS1+="]"
-	
+
 	# Shell character($ or #)
 	PS1+="`_ps1_sc`"
-	
+
 	# Trailing space
 	PS1+=" "
-	
+
 	## Exit
-	
+
 	# Return cleanly
 	return 0
 }
@@ -471,20 +471,20 @@ function _ps1_build() {
 #
 _ps1_git_load () {
 	## Load repo info
-	
+
 	# Repo path
 	ps1_git_repo_last=${ps1_git_repo}
-	
+
 	# Repo name
 	ps1_git_repo_name=$(basename ${ps1_git_repo})
-	
+
 	# Branch we're on
 	ps1_git_branch="$(git symbolic-ref HEAD 2>/dev/null)" || git_branch="(unnamed branch)"
 	ps1_git_branch=${ps1_git_branch##refs/heads/}
-	
+
 	# Repo status(long form)
 	ps1_git_status=$(git status 2>/dev/null)
-	
+
 	# Reset file counters
 	ps1_git_index_edit=0
 	ps1_git_index_add=0
@@ -493,7 +493,7 @@ _ps1_git_load () {
 	ps1_git_tree_add=0
 	ps1_git_tree_del=0
 	ps1_git_untracked=0
-	
+
 	# Count files in index
 	for filename in $(git diff --cached --name-status | tr -d '[:blank:]' 2>/dev/null)
 	do
@@ -506,20 +506,20 @@ _ps1_git_load () {
 		then
 			(( ps1_git_index_edit++ ))
 		fi
-		
+
 		# Deleted in index
 		if $(echo "${filename}" | grep '^D' &>/dev/null)
 		then
 			(( ps1_git_index_del++ ))
 		fi
-		
+
 		# Added in index
 		if $(echo "${filename}" | grep '^A' &>/dev/null)
 		then
 			(( ps1_git_index_add++ ))
 		fi
 	done
-	
+
 	# Work-tree files
 	for filename in $(git diff --name-status | tr -d '[:blank:]' 2>/dev/null)
 	do
@@ -528,28 +528,28 @@ _ps1_git_load () {
 		then
 			(( ps1_git_tree_edit++ ))
 		fi
-		
+
 		# Deleted in tree
 		if $(echo "${filename}" | grep '^D' &>/dev/null)
 		then
 			(( ps1_git_tree_del++ ))
 		fi
-		
+
 		# Added in tree
 		if $(echo "${filename}" | grep '^A' &>/dev/null)
 		then
 			(( ps1_git_tree_add++ ))
 		fi
 	done
-	
+
 	# Count untracked files
 	ps1_git_untracked=$(git ls-files --other --exclude-standard | wc -l )
-	
+
 	# Set the next ps1_git load for 5minutes from now
 	ps1_git_date=$(($(date +%s)+300))
-	
+
 	## Exit
-	
+
 	# Return cleanly
 	return 0
 }
@@ -564,11 +564,12 @@ _ps1_host () {
 	case "${platform}" in
 	"linux")
 		## Get load averages
-		read one five fifteen rest < /proc/loadavg
+		local loadavgs=$(eval $ps1_host_loadavg)
+		read one five fifteen rest <<< $loadavgs
 		local load_1=${one/./}
 		local load_5=${five/./}
 		local load_15=${fifteen/./}
-		
+
 		## Show load averages & hostname bits
 		# 1 minute
 		if [ "$load_1" -gt "$[$ps1_host_cores*2]" ]
@@ -591,10 +592,10 @@ _ps1_host () {
 				fi
 			fi
 		fi
-		
+
 		# Hostname bit
 		echo -ne ${ps1_hostname_1}
-		
+
 		# 5 minutes
 		if [ "$load_5" -gt "$[$ps1_host_cores*2]" ]
 		then
@@ -616,10 +617,10 @@ _ps1_host () {
 				fi
 			fi
 		fi
-		
+
 		# Hostname bit
 		echo -ne ${ps1_hostname_2}
-		
+
 		# 15 minutes
 		if [ "$load_15" -gt "$[$ps1_host_cores*2]" ]
 		then
@@ -643,7 +644,7 @@ _ps1_host () {
 		fi
 		# Hostname bit
 		echo -ne ${ps1_hostname_3}
-		
+
 		# Set prompt color back to normal
 		echo -ne ${COLOR_DEF}
 		;;
@@ -670,13 +671,42 @@ _ps1_prep () {
 
 		# Default to not checking sudo
 		ps1_check_sudo=1
-		
+
 		# Core quantity(includes HyperThreading, too.... meh)
 		ps1_host_cores=$[$(cat /proc/cpuinfo 2>/dev/null| grep processor | wc -l)*100]
-		
+
+		# Where to find the loadavg
+		ps1_host_loadavg="cat /proc/loadavg"
+
 		# Unqualified hostname
 		ps1_hostname=$(hostname -s)
-		
+
+		# Split up hostname for later usage
+		ps1_hostname_1=${ps1_hostname:0:$(( ${#ps1_hostname} / 3 + ( ${#ps1_hostname} % 3 ) / 2 ))}
+		ps1_hostname_2=${ps1_hostname:${#ps1_hostname_1}:$(( (${#ps1_hostname} - ${#ps1_hostname_1}) / 2 + (${#ps1_hostname} - ${#ps1_hostname_1}) % 2 ))}
+		ps1_hostname_3=${ps1_hostname:$(( ${#ps1_hostname_1} + ${#ps1_hostname_2} )):$(( ${#ps1_hostname} - ${#ps1_hostname_1} - ${#ps1_hostname_2} ))}
+		;;
+	"Darwin")
+		platform="linux"
+
+		# Default to not checking sudo
+		ps1_check_sudo=1
+
+		# Check SSH Agent status
+		ps1_check_ssh=0
+
+		# Check git status
+		ps1_check_git=0
+
+		# Core quantity(includes HyperThreading, too.... meh)
+		ps1_host_cores=$[$(sysctl -a | grep machdep.cpu | grep core_count | cut -d' ' -f2) * 100]
+
+		# Where to find the loadavg
+		ps1_host_loadavg="sysctl -n vm.loadavg | sed s/[\{\}]//g | sed -e 's/^ *//' -e 's/ *$/ blah/'"
+
+		# Unqualified hostname
+		ps1_hostname=$(hostname -s)
+
 		# Split up hostname for later usage
 		ps1_hostname_1=${ps1_hostname:0:$(( ${#ps1_hostname} / 3 + ( ${#ps1_hostname} % 3 ) / 2 ))}
 		ps1_hostname_2=${ps1_hostname:${#ps1_hostname_1}:$(( (${#ps1_hostname} - ${#ps1_hostname_1}) / 2 + (${#ps1_hostname} - ${#ps1_hostname_1}) % 2 ))}
@@ -687,27 +717,27 @@ _ps1_prep () {
 		ps1_check_sudo=1
 		ps1_hostname="$(hostname)"
 	esac
-	
-	
+
+
 	# Reset date of next ps1_git load to 0
 	ps1_git_date=0
-	
+
 	# Reset path of ps1_git last repo
 	ps1_git_repo_last=" "
-	
+
 	# Return cleanly
 	return 0
 }
 ## PS1 Working Dir
 #
-# 
+#
 # Outputs: working directory name, trimmed down if needed
 # Returns: 0
 #
 _ps1_wd () {
 	## Find current directory name
 	_ps1_pwd=$(basename "`pwd`")
-	
+
 	## Directory name length
 	if [ "${#_ps1_pwd}" -gt "25" ]
 	then
@@ -717,9 +747,9 @@ _ps1_wd () {
 		# Show full directory name, using PS1 special "working dir"
 		echo "\W"
 	fi
-	
+
 	## Exit
-	
+
 	# Return cleanly
 	return 0
 }
@@ -730,10 +760,10 @@ _ps1_wd () {
 #
 # Outputs: a shell character, $(# if sudo), in red(green if ssh-agent has key)
 # Returns: 0
-# 
+#
 _ps1_sc () {
 	## Output shell char
-	
+
 	# Determine color
 	if [ ${ps1_ssh} -eq 0 ]
 	then
@@ -743,7 +773,7 @@ _ps1_sc () {
 		# No key or other issue
 		echo -ne ${COLOR_RED}
 	fi
-	
+
 	# Echo a shell character
 	if [ ${ps1_sudo} -eq 0 ]
 	then
@@ -753,17 +783,17 @@ _ps1_sc () {
 		# Sudo failed
 		echo -n '$'
 	fi
-	
+
 	# Return to normal color
 	echo -ne ${COLOR_DEF}
-	
+
 	## Exit
-	
+
 	# Return cleanly
 	return 0
 }
 
-## 
+##
 ## Shell settings
 ##
 
