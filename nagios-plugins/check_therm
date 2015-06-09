@@ -1,0 +1,43 @@
+#!/bin/bash
+# nagios-plugins/check_therm.sh
+# EugeneKay/scripts
+#
+# Nagios plugin to check temperature
+#
+## Usage
+#
+# $ check_therm <scale> <warn> <crit>
+#
+# Scale should be either f or c, for Fahrenheit and Celsius respectively. Warn
+# and crit should be a max temperature above which the respective status will
+# be returned.
+
+## Variables
+# Arguments
+scale="${1}"
+warn="${2}"
+crit="${3}"
+
+# Default to Unknown & no data
+code=3
+string=""
+perfdata=""
+
+# Get current temperature
+temp=$(echo "$(temper-poll -q -${scale})/1" | bc)
+
+if [ "${temp}" -gt "${crit}" ]
+then
+	string="CRITICAL!"
+	code=2
+elif [ "${temp}" -gt "${warn}" ]
+then
+	string="WARNING!"
+	code=1
+else
+	string="OK!"
+	code=0
+fi
+
+echo "check_therm: ${string}(${temp}${scale}) | temp=${temp};${warn};${crit}"
+exit ${code}
