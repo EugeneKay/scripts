@@ -20,7 +20,7 @@ crit="${3}"
 
 # Default to Unknown
 code=3
-string="UKNOWN!"
+string="UNKNOWN!"
 
 # Get current temperature
 temp=$(temper-poll -q -${scale})
