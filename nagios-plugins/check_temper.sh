@@ -17,13 +17,14 @@
 scale="${1}"
 warn="${2}"
 crit="${3}"
+bias="${4}"
 
 # Default to Unknown
 code=3
 string="UNKNOWN!"
 
 # Get current temperature
-temp=$(temper-poll -q -${scale})
+temp=$(echo "$(temper-poll -q -${scale}) ${bias}" | bc)
 
 if [ $(echo "${temp}>${crit}" | bc -l) == "1" ]
 then
@@ -41,3 +42,4 @@ fi
 
 echo "check_temper: ${string}(${temp}${scale}) | temp=${temp};${warn};${crit}"
 exit ${code}
+
