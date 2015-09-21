@@ -53,6 +53,9 @@ alias alogs="tail -f /var/log/httpd/*"
 # rtorrent launcher
 alias rtorrents='true; while [ $? -eq 0 ]; do rtorrent; sleep 5; done'
 
+# not quite more
+alias some='head -n $((${LINES} - 2))'
+
 # ping4 a la ping6
 alias ping4="$(which ping)"
 
@@ -800,7 +803,11 @@ _ps1_sc () {
 ## Variables
 
 # Incude lots of places in PATH
-export PATH="${PATH}:${HOME}/bin:/sbin:/usr/sbin:."
+if [ -z "${PATHSET}" ]
+then
+	export PATH="${PATH}:${HOME}/bin:/sbin:/usr/sbin:."
+	export PATHSET="0"
+fi
 
 # Set default editor
 export EDITOR="/usr/bin/vim"
