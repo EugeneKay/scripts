@@ -1,6 +1,0 @@
-[jur]
-name=Florian La Roche - Packes for EL6 - $basearch
-baseurl=http://jur-linux.org/download/el-updates/6/$basearch
-enabled=1
-gpgcheck=0
-includepkgs=python3-*
