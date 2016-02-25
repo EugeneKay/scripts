@@ -35,7 +35,7 @@ then
 fi
 
 # Follow any symlinks
-device=$(realpath "${device}")
+device=$(readlink -e "${device}")
 
 # Handle direct-kernel boot virt
 if [ "${device}" == "/dev/root" ]
