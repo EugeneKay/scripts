@@ -34,10 +34,7 @@ then
 	device=$(df --output=source "${device}" | tail -n1)
 fi
 
-# Follow any symlinks
-device=$(readlink -e "${device}")
-
-# Handle direct-kernel boot virt
+# Handle root device
 if [ "${device}" == "/dev/root" ]
 then
 	if [ -b "/dev/sda" ]
@@ -47,6 +44,10 @@ then
 	then
 		device="/dev/xvda"
 	fi
+else
+	# Follow any symlinks
+	device=$(readlink -e "${device}")
+
 fi
 
 # Verify device
@@ -110,7 +111,7 @@ else
 fi
 
 # Output status & performance data
-echo "check_io: ${dev} is ${status}(Read ${read_rate} Writ ${writ_rate}) | ${dev}_io=${read_bytes};${writ_bytes};${warn_bytes};${crit_bytes}"
+echo "check_io: ${dev} is ${status}(Read ${read_rate}/s Writ ${writ_rate}/s) | ${dev}_io=${read_bytes};${writ_bytes};${warn_bytes};${crit_bytes}"
 
 # Exit appropriately
 exit ${code}
