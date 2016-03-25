@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # nagios-plugins/check_bandwidth.sh
 # EugeneKay/scripts
 #
@@ -12,10 +12,6 @@
 # Period: length of time over which to collect statistics, in seconds
 # Warn / Crit / Max: Speed in Mbit/s at which to trigger alarm or limit
 #
-
-## Constants
-# Adjust as needed
-BC=$(which bc)
 
 ## Variables
 # Arguments
@@ -34,19 +30,40 @@ then
 	max_tx="${max_rx}"
 fi
 
-# Location of statistics
-stats="/sys/class/net/${interface}/statistics"
+# Collect interface statistics
+case "$(uname -o)" in
+"GNU/Linux")
+	# Beginning count
+	rx_start=$(cat /sys/class/net/${interface}/statistics/rx_bytes)
+	tx_start=$(cat /sys/class/net/${interface}/statistics/tx_bytes)
 
-# Beginning count 
-rx_start=$(cat ${stats}/rx_bytes)
-tx_start=$(cat ${stats}/tx_bytes)
+	# Wait a while...
+	sleep ${period}
 
-# Wait a while...
-sleep ${period}
+	# End count
+	rx_end=$(cat /sys/class/net/${interface}/statistics/rx_bytes)
+	tx_end=$(cat /sys/class/net/${interface}/statistics/tx_bytes)
 
-# End count
-rx_end=$(cat ${stats}/rx_bytes)
-tx_end=$(cat ${stats}/tx_bytes)
+	;;
+"FreeBSD")
+	# Beginning count
+	rx_start=$(sysctl dev.${interface}.host.rx_good_bytes | cut -d ' ' -f 2)
+	tx_start=$(sysctl dev.${interface}.host.tx_good_bytes | cut -d ' ' -f 2)
+
+        # Wait a while...
+        sleep ${period}
+
+	# End count
+        rx_end=$(sysctl dev.${interface}.host.rx_good_bytes | cut -d ' ' -f 2)
+        tx_end=$(sysctl dev.${interface}.host.tx_good_bytes | cut -d ' ' -f 2)
+
+	;;
+*)
+	echo "UNKNOWN OS!"
+	exit 3
+	;;
+esac
+
 
 # Data moved
 rx_bytes=$(( ${rx_end} - ${rx_start} ))
@@ -58,9 +75,9 @@ crit_rx_bytes=$(( ${crit_rx} * 125000 * ${period} ))
 warn_tx_bytes=$(( ${warn_tx} * 125000 * ${period} ))
 crit_tx_bytes=$(( ${crit_tx} * 125000 * ${period} ))
 
-# Calculate Mbps
-rx_rate=$(echo "scale=2; ${rx_bytes} / ${period} / 125000" | ${BC} )
-tx_rate=$(echo "scale=2; ${tx_bytes} / ${period} / 125000" | ${BC} )
+# Calculate Mbps(with 2 extra digits)
+rx_rate=$(printf "%03d" $((${rx_bytes} / ${period} / 1250)))
+tx_rate=$(printf "%03d" $((${tx_bytes} / ${period} / 1250)))
 
 # Determine status
 if [ ${rx_bytes} -lt 0 ] || [ ${tx_bytes} -lt 0 ]
@@ -81,7 +98,7 @@ else
 fi
 
 # Output status & performance data
-echo "check_bandwidth: ${interface} is ${status}(RX ${rx_rate}Mbps TX ${tx_rate}Mbps) | ${interface}_rx=${rx_rate};${warn_rx};${crit_rx};${max_rx} ${interface}_tx=${tx_rate};${warn_tx};${crit_tx};${max_tx}"
+echo "check_bandwidth: ${interface} is ${status}(RX ${rx_rate%%??}.${rx_rate##${rx_rate%%??}}Mbps TX ${tx_rate%%??}.${tx_rate##${tx_rate%%??}}Mbps) | ${interface}_rx=${rx_rate%%??}.${rx_rate##${rx_rate%%??}};${warn_rx};${crit_rx};${max_rx} ${interface}_tx=${tx_rate%%??}.${tx_rate##${tx_rate%%??}};${warn_tx};${crit_tx};${max_tx}"
 
 # Exit appropriately
 exit ${code}
