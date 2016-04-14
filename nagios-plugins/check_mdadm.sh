@@ -72,7 +72,7 @@ do
 		arraycode=3
 		percent="100.0"
 		# Do we care about this new array?
-		if [ -z "${array}" ] ||  [ "${match}" == "${array}" ]
+		if [ -z "${array}" ] ||  [ "${array}" == "null" ] || [ "${match}" == "${array}" ]
 		then
 			current="${match}"
 		else
