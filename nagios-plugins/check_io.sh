@@ -17,6 +17,7 @@
 # Adjust as needed
 AWK=$(which awk)
 BC=$(which bc)
+DISKSTATS="/proc/diskstats"
 
 ## Variables
 # Arguments
@@ -26,47 +27,53 @@ sector_bytes="512"
 warn_bytes="${4}"
 crit_byte="${5}"
 
-diskstats="/proc/diskstats"
+## Device detection
+# Is it a PV UUID?
+if [ -n "$(echo ${device} | egrep '\w{6}-(\w{4}-){5}\w{6}')" ]
+then
+        device=$(sudo pvs -o pv_uuid,pv_name | grep "${device}" | cut -d ' ' -f 4)
+fi
 
 # De-reference device
 if [ -d "${device}" ]
 then
-	device=$(df --output=source "${device}" | tail -n1)
+        # Get actual filesystem
+        device=$(df --output=source "${device}" | tail -n1)
+        # Follow any symlinks
+        device=$(readlink -e "${device}")
+
 fi
 
 # Handle root device
 if [ "${device}" == "/dev/root" ]
 then
-	if [ -b "/dev/sda" ]
-	then
-		device="/dev/sda"
-	elif [ -b "/dev/xvda" ]
-	then
-		device="/dev/xvda"
-	fi
-else
-	# Follow any symlinks
-	device=$(readlink -e "${device}")
-
+        if [ -b "/dev/sda" ]
+        then
+                device="/dev/sda"
+        elif [ -b "/dev/xvda" ]
+        then
+                device="/dev/xvda"
+        fi
 fi
 
 # Verify device
 if [ ! -b "${device}" ]
 then
-	echo "UNKNOWN: Invalid Device or Filesystem"
-	exit 3
+        echo "UNKNOWN: Invalid Device or Filesystem"
+        exit 3
 fi
 
 dev=$(echo "${device}" | cut -d '/' -f 3-)
 
+## Data collection
 # Beginning count 
-begin=$(grep "${dev}" ${diskstats} | tr -s ' ')
+begin=$(grep "${dev}" ${DISKSTATS} | tr -s ' ')
 
 # Wait a while...
 sleep ${period}
 
 # End count
-end=$(grep "${dev}" ${diskstats} | tr -s ' ')
+end=$(grep "${dev}" ${DISKSTATS} | tr -s ' ')
 
 # Calculate sizes
 read_sectors=$(($(echo ${end} | cut -d ' ' -f 6) - $(echo ${begin} | cut -d ' ' -f 6)))
@@ -80,7 +87,7 @@ writ_bytes=$(echo "${writ_sectors} * ${sector_bytes} / ${period}" | ${BC})
 read_rate=$(echo ${read_bytes} | ${AWK} 'function human(x) {s="bkMGTEPYZ";while (x>=1000 && length(s)>1){x/=1024;s=substr(s,2)}return int(x*100)/100 substr(s,1,1)}{gsub(/^[0-9]+/, human($1)); print}')
 writ_rate=$(echo ${writ_bytes} | ${AWK} 'function human(x) {s="bkMGTEPYZ";while (x>=1000 && length(s)>1){x/=1024;s=substr(s,2)}return int(x*100)/100 substr(s,1,1)}{gsub(/^[0-9]+/, human($1)); print}')
 
-# Determine status
+## State determination
 if [ ${read_bytes} -lt 0 ] || [ ${writ_bytes} -lt 0 ]
 then
 	code=3
@@ -110,7 +117,9 @@ else
 	fi
 fi
 
-# Output status & performance data
+
+## Output
+# Info & perfdata
 echo "check_io: ${dev} is ${status}(Read ${read_rate}/s Writ ${writ_rate}/s) | ${dev}_io=${read_bytes};${writ_bytes};${warn_bytes};${crit_bytes}"
 
 # Exit appropriately
