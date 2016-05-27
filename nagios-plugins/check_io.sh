@@ -31,36 +31,39 @@ crit_byte="${5}"
 # Is it a PV UUID?
 if [ -n "$(echo ${device} | egrep '\w{6}-(\w{4}-){5}\w{6}')" ]
 then
-        device=$(sudo pvs -o pv_uuid,pv_name | grep "${device}" | cut -d ' ' -f 4)
+	device=$(sudo pvs -o pv_uuid,pv_name | grep "${device}" | cut -d ' ' -f 4)
 fi
 
 # De-reference device
 if [ -d "${device}" ]
 then
-        # Get actual filesystem
-        device=$(df --output=source "${device}" | tail -n1)
-        # Follow any symlinks
-        device=$(readlink -e "${device}")
-
+	# Get actual filesystem
+	device=$(df --output=source "${device}" | tail -n1)
 fi
 
 # Handle root device
 if [ "${device}" == "/dev/root" ]
 then
-        if [ -b "/dev/sda" ]
-        then
-                device="/dev/sda"
-        elif [ -b "/dev/xvda" ]
-        then
-                device="/dev/xvda"
-        fi
+	if [ -b "/dev/sda" ]
+	then
+		device="/dev/sda"
+	elif [ -b "/dev/xvda" ]
+	then
+		device="/dev/xvda"
+	fi
+fi
+
+# Follow symlinks
+if [ -L "${device}" ]
+then
+	device="$(readlink -e ${device})"
 fi
 
 # Verify device
 if [ ! -b "${device}" ]
 then
-        echo "UNKNOWN: Invalid Device or Filesystem"
-        exit 3
+	echo "UNKNOWN: Invalid Device or Filesystem"
+	exit 3
 fi
 
 dev=$(echo "${device}" | cut -d '/' -f 3-)
