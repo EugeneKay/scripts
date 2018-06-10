@@ -196,7 +196,7 @@ do
 	if [ "${timestamps}" == "true" ]
 	then
 		# Set modification times to last-changed
-		for file in $(find ./ -type f) 
+		find ./ -type f -print0 | while IFS= read -r -d '' file
 		do
 			# Get the date of the last commit
 			last=$(git log ${branch} --pretty=format:%ad --date=rfc -1 -- ${file})
