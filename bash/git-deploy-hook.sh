@@ -8,11 +8,6 @@
 # License: WTFPL, any version or GNU General Public License, version 2+
 #
 
-##### TODO MT
-# - Selektiver Source-Pfad (Option)
-# - Doku
-#####
-
 ##
 ## Documentation
 ##
@@ -58,6 +53,11 @@
 #	rsync URI which should be deployed to for branch $FOO. This can be any
 #	scheme which is known to 'rsync', including a local filesystem path, or
 #	a remote host(via SSH)
+#
+# deploy.$FOO.subdir
+#	Only rsync the specified subdirectory of the worktree for branch $FOO.
+#	This is useful if you have other stuff that should not be deployed
+#	and all relevant things are under this subdirectory.
 #
 
 ## Usage
@@ -173,6 +173,11 @@ do
 		continue
 	fi
 
+	# Extract from different directory?
+	subdir=$(git config --get "deploy.${branch}.subdir")
+	subdir=${subdir:-"/"}
+	subdir=${subdir#"/"}
+
 	# Rsync options
 	opts=$(git config --get "deploy.${branch}.opts")
 	if [ -z "${opts}" ]
@@ -180,6 +185,7 @@ do
 		opts="$RSYNC_DEFAULT"
 
 	fi
+
 
 	## Attempt to update
 	echo "Branch ${branch} updated. Deploying to ${dest}..."
@@ -211,7 +217,7 @@ do
 	fi
 	
 	# Copy worktree to destination
-	"$RSYNC" $opts "${scratch}/${branch}/" "${dest}"
+	"$RSYNC" $opts "${scratch}/${branch}/${subdir}" "${dest}"
 	status=$?
 	
 	if [ "${status}" -ne "0" ]
@@ -232,4 +238,4 @@ done
 rm "${scratch}" -rf
 
 # Unset environment variables
-unset GIT RSYNC TMP GIT_DIR scratch old new ref branch dest optstimestamps file last
+unset GIT RSYNC TMP GIT_DIR scratch old new ref branch dest optstimestamps file last subdir
