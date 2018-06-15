@@ -4,7 +4,7 @@
 #
 # git post-receive hook to check out branches to a rsync destination
 #
-# Copyright 2012 K and H Research Company.
+# Copyright 2012 K and H Research Company, 2018 Markus Treinen.
 # License: WTFPL, any version or GNU General Public License, version 2+
 #
 
@@ -54,6 +54,11 @@
 #	scheme which is known to 'rsync', including a local filesystem path, or
 #	a remote host(via SSH)
 #
+# deploy.$FOO.subdir
+#	Only rsync the specified subdirectory of the worktree for branch $FOO.
+#	This is useful if you have other stuff that should not be deployed
+#	and all relevant things are under this subdirectory.
+#
 
 ## Usage
 #
@@ -83,17 +88,17 @@ GIT=$(which git)
 RSYNC=$(which rsync)
 
 # Temporary directory
-TMP="/tmp"
+TMP='/tmp'
+
+# Umask
+UMASK='022'
+
+# Rsync default opts
+#RSYNC_DEFAULT='-rt --delete'
+RSYNC_DEFAULT='-vrtEF --delete-after --delay-updates'
 
 # Repo directory
 export GIT_DIR=$(pwd)
-
-
-##
-## Variables
-##
-
-
 
 
 ##
@@ -145,39 +150,45 @@ do
 	# Find branch name
 	branch=${ref#"refs/heads/"}
 	
-	# Check branch name
-	if [ -z "${branch}" ]
+	# Check branch name (skip if not a branch)
+	if [ -z "${branch}" ] || [[ ! "${ref}" =~ ^refs/heads/.* ]]
 	then
-		echo "Refspec ${ref} is not a branch. Skipped!"
+		#echo "Refspec ${ref} is not a branch. Skipped!"
+		continue
 	fi
 	
 	# Don't attempt to handle deleted branches
-	if [ "${new}" = "0000000000000000000000000000000000000000" ]
+	if [[ "${new}" =~ ^0+$ ]]
 	then
 		# Error && skip branch
 		echo "Branch ${branch} deleted. Skipped!"
 		continue
 	fi
 	
-	## Attempt to update
-	echo "Branch ${branch} updated. Deploying..."
-	
-	# Deploy destination
+	# Deploy destination (skip if not set)
 	dest=$(git config --get "deploy.${branch}.uri")
 	if [ -z "${dest}" ]
 	then
-		echo "Error: Destination not set! Deploy failed."
+		#echo "Warning: Destination not set! Deploy skipped."
 		continue
 	fi
-	echo "Destination: "${dest}
-	
+
+	# Extract from different directory?
+	subdir=$(git config --get "deploy.${branch}.subdir")
+	subdir=${subdir:-"/"}
+	subdir=${subdir#"/"}
+
 	# Rsync options
 	opts=$(git config --get "deploy.${branch}.opts")
 	if [ -z "${opts}" ]
 	then
-		opts="-rt --delete"
+		opts="$RSYNC_DEFAULT"
+
 	fi
-	echo "Options: "${opts}
+
+
+	## Attempt to update
+	echo "Branch ${branch} updated. Deploying to ${dest}..."
 	
 	# Create directory to archive into
 	mkdir "${scratch}/${branch}"
@@ -186,7 +197,7 @@ do
 	cd "${scratch}/${branch}"
 	
 	# Set umask
-	umask 007
+	umask "${UMASK}"
 	
 	# Get a copy of worktree
 	$GIT archive --format=tar ${new} | tar xf -
@@ -196,17 +207,17 @@ do
 	if [ "${timestamps}" == "true" ]
 	then
 		# Set modification times to last-changed
-		for file in $(find ./ -type f) 
+		find ./ -type f -print0 | while IFS= read -r -d '' file
 		do
 			# Get the date of the last commit
-			last=$(git log ${branch} --pretty=format:%ad --date=rfc -1 -- ${file})
+			last=$(git log ${branch} --pretty=format:%ad --date=rfc -1 -- "${file}")
 			# Set the modification time
-			touch -t $(date -d "${last}" +%Y%m%d%H%M.%S) ${file}
+			touch -t $(date -d "${last}" +%Y%m%d%H%M.%S) "${file}"
 		done
 	fi
 	
 	# Copy worktree to destination
-	$RSYNC $opts "${scratch}/${branch}/" "${dest}"
+	"$RSYNC" $opts "${scratch}/${branch}/${subdir}" "${dest}"
 	status=$?
 	
 	if [ "${status}" -ne "0" ]
@@ -224,8 +235,7 @@ done
 ##
 
 # Remove scratch dir
-rm ${scratch} -rf
+rm "${scratch}" -rf
 
 # Unset environment variables
-unset GIT RSYNC TMP GIT_DIR scratch old new ref branch dest optstimestamps file
-unset last
+unset GIT RSYNC TMP GIT_DIR scratch old new ref branch dest optstimestamps file last subdir
